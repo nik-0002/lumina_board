@@ -99,3 +99,25 @@
 2026-05-20 02:16:27,175 - werkzeug - INFO - 127.0.0.1 - - [20/May/2026 02:16:27] "GET /dashboard HTTP/1.1" 200 -
 2026-05-20 11:51:17,318 - werkzeug - INFO - 127.0.0.1 - - [20/May/2026 11:51:17] "GET /api/campaigns HTTP/1.1" 200 -
 2026-05-20 11:59:47,911 - werkzeug - INFO - 127.0.0.1 - - [20/May/2026 11:59:47] "GET /api/campaigns HTTP/1.1" 200 -
+2026-05-20 13:04:37,808 - __main__ - INFO - Initializing API services...
+2026-05-20 13:04:37,859 - __main__ - INFO - All services initialized successfully
+2026-05-20 13:04:37,862 - __main__ - INFO - Starting Syngenta Agricultural Marketing Platform API
+2026-05-20 13:04:37,863 - __main__ - INFO - Dashboard available at: http://localhost:5000/dashboard
+2026-05-20 13:04:37,863 - __main__ - INFO - API documentation available at: http://localhost:5000/api/health
+2026-05-20 13:05:07,866 - __main__ - INFO - Initializing API services...
+2026-05-20 13:05:07,915 - __main__ - INFO - All services initialized successfully
+2026-05-20 13:05:07,918 - __main__ - INFO - Starting Syngenta Agricultural Marketing Platform API
+2026-05-20 13:05:07,919 - __main__ - INFO - Dashboard available at: http://localhost:5000/dashboard
+2026-05-20 13:05:07,919 - __main__ - INFO - API documentation available at: http://localhost:5000/api/health
+2026-05-20 13:05:30,233 - __main__ - INFO - Initializing API services...
+2026-05-20 13:05:30,283 - __main__ - INFO - All services initialized successfully
+2026-05-20 13:05:30,287 - __main__ - INFO - Starting Syngenta Agricultural Marketing Platform API
+2026-05-20 13:05:30,287 - __main__ - INFO - Dashboard available at: http://localhost:5000/dashboard
+2026-05-20 13:05:30,287 - __main__ - INFO - API documentation available at: http://localhost:5000/api/health
+2026-05-20 13:05:30,525 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:8000
+ * Running on http://192.168.43.206:8000
+2026-05-20 13:05:30,525 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2026-05-20 13:05:50,689 - werkzeug - INFO - 192.168.43.206 - - [20/May/2026 13:05:50] "GET / HTTP/1.1" 200 -
+2026-05-20 13:05:52,530 - werkzeug - INFO - 192.168.43.206 - - [20/May/2026 13:05:52] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -

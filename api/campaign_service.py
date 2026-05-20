@@ -1,15 +1,19 @@
-from typing import Dict, List
+from typing import Dict, List, Optional
 from datetime import datetime, timedelta
 import json
+import uuid
+import pandas as pd
+from utils.data_processors import DataProcessor
+from utils.metrics import MetricsCalculator
 
 class CampaignService:
     """
     Core campaign management service
-    Handles campaign creation, optimization, and performance tracking
+    Works with CSV data for growers, campaigns, products, and messaging
     """
     
-    def __init__(self, engagement_predictor, trend_detector, llm_client, 
-                 messaging_orchestrator, audio_generator):
+    def __init__(self, engagement_predictor=None, trend_detector=None, llm_client=None, 
+                 messaging_orchestrator=None, audio_generator=None):
         self.engagement_predictor = engagement_predictor
         self.trend_detector = trend_detector
         self.llm = llm_client
@@ -17,6 +21,11 @@ class CampaignService:
         self.audio_gen = audio_generator
         self.campaigns = {}
         self.campaign_metrics = {}
+        self.data_processor = DataProcessor()
+        self.metrics_calc = MetricsCalculator()
+        
+        # Load datasets
+        self.datasets = self.data_processor.load_all_datasets()
     
     def create_campaign(self, campaign_config: Dict) -> Dict:
         """
@@ -24,14 +33,18 @@ class CampaignService:
         """
         campaign_id = self._generate_campaign_id()
         
-        # Get target farmer segments
-        target_segments = campaign_config.get('target_segments', [])
+        # Get target farmer segments from CSV
+        target_segments = self._get_target_segments(
+            campaign_config.get('region'),
+            campaign_config.get('crop'),
+            campaign_config.get('target_criteria', {})
+        )
         
         # Generate content variants for each segment
         content_variants = self._generate_content_variants(
-            crop=campaign_config['crop'],
-            product=campaign_config['product'],
-            region=campaign_config['region'],
+            crop=campaign_config.get('crop', 'wheat'),
+            product=campaign_config.get('product', 'Fungicide'),
+            region=campaign_config.get('region', 'Punjab'),
             segments=target_segments,
             num_variants=campaign_config.get('num_variants', 5)
         )
@@ -39,10 +52,10 @@ class CampaignService:
         campaign = {
             'campaign_id': campaign_id,
             'name': campaign_config.get('name', ''),
-            'product': campaign_config['product'],
-            'crop': campaign_config['crop'],
-            'region': campaign_config['region'],
-            'target_segments': target_segments,
+            'product': campaign_config.get('product', ''),
+            'crop': campaign_config.get('crop', ''),
+            'region': campaign_config.get('region', ''),
+            'target_segments': len(target_segments),
             'content_variants': content_variants,
             'scheduling': campaign_config.get('scheduling', {}),
             'budget': campaign_config.get('budget', 0),
@@ -62,26 +75,64 @@ class CampaignService:
         return {
             'success': True,
             'campaign_id': campaign_id,
-            'campaign': campaign
+            'campaign': campaign,
+            'target_farmer_count': len(target_segments)
         }
+    
+    def _get_target_segments(self, region: str, crop: str, criteria: Dict = None) -> List[Dict]:
+        """
+        Get target farmer segments from grower CSV based on criteria
+        """
+        if 'growers' not in self.datasets:
+            return []
+        
+        growers_df = self.datasets['growers'].copy()
+        
+        # Filter by region/state
+        if region:
+            growers_df = growers_df[growers_df['state'].str.contains(region, case=False, na=False)]
+        
+        # Filter by crop from crop calendar
+        if crop:
+            growers_df = growers_df[growers_df['grower_crop_calendar'].str.contains(crop, case=False, na=False)]
+        
+        # Apply additional criteria
+        if criteria:
+            if criteria.get('device_type'):
+                growers_df = growers_df[growers_df['device_type'] == criteria['device_type']]
+            
+            if criteria.get('min_farm_size'):
+                growers_df = growers_df[growers_df['grower_farm_size'] >= criteria['min_farm_size']]
+            
+            if criteria.get('language'):
+                growers_df = growers_df[growers_df['language'] == criteria['language']]
+        
+        # Convert to list of dicts
+        return growers_df.to_dict('records')
     
     def _generate_content_variants(self, crop: str, product: str, region: str,
                                    segments: List[Dict], num_variants: int) -> List[Dict]:
-        """Generate multiple content variants for A/B testing"""
+        """
+        Generate multiple content variants for A/B testing
+        """
         variants = []
         
-        for i in range(num_variants):
-            # Generate base message
-            message_result = self.llm.generate_content(
-                f"Generate a marketing message variant {i+1} for {crop} farmers in {region} about {product}",
-                temperature=0.5 + (i * 0.1)  # Vary temperature for diversity
-            )
+        for i in range(min(num_variants, 5)):
+            # Generate base message (LLM if available, else template)
+            if self.llm:
+                message_result = self.llm.generate_content(
+                    f"Generate a marketing message variant {i+1} for {crop} farmers in {region} about {product}",
+                    temperature=0.5 + (i * 0.1)
+                )
+                text = message_result.get('content', f"Check out our {product} for {crop}!")
+            else:
+                text = f"Variant {i+1}: Use {product} for better {crop} yield in {region}"
             
             variant = {
                 'variant_id': i + 1,
                 'type': self._determine_variant_type(i),
                 'content': {
-                    'text': message_result['content'],
+                    'text': text,
                     'has_image': i % 3 == 0,
                     'has_audio': i % 4 == 0
                 },
@@ -99,6 +150,8 @@ class CampaignService:
     
     def _predict_variant_engagement(self, variant_index: int) -> float:
         """Estimate engagement for each variant"""
+        if self.engagement_predictor:
+            return self.engagement_predictor.predict(variant_index)
         base_engagement = 0.4
         variant_boost = (variant_index % 3) * 0.1
         return min(0.95, base_engagement + variant_boost)
@@ -119,12 +172,15 @@ class CampaignService:
             }
         }
     
-    def launch_campaign(self, campaign_id: str, farmer_list: List[Dict]) -> Dict:
+    def launch_campaign(self, campaign_id: str, farmer_list: Optional[List[Dict]] = None) -> Dict:
         """
         Launch campaign to farmer segments
         """
         if campaign_id not in self.campaigns:
             return {'success': False, 'error': 'Campaign not found'}
+        
+        if not farmer_list:
+            return {'success': False, 'error': 'No farmers provided'}
         
         campaign = self.campaigns[campaign_id]
         campaign['status'] = 'active'
@@ -133,41 +189,55 @@ class CampaignService:
         # Route messages to farmers
         delivery_results = []
         for farmer in farmer_list:
-            # Select best variant for farmer
-            selected_variant = self._select_variant_for_farmer(campaign['content_variants'], farmer)
-            
-            # Generate personalized content
-            content = self._personalize_content(selected_variant, farmer, campaign)
-            
-            # Route message
-            delivery = self.messenger.route_campaign_message(
-                farmer_context=farmer,
-                message_content=content,
-                campaign_id=campaign_id
-            )
-            
-            delivery_results.append(delivery)
-            campaign['performance']['sent'] += 1
+            try:
+                # Select best variant for farmer
+                selected_variant = self._select_variant_for_farmer(campaign['content_variants'], farmer)
+                
+                # Generate personalized content
+                content = self._personalize_content(selected_variant, farmer, campaign)
+                
+                # Route message if messenger available
+                if self.messenger:
+                    delivery = self.messenger.route_campaign_message(
+                        farmer_context=farmer,
+                        message_content=content,
+                        campaign_id=campaign_id
+                    )
+                else:
+                    # Simulate delivery
+                    delivery = {
+                        'success': True,
+                        'message_id': str(uuid.uuid4()),
+                        'status': 'sent',
+                        'farmer_id': farmer.get('grower_id')
+                    }
+                
+                delivery_results.append(delivery)
+                campaign['performance']['sent'] += 1
+            except Exception as e:
+                delivery_results.append({'success': False, 'error': str(e)})
         
         return {
             'success': True,
             'campaign_id': campaign_id,
             'total_messages': len(farmer_list),
+            'successful': sum(1 for d in delivery_results if d.get('success')),
             'delivery_results': delivery_results,
             'launch_time': datetime.now().isoformat()
         }
     
     def _select_variant_for_farmer(self, variants: List[Dict], farmer: Dict) -> Dict:
-        """Select best variant for individual farmer using MAB"""
-        # Thompson sampling or epsilon-greedy
+        """Select best variant for individual farmer"""
         variant_scores = []
         
         for variant in variants:
             score = variant['predicted_engagement']
+            
             # Adjust based on farmer characteristics
-            if variant['type'] == 'text_audio' and farmer.get('device_type') == 'feature_phone':
+            device_type = farmer.get('device_type', 'smartphone')
+            if variant['type'] == 'text_audio' and device_type == 'keypad':
                 score *= 1.3
-            elif variant['type'] == 'video_script' and farmer.get('device_type') == 'smartphone':
+            elif variant['type'] == 'video_script' and device_type == 'smartphone':
                 score *= 1.2
             
             variant_scores.append(score)
@@ -176,11 +246,13 @@ class CampaignService:
         return variants[best_variant_idx]
     
     def _personalize_content(self, variant: Dict, farmer: Dict, campaign: Dict) -> Dict:
-        """Personalize content for specific farmer"""
+        """
+        Personalize content for specific farmer
+        """
         personalized = {
             'type': variant['type'],
-            'text': variant['content']['text'].replace('{farmer_name}', farmer.get('name', 'Farmer')),
-            'farmer_id': farmer.get('farmer_id'),
+            'text': variant['content']['text'],
+            'farmer_id': farmer.get('grower_id'),
             'variant_id': variant['variant_id']
         }
         
@@ -188,13 +260,16 @@ class CampaignService:
         if variant['content']['has_image']:
             personalized['image'] = f"/media/campaign_{campaign['campaign_id']}_image.jpg"
         
-        if variant['content']['has_audio']:
-            audio_result = self.audio_gen.generate_campaign_audio(
-                personalized['text'],
-                language=farmer.get('language', 'hi')
-            )
-            if audio_result['success']:
-                personalized['audio_url'] = audio_result.get('audio_path')
+        if variant['content']['has_audio'] and self.audio_gen:
+            try:
+                audio_result = self.audio_gen.generate_campaign_audio(
+                    personalized['text'],
+                    language=farmer.get('language', 'hi')
+                )
+                if audio_result and audio_result.get('success'):
+                    personalized['audio_url'] = audio_result.get('audio_path')
+            except:
+                pass
         
         return personalized
     
@@ -236,6 +311,9 @@ class CampaignService:
     
     def _get_top_variants(self, campaign_id: str, top_n: int = 3) -> List[Dict]:
         """Get top performing variants"""
+        if campaign_id not in self.campaigns:
+            return []
+        
         campaign = self.campaigns[campaign_id]
         variants_with_perf = []
         
@@ -251,7 +329,35 @@ class CampaignService:
         
         return sorted(variants_with_perf, key=lambda x: x['engagement_score'], reverse=True)[:top_n]
     
+    def get_dataset_insights(self) -> Dict:
+        """
+        Get insights from loaded CSV datasets
+        """
+        insights = {
+            'total_growers': 0,
+            'total_campaigns': 0,
+            'total_retailers': 0,
+            'states': [],
+            'crops': [],
+            'products': []
+        }
+        
+        if 'growers' in self.datasets:
+            growers_df = self.datasets['growers']
+            insights['total_growers'] = len(growers_df)
+            insights['states'] = growers_df['state'].unique().tolist()
+        
+        if 'campaigns' in self.datasets:
+            campaigns_df = self.datasets['campaigns']
+            insights['total_campaigns'] = len(campaigns_df)
+            insights['crops'] = campaigns_df['campaign_crop'].unique().tolist()
+            insights['products'] = campaigns_df['campaign_product'].unique().tolist()
+        
+        if 'retailers' in self.datasets:
+            insights['total_retailers'] = len(self.datasets['retailers'])
+        
+        return insights
+    
     def _generate_campaign_id(self) -> str:
         """Generate unique campaign ID"""
-        import uuid
         return f"camp_{uuid.uuid4().hex[:8]}"

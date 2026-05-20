@@ -1,24 +1,16 @@
 """
 Syngenta AI-Powered Agricultural Marketing Platform
-Main application orchestrator
+Main application orchestrator - works with CSV datasets
 """
 
 import os
 import json
 import logging
 from typing import Dict
+import pandas as pd
 
-from config import Config
-from models.ml.trend_detection import TrendDetector, PestOutbreakDetector
-from models.ml.engagement_prediction import EngagementPredictor, CampaignOptimizer
-from models.ml.crop_segmentation import CropSegmentationEngine
-from models.llm.ollama_client import OllamaLLMClient, ContentGenerator
-from models.audio.huggingface_tts import HuggingFaceTextToAudio
-from rag.retriever import RAGRetriever
-from messaging.orchestrator import MessagingOrchestrator
-from messaging.channels.adb_whatsapp import ADBWhatsAppController
-from messaging.channels.twillio_gateway import TwilioMessagingGateway
-from api.campaign_service import CampaignService
+from utils.data_processors import DataProcessor
+from utils.metrics import MetricsCalculator
 
 # Setup logging
 logging.basicConfig(
@@ -34,145 +26,142 @@ logger = logging.getLogger(__name__)
 class AgriculturalMarketingPlatform:
     """
     Main platform orchestrator
-    Integrates all ML, LLM, messaging, and analytics components
+    Works with CSV datasets for growers, campaigns, products, and retailers
     """
     
-    def __init__(self, config_path: str = "./config"):
-        """Initialize the platform with all components"""
+    def __init__(self, data_dir: str = "./data"):
+        """Initialize the platform with CSV data"""
         logger.info("Initializing Agricultural Marketing Platform...")
         
-        self.config = Config(config_path)
+        self.data_processor = DataProcessor(data_dir)
+        self.metrics_calc = MetricsCalculator()
         
-        # Initialize ML Models
-        logger.info("Loading ML models...")
-        self.trend_detector = TrendDetector()
-        self.pest_detector = PestOutbreakDetector()
-        self.engagement_predictor = EngagementPredictor()
-        self.campaign_optimizer = CampaignOptimizer()
-        self.crop_segmentation = CropSegmentationEngine()
-        
-        # Initialize LLM
-        logger.info("Initializing LLM client...")
-        self.llm_client = OllamaLLMClient(
-            base_url=self.config.ollama_url,
-            model=self.config.ollama_model
-        )
-        
-        # Verify LLM connection
-        if not self.llm_client.check_connection():
-            logger.warning("Warning: Ollama service not responding. Running in degraded mode.")
-        
-        # Initialize RAG
-        logger.info("Loading RAG retriever...")
-        self.rag_retriever = RAGRetriever()
-        
-        # Initialize Content Generator
-        self.content_generator = ContentGenerator(self.llm_client, self.rag_retriever)
-        
-        # Initialize Audio
-        logger.info("Loading audio generation model...")
-        self.audio_generator = HuggingFaceTextToAudio()
-        
-        # Initialize Messaging
-        logger.info("Initializing messaging channels...")
-        adb_controller = ADBWhatsAppController() if self.config.adb_enabled else None
-        twilio_gateway = TwilioMessagingGateway(
-            account_sid=self.config.twilio_account_sid,
-            auth_token=self.config.twilio_auth_token,
-            from_number=self.config.twilio_phone
-        ) if self.config.twilio_enabled else None
-        
-        self.messenger = MessagingOrchestrator(
-            adb_controller=adb_controller,
-            twilio_gateway=twilio_gateway
-        )
-        
-        # Initialize Campaign Service
-        self.campaign_service = CampaignService(
-            engagement_predictor=self.engagement_predictor,
-            trend_detector=self.trend_detector,
-            llm_client=self.llm_client,
-            messaging_orchestrator=self.messenger,
-            audio_generator=self.audio_generator
-        )
+        # Load datasets
+        logger.info("Loading datasets from CSV...")
+        self.datasets = self.data_processor.load_all_datasets()
+        logger.info(f"Loaded datasets: {list(self.datasets.keys())}")
         
         logger.info("Platform initialization complete!")
     
-    def create_and_launch_campaign(self, campaign_config: Dict) -> Dict:
+    def analyze_campaign_performance(self) -> Dict:
         """
-        End-to-end campaign creation and launch
+        Analyze all campaign performance from CSV data
         """
-        logger.info(f"Creating campaign: {campaign_config.get('name', 'Unnamed')}")
+        logger.info("Analyzing campaign performance...")
         
-        # Create campaign
-        campaign_result = self.campaign_service.create_campaign(campaign_config)
+        if 'campaigns' not in self.datasets:
+            logger.warning("No campaign data loaded")
+            return {}
         
-        if not campaign_result['success']:
-            logger.error(f"Campaign creation failed: {campaign_result}")
-            return campaign_result
+        campaigns_df = self.datasets['campaigns']
         
-        campaign_id = campaign_result['campaign_id']
-        logger.info(f"Campaign created: {campaign_id}")
-        
-        # Get target farmer list
-        target_farmers = self._get_target_farmers(campaign_config)
-        logger.info(f"Targeting {len(target_farmers)} farmers")
-        
-        # Launch campaign
-        launch_result = self.campaign_service.launch_campaign(campaign_id, target_farmers)
-        
-        return {
-            'success': True,
-            'campaign_id': campaign_id,
-            'launch_result': launch_result
+        analysis = {
+            'total_campaigns': campaigns_df['campaign_id'].nunique(),
+            'total_impressions': campaigns_df['social_post_impression'].sum(),
+            'total_visits': campaigns_df['landing_page_visits'].sum(),
+            'total_submissions': campaigns_df['lead_form_submission'].sum(),
+            'avg_ctr': self.metrics_calc.calculate_impression_to_visit(
+                campaigns_df['social_post_impression'].sum(),
+                campaigns_df['landing_page_visits'].sum()
+            ),
+            'avg_conversion': self.metrics_calc.calculate_visit_conversion(
+                campaigns_df['landing_page_visits'].sum(),
+                campaigns_df['lead_form_submission'].sum()
+            ),
+            'by_product': self.metrics_calc.analyze_product_performance(campaigns_df),
+            'by_crop': self.metrics_calc.analyze_regional_performance(campaigns_df, 'crop')
         }
+        
+        return analysis
     
-    def _get_target_farmers(self, campaign_config: Dict) -> list:
+    def get_grower_segmentation(self) -> Dict:
         """
-        Get list of farmers matching campaign targeting criteria
-        In production, this would query a farmer database
+        Get grower segmentation from CSV data
         """
-        # Placeholder - would connect to farmer database
-        return []
+        logger.info("Analyzing grower segmentation...")
+        
+        if 'growers' not in self.datasets:
+            logger.warning("No grower data loaded")
+            return {}
+        
+        growers_df = self.datasets['growers']
+        
+        segmentation = {
+            'total_growers': len(growers_df),
+            'by_state': growers_df['state'].value_counts().to_dict(),
+            'by_device': growers_df['device_type'].value_counts().to_dict(),
+            'by_language': growers_df['language'].value_counts().to_dict(),
+            'avg_age': growers_df['grower_age'].mean(),
+            'avg_farm_size': growers_df['grower_farm_size'].mean(),
+            'gender_distribution': growers_df['gender'].value_counts().to_dict()
+        }
+        
+        return segmentation
     
-    def analyze_campaign_performance(self, campaign_id: str) -> Dict:
+    def get_regional_trends(self, state: str = None) -> Dict:
         """
-        Get comprehensive campaign performance analytics
+        Get regional trends from grower data
         """
-        return self.campaign_service.get_campaign_analytics(campaign_id)
+        logger.info(f"Analyzing regional trends for state: {state}")
+        
+        if 'growers' not in self.datasets:
+            return {}
+        
+        growers_df = self.datasets['growers']
+        
+        if state:
+            growers_df = growers_df[growers_df['state'] == state]
+        
+        trends = {
+            'total_growers': len(growers_df),
+            'avg_farm_size': growers_df['grower_farm_size'].mean(),
+            'device_adoption': {
+                'smartphone': len(growers_df[growers_df['device_type'] == 'smartphone']),
+                'keypad': len(growers_df[growers_df['device_type'] == 'keypad']),
+                'unknown': len(growers_df[growers_df['device_type'] == 'unknown'])
+            },
+            'languages': growers_df['language'].unique().tolist()
+        }
+        
+        return trends
     
-    def get_pest_outbreak_predictions(self, region: str, crop: str) -> Dict:
+    def generate_marketing_insights(self) -> Dict:
         """
-        Get pest outbreak risk predictions for region/crop
+        Generate comprehensive marketing insights
         """
-        # This would fetch actual historical pest data and weather
-        predictions = self.pest_detector.predict_outbreak_risk(
-            historical_data={},
-            weather_data={},
-            region=region
-        )
-        return predictions
+        logger.info("Generating marketing insights...")
+        
+        insights = {
+            'timestamp': pd.Timestamp.now().isoformat(),
+            'campaign_analysis': self.analyze_campaign_performance(),
+            'grower_segmentation': self.get_grower_segmentation(),
+            'dataset_summary': {
+                'total_growers': len(self.datasets.get('growers', pd.DataFrame())),
+                'total_campaigns': len(self.datasets.get('campaigns', pd.DataFrame()).groupby('campaign_id')) if 'campaigns' in self.datasets else 0,
+                'total_retailers': len(self.datasets.get('retailers', pd.DataFrame())),
+                'total_reps': len(self.datasets.get('reps', pd.DataFrame()))
+            }
+        }
+        
+        return insights
 
 # Example usage
 if __name__ == "__main__":
     # Initialize platform
     platform = AgriculturalMarketingPlatform()
     
-    # Create example campaign
-    campaign_config = {
-        'name': 'Fungicide Campaign - Tamil Nadu Monsoon',
-        'crop': 'rice',
-        'product': 'Dhanuka Propiconazole',
-        'region': 'Tamil Nadu',
-        'target_segments': ['smallholder', 'medium_farmer'],
-        'num_variants': 5,
-        'budget': 50000,
-        'scheduling': {
-            'start_date': '2024-06-01',
-            'duration_days': 14,
-            'send_hours': [7, 12, 17]
-        }
-    }
+    # Generate insights
+    insights = platform.generate_marketing_insights()
     
-    result = platform.create_and_launch_campaign(campaign_config)
-    print(json.dumps(result, indent=2))
+    # Print results
+    print("\n" + "="*60)
+    print("AGRICULTURAL MARKETING PLATFORM - INSIGHTS")
+    print("="*60)
+    print(json.dumps(insights, indent=2, default=str))
+    
+    # Analyze specific region
+    print("\n" + "="*60)
+    print("REGIONAL ANALYSIS - PUNJAB")
+    print("="*60)
+    punjab_trends = platform.get_regional_trends('Punjab')
+    print(json.dumps(punjab_trends, indent=2))

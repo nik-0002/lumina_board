@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Flask API Server for Syngenta Agricultural Marketing Platform
-Integrates with HTML dashboard and Python backend
+Integrates with HTML dashboard and CSV data backend
 """
 
 import os
@@ -11,16 +11,14 @@ from datetime import datetime, timedelta
 from flask import Flask, render_template, request, jsonify, send_from_directory
 from flask_cors import CORS
 import sys
+import pandas as pd
 
 # Add parent directory to path
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from api.campaign_service import CampaignService
-from models.ml.engagement_prediction import EngagementPredictor
-from models.ml.trend_detection import TrendDetector, PestOutbreakDetector
-from models.llm.ollama_client import OllamaLLMClient
-from messaging.orchestrator import MessagingOrchestrator
-from models.audio.huggingface_tts import HuggingFaceTextToAudio
+from utils.data_processors import DataProcessor
+from utils.metrics import MetricsCalculator
 
 # Setup logging
 logging.basicConfig(
@@ -41,23 +39,15 @@ CORS(app)
 logger.info("Initializing API services...")
 
 try:
-    engagement_predictor = EngagementPredictor()
-    trend_detector = TrendDetector()
-    pest_detector = PestOutbreakDetector()
-    llm_client = OllamaLLMClient()
-    messenger = MessagingOrchestrator()
-    audio_generator = HuggingFaceTextToAudio()
-    campaign_service = CampaignService(
-        engagement_predictor=engagement_predictor,
-        trend_detector=trend_detector,
-        llm_client=llm_client,
-        messaging_orchestrator=messenger,
-        audio_generator=audio_generator
-    )
+    campaign_service = CampaignService()
+    data_processor = DataProcessor()
+    metrics_calc = MetricsCalculator()
+    datasets = data_processor.load_all_datasets()
     logger.info("All services initialized successfully")
 except Exception as e:
     logger.error(f"Error initializing services: {e}")
     logger.warning("Running in degraded mode")
+    datasets = {}
 
 # ==================== DASHBOARD ROUTES ====================
 
@@ -75,71 +65,159 @@ def serve_dashboard_static(filename):
     """Serve static files for dashboard"""
     return send_from_directory('../dashboard', filename)
 
+# ==================== DATA INSIGHT ROUTES ====================
+
+@app.route('/api/data/insights', methods=['GET'])
+def get_data_insights():
+    """Get insights from loaded CSV datasets"""
+    try:
+        insights = campaign_service.get_dataset_insights()
+        return jsonify({
+            'success': True,
+            'insights': insights,
+            'datasets_loaded': list(datasets.keys())
+        })
+    except Exception as e:
+        logger.error(f"Error fetching data insights: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/growers', methods=['GET'])
+def get_growers():
+    """Get growers with optional filtering"""
+    try:
+        state = request.args.get('state')
+        crop = request.args.get('crop')
+        page = request.args.get('page', 1, type=int)
+        limit = request.args.get('limit', 20, type=int)
+        
+        if 'growers' not in datasets:
+            return jsonify({'success': False, 'error': 'Grower data not loaded'}), 404
+        
+        growers_df = datasets['growers'].copy()
+        
+        # Apply filters
+        if state:
+            growers_df = growers_df[growers_df['state'].str.contains(state, case=False, na=False)]
+        
+        if crop:
+            growers_df = growers_df[growers_df['grower_crop_calendar'].str.contains(crop, case=False, na=False)]
+        
+        # Pagination
+        total = len(growers_df)
+        start_idx = (page - 1) * limit
+        growers_df = growers_df.iloc[start_idx:start_idx + limit]
+        
+        growers = growers_df.to_dict('records')
+        
+        return jsonify({
+            'success': True,
+            'growers': growers,
+            'page': page,
+            'limit': limit,
+            'total': total
+        })
+    except Exception as e:
+        logger.error(f"Error fetching growers: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/growers/<grower_id>', methods=['GET'])
+def get_grower_details(grower_id):
+    """Get detailed information about a grower from CSV"""
+    try:
+        if 'growers' not in datasets:
+            return jsonify({'success': False, 'error': 'Grower data not loaded'}), 404
+        
+        grower = datasets['growers'][datasets['growers']['grower_id'] == grower_id]
+        
+        if grower.empty:
+            return jsonify({'success': False, 'error': 'Grower not found'}), 404
+        
+        grower_dict = grower.to_dict('records')[0]
+        
+        return jsonify({
+            'success': True,
+            'grower': grower_dict
+        })
+    except Exception as e:
+        logger.error(f"Error fetching grower details: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
 # ==================== CAMPAIGN API ROUTES ====================
 
 @app.route('/api/campaigns', methods=['GET'])
 def get_campaigns():
     """Get list of campaigns with optional filtering"""
     try:
-        period = request.args.get('period', '7d')
-        status = request.args.get('status', None)
+        state = request.args.get('state')
+        product = request.args.get('product')
         
-        # Generate sample campaign data
-        campaigns = generate_sample_campaigns(period=period)
+        if 'campaigns' not in datasets:
+            return jsonify({'success': False, 'error': 'Campaign data not loaded'}), 404
         
-        if status:
-            campaigns = [c for c in campaigns if c['status'] == status]
+        campaigns_df = datasets['campaigns'].copy()
+        
+        # Group by campaign_id
+        campaigns_list = []
+        for campaign_id in campaigns_df['campaign_id'].unique():
+            camp_data = campaigns_df[campaigns_df['campaign_id'] == campaign_id]
+            
+            campaign = {
+                'campaign_id': campaign_id,
+                'product': camp_data['campaign_product'].iloc[0],
+                'crop': camp_data['campaign_crop'].iloc[0],
+                'total_impressions': camp_data['social_post_impression'].sum(),
+                'total_visits': camp_data['landing_page_visits'].sum(),
+                'total_submissions': camp_data['lead_form_submission'].sum(),
+                'weeks': len(camp_data)
+            }
+            campaigns_list.append(campaign)
+        
+        # Apply filters
+        if product:
+            campaigns_list = [c for c in campaigns_list if product.lower() in c['product'].lower()]
         
         return jsonify({
             'success': True,
-            'campaigns': campaigns,
-            'total': len(campaigns),
-            'period': period
+            'campaigns': campaigns_list,
+            'total': len(campaigns_list)
         })
     except Exception as e:
         logger.error(f"Error fetching campaigns: {e}")
         return jsonify({'success': False, 'error': str(e)}), 500
 
-@app.route('/api/campaigns/<campaign_id>', methods=['GET'])
-def get_campaign_details(campaign_id):
-    """Get detailed information about a specific campaign"""
-    try:
-        campaign = generate_sample_campaign_details(campaign_id)
-        return jsonify({
-            'success': True,
-            'campaign': campaign
-        })
-    except Exception as e:
-        logger.error(f"Error fetching campaign details: {e}")
-        return jsonify({'success': False, 'error': str(e)}), 500
-
 @app.route('/api/campaigns/<campaign_id>/analytics', methods=['GET'])
 def get_campaign_analytics(campaign_id):
-    """Get campaign analytics and metrics"""
+    """Get campaign analytics from CSV data"""
     try:
-        period = request.args.get('period', '7d')
+        if 'campaigns' not in datasets:
+            return jsonify({'success': False, 'error': 'Campaign data not loaded'}), 404
+        
+        campaigns_df = datasets['campaigns']
+        campaign_data = campaigns_df[campaigns_df['campaign_id'] == campaign_id]
+        
+        if campaign_data.empty:
+            return jsonify({'success': False, 'error': 'Campaign not found'}), 404
+        
+        # Calculate metrics
+        total_impressions = campaign_data['social_post_impression'].sum()
+        total_visits = campaign_data['landing_page_visits'].sum()
+        total_submissions = campaign_data['lead_form_submission'].sum()
+        
+        ctr = MetricsCalculator.calculate_impression_to_visit(total_impressions, total_visits)
+        conversion = MetricsCalculator.calculate_visit_conversion(total_visits, total_submissions)
         
         analytics = {
             'campaign_id': campaign_id,
-            'period': period,
+            'product': campaign_data['campaign_product'].iloc[0],
+            'crop': campaign_data['campaign_crop'].iloc[0],
             'performance_metrics': {
-                'total_sent': generate_random_metric(1000, 5000),
-                'delivery_rate': round(88.5 + (hash(campaign_id) % 10), 1),
-                'engagement_rate': round(35.2 + (hash(campaign_id) % 15), 1),
-                'conversion_rate': round(6.8 + (hash(campaign_id) % 8), 1),
-                'conversions': generate_random_metric(50, 300)
+                'total_impressions': total_impressions,
+                'total_visits': total_visits,
+                'total_submissions': total_submissions,
+                'click_through_rate': round(ctr, 2),
+                'conversion_rate': round(conversion, 2)
             },
-            'channel_breakdown': {
-                'whatsapp': generate_random_metric(400, 2000),
-                'sms': generate_random_metric(200, 1000),
-                'voice': generate_random_metric(100, 500)
-            },
-            'daily_trend': generate_daily_trend(period),
-            'top_variants': [
-                {'variant_id': 1, 'type': 'text_image', 'engagement_score': 45},
-                {'variant_id': 2, 'type': 'video_script', 'engagement_score': 38},
-                {'variant_id': 3, 'type': 'text_audio', 'engagement_score': 32}
-            ]
+            'weekly_breakdown': campaign_data[['week_start_date', 'social_post_impression', 'landing_page_visits', 'lead_form_submission']].to_dict('records')
         }
         
         return jsonify({
@@ -147,7 +225,7 @@ def get_campaign_analytics(campaign_id):
             'analytics': analytics
         })
     except Exception as e:
-        logger.error(f"Error fetching analytics: {e}")
+        logger.error(f"Error fetching campaign analytics: {e}")
         return jsonify({'success': False, 'error': str(e)}), 500
 
 @app.route('/api/campaigns', methods=['POST'])
@@ -158,11 +236,11 @@ def create_campaign():
         
         campaign_config = {
             'name': data.get('name', 'New Campaign'),
-            'crop': data.get('crop', 'rice'),
+            'crop': data.get('crop', 'wheat'),
             'product': data.get('product', 'Fungicide'),
-            'region': data.get('region', 'Tamil Nadu'),
-            'target_segments': data.get('target_segments', ['smallholder']),
-            'num_variants': data.get('num_variants', 5),
+            'region': data.get('region', 'Punjab'),
+            'target_segments': data.get('target_segments', []),
+            'num_variants': data.get('num_variants', 3),
             'budget': data.get('budget', 50000)
         }
         
@@ -171,7 +249,8 @@ def create_campaign():
         return jsonify({
             'success': True,
             'campaign_id': result.get('campaign_id'),
-            'campaign': result.get('campaign')
+            'campaign': result.get('campaign'),
+            'target_farmer_count': result.get('target_farmer_count')
         }), 201
     except Exception as e:
         logger.error(f"Error creating campaign: {e}")
@@ -184,12 +263,16 @@ def launch_campaign(campaign_id):
         data = request.get_json()
         farmer_list = data.get('farmer_list', [])
         
+        if not farmer_list:
+            return jsonify({'success': False, 'error': 'No farmers provided'}), 400
+        
         result = campaign_service.launch_campaign(campaign_id, farmer_list)
         
         return jsonify({
             'success': result['success'],
             'campaign_id': campaign_id,
             'total_messages': result.get('total_messages', 0),
+            'successful': result.get('successful', 0),
             'timestamp': datetime.now().isoformat()
         })
     except Exception as e:
@@ -200,22 +283,14 @@ def launch_campaign(campaign_id):
 
 @app.route('/api/analytics/overview', methods=['GET'])
 def get_analytics_overview():
-    """Get overall platform analytics"""
+    """Get overall platform analytics from CSV data"""
     try:
-        period = request.args.get('period', '7d')
-        
         overview = {
-            'period': period,
-            'total_campaigns': 12,
-            'active_campaigns': 5,
-            'total_farmers': 45230,
-            'total_messages_sent': 156420,
-            'overall_delivery_rate': 91.3,
-            'overall_engagement_rate': 38.7,
-            'overall_conversion_rate': 7.2,
-            'top_performing_region': 'Tamil Nadu',
-            'top_performing_crop': 'Rice',
-            'roi': 3.45
+            'total_growers': len(datasets.get('growers', pd.DataFrame())),
+            'total_campaigns': len(datasets.get('campaigns', pd.DataFrame()).groupby('campaign_id')),
+            'total_retailers': len(datasets.get('retailers', pd.DataFrame())),
+            'total_impressions': datasets.get('campaigns', pd.DataFrame())['social_post_impression'].sum() if 'campaigns' in datasets else 0,
+            'total_submissions': datasets.get('campaigns', pd.DataFrame())['lead_form_submission'].sum() if 'campaigns' in datasets else 0
         }
         
         return jsonify({'success': True, 'overview': overview})
@@ -223,174 +298,65 @@ def get_analytics_overview():
         logger.error(f"Error fetching analytics overview: {e}")
         return jsonify({'success': False, 'error': str(e)}), 500
 
-@app.route('/api/analytics/trends', methods=['GET'])
-def get_analytics_trends():
-    """Get trend analysis data"""
+@app.route('/api/analytics/regional-performance', methods=['GET'])
+def get_regional_performance():
+    """Get regional performance from grower and campaign data"""
     try:
-        metric = request.args.get('metric', 'engagement')
-        period = request.args.get('period', '7d')
+        if 'growers' not in datasets:
+            return jsonify({'success': False, 'error': 'Grower data not loaded'}), 404
         
-        trends = generate_trend_data(metric, period)
+        growers_df = datasets['growers']
+        regional = growers_df.groupby('state').size().to_dict()
         
         return jsonify({
             'success': True,
-            'metric': metric,
-            'period': period,
-            'data': trends
+            'regional_data': regional
         })
     except Exception as e:
-        logger.error(f"Error fetching trends: {e}")
+        logger.error(f"Error fetching regional performance: {e}")
         return jsonify({'success': False, 'error': str(e)}), 500
 
 # ==================== MESSAGING ROUTES ====================
 
-@app.route('/api/messages/send', methods=['POST'])
-def send_message():
-    """Send a message to a farmer"""
+@app.route('/api/campaigns/<campaign_id>/messaging-setup', methods=['GET'])
+def get_messaging_setup(campaign_id):
+    """Get messaging setup for campaign - phone numbers and default text"""
     try:
-        data = request.get_json()
+        data = request.args
+        grower_ids = data.getlist('grower_ids')
         
-        farmer_context = {
-            'farmer_id': data.get('farmer_id'),
-            'phone_number': data.get('phone_number'),
-            'name': data.get('name'),
-            'crop': data.get('crop', 'rice'),
-            'region': data.get('region'),
-            'language': data.get('language', 'hi')
-        }
+        if 'growers' not in datasets:
+            return jsonify({'success': False, 'error': 'Grower data not loaded'}), 404
         
-        message_content = {
-            'type': data.get('type', 'text'),
-            'text': data.get('text'),
-            'media_path': data.get('media_path')
-        }
+        growers_df = datasets['growers']
         
-        result = messenger.route_campaign_message(
-            farmer_context=farmer_context,
-            message_content=message_content,
-            campaign_id=data.get('campaign_id', 'manual')
-        )
+        if grower_ids:
+            growers_df = growers_df[growers_df['grower_id'].isin(grower_ids)]
         
-        return jsonify({
-            'success': result['success'],
-            'message_id': result.get('message_id'),
-            'status': result.get('status', 'sent')
-        })
-    except Exception as e:
-        logger.error(f"Error sending message: {e}")
-        return jsonify({'success': False, 'error': str(e)}), 500
-
-# ==================== PEST ALERTS ROUTES ====================
-
-@app.route('/api/pest-alerts', methods=['GET'])
-def get_pest_alerts():
-    """Get active pest and disease alerts"""
-    try:
-        region = request.args.get('region', None)
-        severity = request.args.get('severity', None)
-        
-        alerts = generate_sample_pest_alerts(region=region, severity=severity)
+        # Create messaging payload
+        messaging_list = []
+        for _, grower in growers_df.iterrows():
+            # Extract phone if available from dataset
+            phone = grower.get('phone_number', '')
+            
+            messaging_list.append({
+                'grower_id': grower['grower_id'],
+                'name': f"Grower {grower['grower_id']}",
+                'phone': phone if phone else '+91XXXXXXXXXX',
+                'state': grower['state'],
+                'device_type': grower['device_type'],
+                'language': grower['language'],
+                'selected': False
+            })
         
         return jsonify({
             'success': True,
-            'alerts': alerts,
-            'total': len(alerts)
+            'campaign_id': campaign_id,
+            'messaging_list': messaging_list,
+            'default_message': f"Check our latest agricultural solution!"
         })
     except Exception as e:
-        logger.error(f"Error fetching pest alerts: {e}")
-        return jsonify({'success': False, 'error': str(e)}), 500
-
-@app.route('/api/pest-alerts/<alert_id>', methods=['GET'])
-def get_pest_alert_details(alert_id):
-    """Get detailed information about a pest alert"""
-    try:
-        alert = {
-            'alert_id': alert_id,
-            'pest_name': 'Brown Plant Hopper',
-            'disease_name': 'None',
-            'region': 'Tamil Nadu',
-            'crop': 'Rice',
-            'severity': 'HIGH',
-            'severity_score': 8.5,
-            'affected_area_km2': 2450,
-            'affected_farmers': 1230,
-            'detection_date': (datetime.now() - timedelta(days=2)).isoformat(),
-            'weather_conditions': {
-                'temperature': 32.5,
-                'humidity': 85,
-                'rainfall': 15.2
-            },
-            'recommended_actions': [
-                'Scout fields daily for pest population',
-                'Apply recommended insecticide',
-                'Maintain field hygiene'
-            ],
-            'recommended_products': [
-                'Syngenta Imidacloprid 70% WS',
-                'Syngenta Fipronil 5% SC'
-            ]
-        }
-        
-        return jsonify({
-            'success': True,
-            'alert': alert
-        })
-    except Exception as e:
-        logger.error(f"Error fetching alert details: {e}")
-        return jsonify({'success': False, 'error': str(e)}), 500
-
-# ==================== FARMER ROUTES ====================
-
-@app.route('/api/farmers', methods=['GET'])
-def get_farmers():
-    """Get list of farmers"""
-    try:
-        region = request.args.get('region', None)
-        crop = request.args.get('crop', None)
-        page = request.args.get('page', 1, type=int)
-        limit = request.args.get('limit', 20, type=int)
-        
-        farmers = generate_sample_farmers(region=region, crop=crop, page=page, limit=limit)
-        
-        return jsonify({
-            'success': True,
-            'farmers': farmers,
-            'page': page,
-            'limit': limit,
-            'total': 45230
-        })
-    except Exception as e:
-        logger.error(f"Error fetching farmers: {e}")
-        return jsonify({'success': False, 'error': str(e)}), 500
-
-@app.route('/api/farmers/<farmer_id>', methods=['GET'])
-def get_farmer_details(farmer_id):
-    """Get detailed information about a farmer"""
-    try:
-        farmer = {
-            'farmer_id': farmer_id,
-            'name': 'Rajesh Kumar',
-            'phone_number': '+919876543210',
-            'region': 'Tamil Nadu',
-            'district': 'Thanjavur',
-            'village': 'Kolangudi',
-            'primary_crop': 'Rice',
-            'farm_size_acres': 2.5,
-            'crops': ['Rice', 'Pulses'],
-            'language': 'Tamil',
-            'device_type': 'smartphone',
-            'engagement_history': [
-                {'date': datetime.now().isoformat(), 'campaign': 'Fungicide Campaign', 'status': 'opened'},
-                {'date': (datetime.now() - timedelta(days=3)).isoformat(), 'campaign': 'Pest Control', 'status': 'clicked'}
-            ]
-        }
-        
-        return jsonify({
-            'success': True,
-            'farmer': farmer
-        })
-    except Exception as e:
-        logger.error(f"Error fetching farmer details: {e}")
+        logger.error(f"Error getting messaging setup: {e}")
         return jsonify({'success': False, 'error': str(e)}), 500
 
 # ==================== HEALTH CHECK ====================
@@ -402,212 +368,11 @@ def health_check():
         'status': 'healthy',
         'timestamp': datetime.now().isoformat(),
         'services': {
-            'llm': 'connected' if llm_client.check_connection() else 'disconnected',
-            'database': 'connected',
-            'messaging': 'ready'
+            'api': 'running',
+            'data_processor': 'running',
+            'datasets_loaded': list(datasets.keys())
         }
     })
-
-# ==================== HELPER FUNCTIONS ====================
-
-def generate_sample_campaigns(period='7d'):
-    """Generate sample campaign data"""
-    campaigns = [
-        {
-            'campaign_id': 'camp_001',
-            'name': 'Monsoon Fungicide Campaign',
-            'crop': 'Rice',
-            'product': 'Propiconazole',
-            'region': 'Tamil Nadu',
-            'status': 'active',
-            'start_date': (datetime.now() - timedelta(days=5)).isoformat(),
-            'performance': {
-                'sent': 2450,
-                'delivered': 2310,
-                'engaged': 988,
-                'converted': 67
-            }
-        },
-        {
-            'campaign_id': 'camp_002',
-            'name': 'Kharif Pest Control',
-            'crop': 'Cotton',
-            'product': 'Imidacloprid',
-            'region': 'Maharashtra',
-            'status': 'active',
-            'start_date': (datetime.now() - timedelta(days=3)).isoformat(),
-            'performance': {
-                'sent': 1850,
-                'delivered': 1694,
-                'engaged': 542,
-                'converted': 39
-            }
-        },
-        {
-            'campaign_id': 'camp_003',
-            'name': 'Winter Herbicide Campaign',
-            'crop': 'Wheat',
-            'product': 'Glyphosate',
-            'region': 'Punjab',
-            'status': 'active',
-            'start_date': (datetime.now() - timedelta(days=7)).isoformat(),
-            'performance': {
-                'sent': 3200,
-                'delivered': 3075,
-                'engaged': 1435,
-                'converted': 103
-            }
-        },
-        {
-            'campaign_id': 'camp_004',
-            'name': 'Spring Vegetable Protection',
-            'crop': 'Tomato',
-            'product': 'Captan',
-            'region': 'Himachal Pradesh',
-            'status': 'scheduled',
-            'start_date': (datetime.now() + timedelta(days=2)).isoformat(),
-            'performance': {
-                'sent': 0,
-                'delivered': 0,
-                'engaged': 0,
-                'converted': 0
-            }
-        },
-        {
-            'campaign_id': 'camp_005',
-            'name': 'Disease Management Initiative',
-            'crop': 'Sugarcane',
-            'product': 'Copper Oxychloride',
-            'region': 'Karnataka',
-            'status': 'paused',
-            'start_date': (datetime.now() - timedelta(days=14)).isoformat(),
-            'performance': {
-                'sent': 1200,
-                'delivered': 1044,
-                'engaged': 315,
-                'converted': 18
-            }
-        }
-    ]
-    return campaigns
-
-def generate_sample_campaign_details(campaign_id):
-    """Generate detailed campaign information"""
-    campaigns = generate_sample_campaigns()
-    for c in campaigns:
-        if c['campaign_id'] == campaign_id:
-            return c
-    return campaigns[0]
-
-def generate_sample_pest_alerts(region=None, severity=None):
-    """Generate sample pest alerts"""
-    alerts = [
-        {
-            'alert_id': 'alert_001',
-            'pest_name': 'Brown Plant Hopper',
-            'region': 'Tamil Nadu',
-            'crop': 'Rice',
-            'severity': 'HIGH',
-            'severity_score': 8.5,
-            'affected_farmers': 1230,
-            'detection_date': (datetime.now() - timedelta(days=2)).isoformat()
-        },
-        {
-            'alert_id': 'alert_002',
-            'pest_name': 'Bollworm',
-            'region': 'Maharashtra',
-            'crop': 'Cotton',
-            'severity': 'MEDIUM',
-            'severity_score': 6.2,
-            'affected_farmers': 450,
-            'detection_date': (datetime.now() - timedelta(days=1)).isoformat()
-        },
-        {
-            'alert_id': 'alert_003',
-            'pest_name': 'Wheat Rust',
-            'region': 'Punjab',
-            'crop': 'Wheat',
-            'severity': 'HIGH',
-            'severity_score': 7.8,
-            'affected_farmers': 890,
-            'detection_date': datetime.now().isoformat()
-        }
-    ]
-    
-    if region:
-        alerts = [a for a in alerts if a['region'] == region]
-    if severity:
-        alerts = [a for a in alerts if a['severity'] == severity]
-    
-    return alerts
-
-def generate_sample_farmers(region=None, crop=None, page=1, limit=20):
-    """Generate sample farmer data"""
-    farmers = [
-        {
-            'farmer_id': f'farmer_{i:05d}',
-            'name': f'Farmer {i}',
-            'phone_number': f'+9198765{4321 + i:05d}',
-            'region': ['Tamil Nadu', 'Maharashtra', 'Punjab', 'Karnataka'][i % 4],
-            'crop': ['Rice', 'Cotton', 'Wheat', 'Sugarcane'][i % 4],
-            'farm_size': 2.5 + (i % 5),
-            'device_type': 'smartphone' if i % 3 != 0 else 'feature_phone'
-        }
-        for i in range(1, 1001)
-    ]
-    
-    if region:
-        farmers = [f for f in farmers if f['region'] == region]
-    if crop:
-        farmers = [f for f in farmers if f['crop'] == crop]
-    
-    start_idx = (page - 1) * limit
-    return farmers[start_idx:start_idx + limit]
-
-def generate_random_metric(min_val, max_val):
-    """Generate random metric value"""
-    import random
-    return random.randint(min_val, max_val)
-
-def generate_daily_trend(period):
-    """Generate daily trend data"""
-    days = {'7d': 7, '30d': 30, '90d': 90, '1y': 365}.get(period, 7)
-    trend_data = []
-    
-    for i in range(days):
-        date = (datetime.now() - timedelta(days=i)).strftime('%Y-%m-%d')
-        trend_data.append({
-            'date': date,
-            'sent': 200 + (i * 5),
-            'delivered': 188 + (i * 4),
-            'engaged': 72 + (i * 2),
-            'converted': 8 + (i % 3)
-        })
-    
-    return sorted(trend_data, key=lambda x: x['date'])
-
-def generate_trend_data(metric, period):
-    """Generate trend data for specific metric"""
-    days = {'7d': 7, '30d': 30, '90d': 90, '1y': 365}.get(period, 7)
-    trend_data = []
-    
-    base_values = {
-        'engagement': 35,
-        'conversion': 6.5,
-        'delivery': 91
-    }
-    
-    base = base_values.get(metric, 50)
-    
-    for i in range(days):
-        date = (datetime.now() - timedelta(days=i)).strftime('%Y-%m-%d')
-        value = base + (i % 5) - 2 + (hash(date) % 10)
-        trend_data.append({
-            'date': date,
-            'value': round(max(0, min(100, value)), 1)
-        })
-    
-    return sorted(trend_data, key=lambda x: x['date'])
 
 # ==================== ERROR HANDLERS ====================
 
@@ -625,7 +390,7 @@ def internal_error(e):
 if __name__ == '__main__':
     logger.info("Starting Syngenta Agricultural Marketing Platform API")
     logger.info("Dashboard available at: http://localhost:5000/dashboard")
-    logger.info("API documentation available at: http://localhost:5000/api")
+    logger.info("API documentation available at: http://localhost:5000/api/health")
     
     # Run Flask app
     app.run(
