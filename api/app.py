@@ -1,401 +1,561 @@
-#!/usr/bin/env python3
 """
-Flask API Server for Syngenta Agricultural Marketing Platform
-Integrates with HTML dashboard and CSV data backend
+Lumina Board - Enhanced Agricultural Marketing API
+Flask backend integrating CSV-based RAG, Qwen2.5 LLM, urgency detection,
+and multilingual campaign message generation.
 """
 
 import os
 import json
 import logging
-from datetime import datetime, timedelta
-from flask import Flask, render_template, request, jsonify, send_from_directory
-from flask_cors import CORS
-import sys
-import pandas as pd
+import glob
+import re
+from typing import Dict, List, Optional
+from datetime import datetime
 
-# Add parent directory to path
+import pandas as pd
+import numpy as np
+from flask import Flask, request, jsonify, send_from_directory
+from flask_cors import CORS
+
+# Internal modules
+import sys
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from api.campaign_service import CampaignService
+from rag.rag_engine import CSVRagEngine
+from models.urgency_detector import UrgencyDetector
+from messaging.campaign_generator import CampaignMessageGenerator
 from utils.data_processors import DataProcessor
-from utils.metrics import MetricsCalculator
 
-# Setup logging
+# ─── Logging ──────────────────────────────────────────────────────────────────
 logging.basicConfig(
     level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    format="%(asctime)s [%(levelname)s] %(name)s - %(message)s",
     handlers=[
-        logging.FileHandler('logs/api.log'),
+        logging.FileHandler("../logs/api.log"),
         logging.StreamHandler()
     ]
 )
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("lumina.api")
 
-# Initialize Flask app
-app = Flask(__name__, static_folder='../dashboard', static_url_path='/dashboard')
+# ─── App Setup ────────────────────────────────────────────────────────────────
+app = Flask(__name__, static_folder="../dashboard", static_url_path="")
 CORS(app)
 
-# Initialize services
-logger.info("Initializing API services...")
+DATA_DIR = os.environ.get("DATA_DIR", "../data")
 
-try:
-    campaign_service = CampaignService()
-    data_processor = DataProcessor()
-    metrics_calc = MetricsCalculator()
-    datasets = data_processor.load_all_datasets()
-    logger.info("All services initialized successfully")
-except Exception as e:
-    logger.error(f"Error initializing services: {e}")
-    logger.warning("Running in degraded mode")
-    datasets = {}
+# ─── Singletons (lazy-init) ───────────────────────────────────────────────────
+_rag_engine: Optional[CSVRagEngine] = None
+_urgency_detector: Optional[UrgencyDetector] = None
+_campaign_gen: Optional[CampaignMessageGenerator] = None
+_data_processor: Optional[DataProcessor] = None
+_datasets: Dict[str, pd.DataFrame] = {}
 
-# ==================== DASHBOARD ROUTES ====================
 
-@app.route('/')
-@app.route('/dashboard')
-def dashboard():
-    """Serve the main dashboard HTML"""
-    try:
-        return send_from_directory('../dashboard', 'index.html')
-    except:
-        return "Dashboard file not found. Please ensure dashboard/index.html exists.", 404
+def get_rag_engine() -> CSVRagEngine:
+    global _rag_engine
+    if _rag_engine is None:
+        _rag_engine = CSVRagEngine(DATA_DIR)
+        _rag_engine.build_index()
+    return _rag_engine
 
-@app.route('/dashboard/<path:filename>')
-def serve_dashboard_static(filename):
-    """Serve static files for dashboard"""
-    return send_from_directory('../dashboard', filename)
 
-# ==================== DATA INSIGHT ROUTES ====================
+def get_urgency_detector() -> UrgencyDetector:
+    global _urgency_detector
+    if _urgency_detector is None:
+        _urgency_detector = UrgencyDetector(DATA_DIR)
+        _urgency_detector.train()
+    return _urgency_detector
 
-@app.route('/api/data/insights', methods=['GET'])
-def get_data_insights():
-    """Get insights from loaded CSV datasets"""
-    try:
-        insights = campaign_service.get_dataset_insights()
-        return jsonify({
-            'success': True,
-            'insights': insights,
-            'datasets_loaded': list(datasets.keys())
-        })
-    except Exception as e:
-        logger.error(f"Error fetching data insights: {e}")
-        return jsonify({'success': False, 'error': str(e)}), 500
 
-@app.route('/api/growers', methods=['GET'])
-def get_growers():
-    """Get growers with optional filtering"""
-    try:
-        state = request.args.get('state')
-        crop = request.args.get('crop')
-        page = request.args.get('page', 1, type=int)
-        limit = request.args.get('limit', 20, type=int)
-        
-        if 'growers' not in datasets:
-            return jsonify({'success': False, 'error': 'Grower data not loaded'}), 404
-        
-        growers_df = datasets['growers'].copy()
-        
-        # Apply filters
-        if state:
-            growers_df = growers_df[growers_df['state'].str.contains(state, case=False, na=False)]
-        
-        if crop:
-            growers_df = growers_df[growers_df['grower_crop_calendar'].str.contains(crop, case=False, na=False)]
-        
-        # Pagination
-        total = len(growers_df)
-        start_idx = (page - 1) * limit
-        growers_df = growers_df.iloc[start_idx:start_idx + limit]
-        
-        growers = growers_df.to_dict('records')
-        
-        return jsonify({
-            'success': True,
-            'growers': growers,
-            'page': page,
-            'limit': limit,
-            'total': total
-        })
-    except Exception as e:
-        logger.error(f"Error fetching growers: {e}")
-        return jsonify({'success': False, 'error': str(e)}), 500
+def get_campaign_gen() -> CampaignMessageGenerator:
+    global _campaign_gen
+    if _campaign_gen is None:
+        _campaign_gen = CampaignMessageGenerator()
+    return _campaign_gen
 
-@app.route('/api/growers/<grower_id>', methods=['GET'])
-def get_grower_details(grower_id):
-    """Get detailed information about a grower from CSV"""
-    try:
-        if 'growers' not in datasets:
-            return jsonify({'success': False, 'error': 'Grower data not loaded'}), 404
-        
-        grower = datasets['growers'][datasets['growers']['grower_id'] == grower_id]
-        
-        if grower.empty:
-            return jsonify({'success': False, 'error': 'Grower not found'}), 404
-        
-        grower_dict = grower.to_dict('records')[0]
-        
-        return jsonify({
-            'success': True,
-            'grower': grower_dict
-        })
-    except Exception as e:
-        logger.error(f"Error fetching grower details: {e}")
-        return jsonify({'success': False, 'error': str(e)}), 500
 
-# ==================== CAMPAIGN API ROUTES ====================
+def get_datasets() -> Dict[str, pd.DataFrame]:
+    global _datasets, _data_processor
+    if not _datasets:
+        _data_processor = DataProcessor(DATA_DIR)
+        _datasets = _data_processor.load_all_datasets()
+    return _datasets
 
-@app.route('/api/campaigns', methods=['GET'])
-def get_campaigns():
-    """Get list of campaigns with optional filtering"""
-    try:
-        state = request.args.get('state')
-        product = request.args.get('product')
-        
-        if 'campaigns' not in datasets:
-            return jsonify({'success': False, 'error': 'Campaign data not loaded'}), 404
-        
-        campaigns_df = datasets['campaigns'].copy()
-        
-        # Group by campaign_id
-        campaigns_list = []
-        for campaign_id in campaigns_df['campaign_id'].unique():
-            camp_data = campaigns_df[campaigns_df['campaign_id'] == campaign_id]
-            
-            campaign = {
-                'campaign_id': campaign_id,
-                'product': camp_data['campaign_product'].iloc[0],
-                'crop': camp_data['campaign_crop'].iloc[0],
-                'total_impressions': camp_data['social_post_impression'].sum(),
-                'total_visits': camp_data['landing_page_visits'].sum(),
-                'total_submissions': camp_data['lead_form_submission'].sum(),
-                'weeks': len(camp_data)
-            }
-            campaigns_list.append(campaign)
-        
-        # Apply filters
-        if product:
-            campaigns_list = [c for c in campaigns_list if product.lower() in c['product'].lower()]
-        
-        return jsonify({
-            'success': True,
-            'campaigns': campaigns_list,
-            'total': len(campaigns_list)
-        })
-    except Exception as e:
-        logger.error(f"Error fetching campaigns: {e}")
-        return jsonify({'success': False, 'error': str(e)}), 500
 
-@app.route('/api/campaigns/<campaign_id>/analytics', methods=['GET'])
-def get_campaign_analytics(campaign_id):
-    """Get campaign analytics from CSV data"""
-    try:
-        if 'campaigns' not in datasets:
-            return jsonify({'success': False, 'error': 'Campaign data not loaded'}), 404
-        
-        campaigns_df = datasets['campaigns']
-        campaign_data = campaigns_df[campaigns_df['campaign_id'] == campaign_id]
-        
-        if campaign_data.empty:
-            return jsonify({'success': False, 'error': 'Campaign not found'}), 404
-        
-        # Calculate metrics
-        total_impressions = campaign_data['social_post_impression'].sum()
-        total_visits = campaign_data['landing_page_visits'].sum()
-        total_submissions = campaign_data['lead_form_submission'].sum()
-        
-        ctr = MetricsCalculator.calculate_impression_to_visit(total_impressions, total_visits)
-        conversion = MetricsCalculator.calculate_visit_conversion(total_visits, total_submissions)
-        
-        analytics = {
-            'campaign_id': campaign_id,
-            'product': campaign_data['campaign_product'].iloc[0],
-            'crop': campaign_data['campaign_crop'].iloc[0],
-            'performance_metrics': {
-                'total_impressions': total_impressions,
-                'total_visits': total_visits,
-                'total_submissions': total_submissions,
-                'click_through_rate': round(ctr, 2),
-                'conversion_rate': round(conversion, 2)
-            },
-            'weekly_breakdown': campaign_data[['week_start_date', 'social_post_impression', 'landing_page_visits', 'lead_form_submission']].to_dict('records')
-        }
-        
-        return jsonify({
-            'success': True,
-            'analytics': analytics
-        })
-    except Exception as e:
-        logger.error(f"Error fetching campaign analytics: {e}")
-        return jsonify({'success': False, 'error': str(e)}), 500
+# ─── Serve Dashboard ──────────────────────────────────────────────────────────
+@app.route("/")
+def serve_dashboard():
+    return send_from_directory("../dashboard", "index.html")
 
-@app.route('/api/campaigns', methods=['POST'])
-def create_campaign():
-    """Create a new campaign"""
-    try:
-        data = request.get_json()
-        
-        campaign_config = {
-            'name': data.get('name', 'New Campaign'),
-            'crop': data.get('crop', 'wheat'),
-            'product': data.get('product', 'Fungicide'),
-            'region': data.get('region', 'Punjab'),
-            'target_segments': data.get('target_segments', []),
-            'num_variants': data.get('num_variants', 3),
-            'budget': data.get('budget', 50000)
-        }
-        
-        result = campaign_service.create_campaign(campaign_config)
-        
-        return jsonify({
-            'success': True,
-            'campaign_id': result.get('campaign_id'),
-            'campaign': result.get('campaign'),
-            'target_farmer_count': result.get('target_farmer_count')
-        }), 201
-    except Exception as e:
-        logger.error(f"Error creating campaign: {e}")
-        return jsonify({'success': False, 'error': str(e)}), 500
 
-@app.route('/api/campaigns/<campaign_id>/launch', methods=['POST'])
-def launch_campaign(campaign_id):
-    """Launch a campaign to farmers"""
-    try:
-        data = request.get_json()
-        farmer_list = data.get('farmer_list', [])
-        
-        if not farmer_list:
-            return jsonify({'success': False, 'error': 'No farmers provided'}), 400
-        
-        result = campaign_service.launch_campaign(campaign_id, farmer_list)
-        
-        return jsonify({
-            'success': result['success'],
-            'campaign_id': campaign_id,
-            'total_messages': result.get('total_messages', 0),
-            'successful': result.get('successful', 0),
-            'timestamp': datetime.now().isoformat()
-        })
-    except Exception as e:
-        logger.error(f"Error launching campaign: {e}")
-        return jsonify({'success': False, 'error': str(e)}), 500
-
-# ==================== ANALYTICS ROUTES ====================
-
-@app.route('/api/analytics/overview', methods=['GET'])
-def get_analytics_overview():
-    """Get overall platform analytics from CSV data"""
-    try:
-        overview = {
-            'total_growers': len(datasets.get('growers', pd.DataFrame())),
-            'total_campaigns': len(datasets.get('campaigns', pd.DataFrame()).groupby('campaign_id')),
-            'total_retailers': len(datasets.get('retailers', pd.DataFrame())),
-            'total_impressions': datasets.get('campaigns', pd.DataFrame())['social_post_impression'].sum() if 'campaigns' in datasets else 0,
-            'total_submissions': datasets.get('campaigns', pd.DataFrame())['lead_form_submission'].sum() if 'campaigns' in datasets else 0
-        }
-        
-        return jsonify({'success': True, 'overview': overview})
-    except Exception as e:
-        logger.error(f"Error fetching analytics overview: {e}")
-        return jsonify({'success': False, 'error': str(e)}), 500
-
-@app.route('/api/analytics/regional-performance', methods=['GET'])
-def get_regional_performance():
-    """Get regional performance from grower and campaign data"""
-    try:
-        if 'growers' not in datasets:
-            return jsonify({'success': False, 'error': 'Grower data not loaded'}), 404
-        
-        growers_df = datasets['growers']
-        regional = growers_df.groupby('state').size().to_dict()
-        
-        return jsonify({
-            'success': True,
-            'regional_data': regional
-        })
-    except Exception as e:
-        logger.error(f"Error fetching regional performance: {e}")
-        return jsonify({'success': False, 'error': str(e)}), 500
-
-# ==================== MESSAGING ROUTES ====================
-
-@app.route('/api/campaigns/<campaign_id>/messaging-setup', methods=['GET'])
-def get_messaging_setup(campaign_id):
-    """Get messaging setup for campaign - phone numbers and default text"""
-    try:
-        data = request.args
-        grower_ids = data.getlist('grower_ids')
-        
-        if 'growers' not in datasets:
-            return jsonify({'success': False, 'error': 'Grower data not loaded'}), 404
-        
-        growers_df = datasets['growers']
-        
-        if grower_ids:
-            growers_df = growers_df[growers_df['grower_id'].isin(grower_ids)]
-        
-        # Create messaging payload
-        messaging_list = []
-        for _, grower in growers_df.iterrows():
-            # Extract phone if available from dataset
-            phone = grower.get('phone_number', '')
-            
-            messaging_list.append({
-                'grower_id': grower['grower_id'],
-                'name': f"Grower {grower['grower_id']}",
-                'phone': phone if phone else '+91XXXXXXXXXX',
-                'state': grower['state'],
-                'device_type': grower['device_type'],
-                'language': grower['language'],
-                'selected': False
-            })
-        
-        return jsonify({
-            'success': True,
-            'campaign_id': campaign_id,
-            'messaging_list': messaging_list,
-            'default_message': f"Check our latest agricultural solution!"
-        })
-    except Exception as e:
-        logger.error(f"Error getting messaging setup: {e}")
-        return jsonify({'success': False, 'error': str(e)}), 500
-
-# ==================== HEALTH CHECK ====================
-
-@app.route('/api/health', methods=['GET'])
-def health_check():
-    """Health check endpoint"""
+# ─── Health ───────────────────────────────────────────────────────────────────
+@app.route("/api/health", methods=["GET"])
+def health():
+    ds = get_datasets()
     return jsonify({
-        'status': 'healthy',
-        'timestamp': datetime.now().isoformat(),
-        'services': {
-            'api': 'running',
-            'data_processor': 'running',
-            'datasets_loaded': list(datasets.keys())
-        }
+        "status": "ok",
+        "timestamp": datetime.utcnow().isoformat(),
+        "datasets_loaded": list(ds.keys()),
+        "record_counts": {k: len(v) for k, v in ds.items()}
     })
 
-# ==================== ERROR HANDLERS ====================
 
-@app.errorhandler(404)
-def not_found(e):
-    return jsonify({'success': False, 'error': 'Endpoint not found'}), 404
+# ─── CSV Listing & Preview ────────────────────────────────────────────────────
+@app.route("/api/csv/list", methods=["GET"])
+def list_csv_files():
+    """List all available CSV files in the data directory."""
+    csv_files = glob.glob(os.path.join(DATA_DIR, "**/*.csv"), recursive=True)
+    csv_files += glob.glob(os.path.join(DATA_DIR, "*.csv"))
+    # deduplicate
+    csv_files = list(set(csv_files))
+    result = []
+    for f in csv_files:
+        try:
+            df = pd.read_csv(f, nrows=1)
+            size = os.path.getsize(f)
+            full_df = pd.read_csv(f)
+            result.append({
+                "name": os.path.basename(f),
+                "path": f,
+                "columns": list(df.columns),
+                "row_count": len(full_df),
+                "size_kb": round(size / 1024, 2)
+            })
+        except Exception as e:
+            result.append({"name": os.path.basename(f), "error": str(e)})
+    return jsonify({"files": result, "count": len(result)})
 
-@app.errorhandler(500)
-def internal_error(e):
-    logger.error(f"Internal server error: {e}")
-    return jsonify({'success': False, 'error': 'Internal server error'}), 500
 
-# ==================== MAIN ====================
+@app.route("/api/csv/preview", methods=["GET"])
+def preview_csv():
+    """Preview rows from a CSV file."""
+    filename = request.args.get("file")
+    rows = int(request.args.get("rows", 20))
+    if not filename:
+        return jsonify({"error": "file parameter required"}), 400
+    filepath = os.path.join(DATA_DIR, filename)
+    if not os.path.exists(filepath):
+        return jsonify({"error": "File not found"}), 404
+    try:
+        df = pd.read_csv(filepath, nrows=rows)
+        # Replace NaN with None for JSON serialization
+        df = df.where(pd.notnull(df), None)
+        return jsonify({
+            "file": filename,
+            "columns": list(df.columns),
+            "rows": df.to_dict(orient="records"),
+            "total_shown": len(df)
+        })
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
-if __name__ == '__main__':
-    logger.info("Starting Syngenta Agricultural Marketing Platform API")
-    logger.info("Dashboard available at: http://localhost:5000/dashboard")
-    logger.info("API documentation available at: http://localhost:5000/api/health")
-    
-    # Run Flask app
-    app.run(
-        host='0.0.0.0',
-        port=8000,
-        debug=os.getenv('FLASK_DEBUG', 'False') == 'True',
-        use_reloader=False
+
+@app.route("/api/csv/stats", methods=["GET"])
+def csv_stats():
+    """Return statistical summary of a CSV file."""
+    filename = request.args.get("file")
+    if not filename:
+        return jsonify({"error": "file parameter required"}), 400
+    filepath = os.path.join(DATA_DIR, filename)
+    if not os.path.exists(filepath):
+        return jsonify({"error": "File not found"}), 404
+    try:
+        df = pd.read_csv(filepath)
+        desc = df.describe(include="all").fillna("").to_dict()
+        return jsonify({
+            "file": filename,
+            "shape": {"rows": len(df), "cols": len(df.columns)},
+            "columns": list(df.columns),
+            "dtypes": {c: str(t) for c, t in df.dtypes.items()},
+            "null_counts": df.isnull().sum().to_dict(),
+            "stats": desc
+        })
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+# ─── RAG Chat Endpoint ────────────────────────────────────────────────────────
+@app.route("/api/chat", methods=["POST"])
+def chat():
+    """
+    Main chat endpoint. Uses CSV RAG to retrieve relevant data,
+    then calls Qwen2.5 via Ollama/OpenAI-compatible API to generate response.
+    No hallucination: answers grounded strictly in retrieved CSV context.
+    """
+    body = request.get_json(force=True)
+    query = body.get("query", "").strip()
+    history = body.get("history", [])  # list of {role, content}
+    csv_filter = body.get("csv_filter")  # optional: restrict to specific CSV
+
+    if not query:
+        return jsonify({"error": "query required"}), 400
+
+    try:
+        rag = get_rag_engine()
+        # Retrieve top-k relevant rows from CSVs
+        retrieved = rag.query(query, top_k=12, csv_filter=csv_filter)
+
+        # Build grounded context string
+        context_parts = []
+        sources_used = []
+        for item in retrieved:
+            context_parts.append(
+                f"[Source: {item['source']} | Row {item['row_idx']}]\n{item['text']}"
+            )
+            if item["source"] not in sources_used:
+                sources_used.append(item["source"])
+
+        context_str = "\n\n".join(context_parts) if context_parts else "No relevant data found in CSV files."
+
+        # Build Qwen2.5 prompt
+        system_prompt = f"""You are Lumina AI — an intelligent agricultural marketing assistant for Syngenta India.
+You have access to real grower data, campaign data, retailer data, and representative data from CSV files.
+
+CRITICAL RULES:
+1. ONLY use information from the provided CSV context below. NEVER invent numbers or facts.
+2. If the context doesn't contain enough information, say so explicitly.
+3. Always cite which data source (CSV file / column) you're drawing from.
+4. When asked about trends, always calculate from actual data in context.
+5. For campaign planning, use real grower segmentation data only.
+6. whenever the user doesn't ask fo specific data point just give them a brief overview of data
+7. users might use terms interchangebly or misspell just try to form an understanding of what user is trying to convey
+Current date: {datetime.now().strftime("%d %B %Y")}
+Data sources available: {', '.join(sources_used) if sources_used else 'None found'}
+
+CSV DATA CONTEXT:
+{context_str}
+"""
+
+        messages_for_llm = [{"role": "system", "content": system_prompt}]
+        # Add conversation history (last 6 turns max for context window)
+        for h in history[-6:]:
+            messages_for_llm.append({"role": h["role"], "content": h["content"]})
+        messages_for_llm.append({"role": "user", "content": query})
+
+        # Call Qwen2.5 via Ollama OpenAI-compatible endpoint
+        llm_response = _call_qwen(messages_for_llm)
+
+        return jsonify({
+            "response": llm_response,
+            "sources": sources_used,
+            "retrieved_count": len(retrieved),
+            "context_preview": context_str[:500] + "..." if len(context_str) > 500 else context_str
+        })
+
+    except Exception as e:
+        logger.error(f"Chat error: {e}", exc_info=True)
+        return jsonify({"error": str(e)}), 500
+
+
+def _call_qwen(messages: List[Dict]) -> str:
+    """Call Qwen2.5 via Ollama's OpenAI-compatible API."""
+    import requests as req
+    OLLAMA_BASE = os.environ.get("OLLAMA_BASE_URL", "http://localhost:11434")
+    MODEL = os.environ.get("LLM_MODEL", "qwen2.5")
+
+    try:
+        resp = req.post(
+            f"{OLLAMA_BASE}/v1/chat/completions",
+            json={
+                "model": MODEL,
+                "messages": messages,
+                "temperature": 0.3,
+                "max_tokens": 1200,
+                "stream": False
+            },
+            timeout=60
+        )
+        resp.raise_for_status()
+        data = resp.json()
+        return data["choices"][0]["message"]["content"]
+    except req.exceptions.ConnectionError:
+        # Fallback: rule-based response from context
+        return _fallback_response(messages)
+    except Exception as e:
+        logger.error(f"LLM call failed: {e}")
+        return _fallback_response(messages)
+
+
+def _fallback_response(messages: List[Dict]) -> str:
+    """Rule-based fallback when Qwen2.5 is unavailable."""
+    user_msg = next((m["content"] for m in reversed(messages) if m["role"] == "user"), "")
+    system_msg = next((m["content"] for m in messages if m["role"] == "system"), "")
+
+    # Extract context from system prompt
+    if "CSV DATA CONTEXT:" in system_msg:
+        context = system_msg.split("CSV DATA CONTEXT:")[-1].strip()
+        if len(context) > 100:
+            return (
+                f"[Qwen2.5 unavailable — showing raw retrieved data]\n\n"
+                f"Query: {user_msg}\n\n"
+                f"Retrieved context from CSV files:\n{context[:1500]}\n\n"
+                f"⚠️ Start Ollama with `ollama run qwen2.5:7b` for AI-powered responses."
+            )
+    return (
+        "⚠️ Qwen2.5 LLM is not running. Please start Ollama: `ollama run qwen2.5:7b`\n"
+        "CSV data is loaded and RAG is active — only LLM response generation is unavailable."
     )
+
+
+# ─── Dashboard Metrics ────────────────────────────────────────────────────────
+@app.route("/api/metrics/overview", methods=["GET"])
+def metrics_overview():
+    """High-level platform metrics from all CSVs."""
+    ds = get_datasets()
+    out = {"timestamp": datetime.utcnow().isoformat()}
+
+    if "growers" in ds:
+        g = ds["growers"]
+        out["growers"] = {
+            "total": len(g),
+            "states": g["state"].value_counts().head(10).to_dict() if "state" in g.columns else {},
+            "languages": g["language"].value_counts().to_dict() if "language" in g.columns else {},
+            "devices": g["device_type"].value_counts().to_dict() if "device_type" in g.columns else {},
+            "avg_farm_size": round(float(g["grower_farm_size"].mean()), 2) if "grower_farm_size" in g.columns else None,
+            "avg_age": round(float(g["grower_age"].mean()), 1) if "grower_age" in g.columns else None,
+        }
+
+    if "campaigns" in ds:
+        c = ds["campaigns"]
+        impressions = int(c["social_post_impression"].sum()) if "social_post_impression" in c.columns else 0
+        visits = int(c["landing_page_visits"].sum()) if "landing_page_visits" in c.columns else 0
+        submissions = int(c["lead_form_submission"].sum()) if "lead_form_submission" in c.columns else 0
+        out["campaigns"] = {
+            "total_campaigns": c["campaign_id"].nunique() if "campaign_id" in c.columns else len(c),
+            "total_impressions": impressions,
+            "total_visits": visits,
+            "total_submissions": submissions,
+            "ctr_pct": round(visits / impressions * 100, 2) if impressions > 0 else 0,
+            "conversion_pct": round(submissions / visits * 100, 2) if visits > 0 else 0,
+            "by_crop": c.groupby("crop")["lead_form_submission"].sum().to_dict() if "crop" in c.columns else {}
+        }
+
+    if "retailers" in ds:
+        r = ds["retailers"]
+        out["retailers"] = {
+            "total": len(r),
+            "by_state": r["state"].value_counts().head(8).to_dict() if "state" in r.columns else {}
+        }
+
+    if "reps" in ds:
+        out["reps"] = {"total": len(ds["reps"])}
+
+    return jsonify(out)
+
+
+@app.route("/api/metrics/campaigns", methods=["GET"])
+def campaign_metrics():
+    """Detailed campaign analytics."""
+    ds = get_datasets()
+    if "campaigns" not in ds:
+        return jsonify({"error": "campaigns dataset not loaded"}), 404
+
+    c = ds["campaigns"]
+    result = {
+        "by_product": {},
+        "by_crop": {},
+        "by_state": {},
+        "top_campaigns": []
+    }
+
+    if "product_name" in c.columns and "lead_form_submission" in c.columns:
+        result["by_product"] = c.groupby("product_name")["lead_form_submission"].sum().sort_values(ascending=False).head(10).to_dict()
+
+    if "crop" in c.columns and "lead_form_submission" in c.columns:
+        result["by_crop"] = c.groupby("crop")["lead_form_submission"].sum().sort_values(ascending=False).to_dict()
+
+    if "state" in c.columns and "lead_form_submission" in c.columns:
+        result["by_state"] = c.groupby("state")["lead_form_submission"].sum().sort_values(ascending=False).head(10).to_dict()
+
+    # Top campaigns by conversion
+    if "campaign_id" in c.columns and "landing_page_visits" in c.columns and "lead_form_submission" in c.columns:
+        grp = c.groupby("campaign_id").agg({
+            "landing_page_visits": "sum",
+            "lead_form_submission": "sum",
+            "social_post_impression": "sum"
+        }).reset_index()
+        grp["conversion_pct"] = (grp["lead_form_submission"] / grp["landing_page_visits"].replace(0, np.nan) * 100).round(2)
+        top = grp.nlargest(5, "lead_form_submission").fillna(0)
+        result["top_campaigns"] = top.to_dict(orient="records")
+
+    return jsonify(result)
+
+
+@app.route("/api/metrics/growers", methods=["GET"])
+def grower_metrics():
+    """Grower segmentation metrics."""
+    ds = get_datasets()
+    if "growers" not in ds:
+        return jsonify({"error": "growers dataset not loaded"}), 404
+
+    g = ds["growers"]
+    state_filter = request.args.get("state")
+    if state_filter and "state" in g.columns:
+        g = g[g["state"] == state_filter]
+
+    result = {
+        "total": len(g),
+        "gender": g["gender"].value_counts().to_dict() if "gender" in g.columns else {},
+        "age_buckets": {},
+        "farm_size_buckets": {},
+        "languages": g["language"].value_counts().to_dict() if "language" in g.columns else {},
+        "devices": g["device_type"].value_counts().to_dict() if "device_type" in g.columns else {},
+        "states": g["state"].value_counts().head(15).to_dict() if "state" in g.columns else {}
+    }
+
+    if "grower_age" in g.columns:
+        bins = [0, 25, 35, 45, 55, 65, 100]
+        labels = ["<25", "25-34", "35-44", "45-54", "55-64", "65+"]
+        g["age_bucket"] = pd.cut(g["grower_age"], bins=bins, labels=labels, right=False)
+        result["age_buckets"] = g["age_bucket"].value_counts().to_dict()
+
+    if "grower_farm_size" in g.columns:
+        bins = [0, 2, 5, 10, 25, 50, 10000]
+        labels = ["<2ac", "2-5ac", "5-10ac", "10-25ac", "25-50ac", "50ac+"]
+        g["farm_bucket"] = pd.cut(g["grower_farm_size"], bins=bins, labels=labels, right=False)
+        result["farm_size_buckets"] = g["farm_bucket"].value_counts().to_dict()
+
+    return jsonify(result)
+
+
+# ─── Urgency Detection ────────────────────────────────────────────────────────
+@app.route("/api/urgency/detect", methods=["POST"])
+def detect_urgency():
+    """
+    Real urgency detection from CSV data analysis + ML model.
+    Analyzes grower engagement drop, campaign underperformance, seasonal signals.
+    """
+    body = request.get_json(force=True)
+    state = body.get("state")
+    crop = body.get("crop")
+    product = body.get("product")
+
+    try:
+        detector = get_urgency_detector()
+        ds = get_datasets()
+
+        result = detector.detect(
+            datasets=ds,
+            state_filter=state,
+            crop_filter=crop,
+            product_filter=product
+        )
+
+        return jsonify(result)
+    except Exception as e:
+        logger.error(f"Urgency detection error: {e}", exc_info=True)
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/urgency/bulk", methods=["GET"])
+def bulk_urgency():
+    """Scan all states/crops for urgency signals."""
+    try:
+        detector = get_urgency_detector()
+        ds = get_datasets()
+        result = detector.bulk_scan(ds)
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+# ─── Campaign Message Generation ─────────────────────────────────────────────
+@app.route("/api/campaign/generate", methods=["POST"])
+def generate_campaign():
+    """
+    Generate multilingual SMS + audio scripts for campaigns.
+    Languages: Hindi, Marathi, Punjabi, Telugu, Tamil, Kannada, Bengali, Gujarati, English.
+    Data grounded: uses actual grower language distribution from CSV.
+    """
+    body = request.get_json(force=True)
+    campaign_type = body.get("campaign_type", "product_launch")
+    product = body.get("product", "")
+    crop = body.get("crop", "")
+    target_state = body.get("state", "")
+    languages = body.get("languages", [])  # if empty, auto-detect from CSV
+    custom_context = body.get("context", "")
+
+    try:
+        ds = get_datasets()
+        gen = get_campaign_gen()
+
+        # Auto-detect languages from grower data if not specified
+        if not languages and "growers" in ds:
+            g = ds["growers"]
+            filters = pd.Series([True] * len(g))
+            if target_state and "state" in g.columns:
+                filters &= g["state"] == target_state
+            filtered = g[filters]
+            if "language" in filtered.columns and len(filtered) > 0:
+                lang_dist = filtered["language"].value_counts()
+                languages = lang_dist.head(5).index.tolist()
+
+        if not languages:
+            languages = ["Hindi", "English", "Marathi"]
+
+        # Get grower stats for this segment
+        segment_stats = {}
+        if "growers" in ds:
+            g = ds["growers"]
+            if target_state and "state" in g.columns:
+                seg = g[g["state"] == target_state]
+            else:
+                seg = g
+            segment_stats = {
+                "total_growers": len(seg),
+                "avg_farm_size": round(float(seg["grower_farm_size"].mean()), 1) if "grower_farm_size" in seg.columns else None,
+                "dominant_device": seg["device_type"].mode()[0] if "device_type" in seg.columns and len(seg) > 0 else "unknown"
+            }
+
+        messages = gen.generate_multilingual(
+            campaign_type=campaign_type,
+            product=product,
+            crop=crop,
+            state=target_state,
+            languages=languages,
+            context=custom_context,
+            segment_stats=segment_stats
+        )
+
+        return jsonify({
+            "campaign_type": campaign_type,
+            "product": product,
+            "crop": crop,
+            "state": target_state,
+            "languages_generated": languages,
+            "segment_stats": segment_stats,
+            "messages": messages
+        })
+
+    except Exception as e:
+        logger.error(f"Campaign gen error: {e}", exc_info=True)
+        return jsonify({"error": str(e)}), 500
+
+
+# ─── RAG Index Status ─────────────────────────────────────────────────────────
+@app.route("/api/rag/status", methods=["GET"])
+def rag_status():
+    try:
+        rag = get_rag_engine()
+        return jsonify(rag.get_status())
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/rag/rebuild", methods=["POST"])
+def rag_rebuild():
+    global _rag_engine
+    _rag_engine = None
+    try:
+        rag = get_rag_engine()
+        return jsonify({"status": "rebuilt", **rag.get_status()})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+# ─── Entry Point ──────────────────────────────────────────────────────────────
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 8000))
+    debug = os.environ.get("DEBUG", "true").lower() == "true"
+    logger.info(f"Starting Lumina Board API on port {port}")
+    app.run(host="0.0.0.0", port=port, debug=debug)

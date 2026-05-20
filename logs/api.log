@@ -131,3 +131,147 @@
 2026-05-20 14:33:22,036 - werkzeug - INFO - 127.0.0.1 - - [20/May/2026 14:33:22] "GET /api/data/insights HTTP/1.1" 200 -
 2026-05-20 14:33:34,003 - werkzeug - INFO - 127.0.0.1 - - [20/May/2026 14:33:34] "GET /api/health HTTP/1.1" 200 -
 2026-05-20 14:34:04,472 - werkzeug - INFO - 127.0.0.1 - - [20/May/2026 14:34:04] "GET /api/data/insights HTTP/1.1" 200 -
+2026-05-20 14:35:09,285 - werkzeug - INFO - 127.0.0.1 - - [20/May/2026 14:35:09] "GET /api/health HTTP/1.1" 200 -
+2026-05-20 14:53:32,830 - werkzeug - INFO - 127.0.0.1 - - [20/May/2026 14:53:32] "GET /api/health HTTP/1.1" 200 -
+2026-05-20 15:57:37,853 - werkzeug - INFO - 127.0.0.1 - - [20/May/2026 15:57:37] "GET /api/health HTTP/1.1" 200 -
+2026-05-20 15:57:59,324 - werkzeug - INFO - 127.0.0.1 - - [20/May/2026 15:57:59] "GET /api/health HTTP/1.1" 200 -
+2026-05-20 15:58:14,370 - werkzeug - INFO - 127.0.0.1 - - [20/May/2026 15:58:14] "GET /api/growers?limit=100&state=Rajasthan HTTP/1.1" 200 -
+2026-05-20 18:15:56,196 - werkzeug - INFO - 127.0.0.1 - - [20/May/2026 18:15:56] "GET /api/health HTTP/1.1" 200 -
+2026-05-20 18:16:29,270 - werkzeug - INFO - 127.0.0.1 - - [20/May/2026 18:16:29] "GET /api/data/insights HTTP/1.1" 200 -
+2026-05-20 18:16:29,310 - werkzeug - INFO - 127.0.0.1 - - [20/May/2026 18:16:29] "GET /api/data/insights HTTP/1.1" 200 -
+2026-05-20 18:18:34,483 - werkzeug - INFO - 127.0.0.1 - - [20/May/2026 18:18:34] "GET /api/data/insights HTTP/1.1" 200 -
+2026-05-20 23:50:59,055 [INFO] lumina.api - Starting Lumina Board API on port 5000
+2026-05-20 23:51:21,499 [INFO] lumina.api - Starting Lumina Board API on port 8000
+2026-05-20 23:51:21,800 [INFO] werkzeug - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:8000
+ * Running on http://192.168.43.206:8000
+2026-05-20 23:51:21,800 [INFO] werkzeug - [33mPress CTRL+C to quit[0m
+2026-05-20 23:51:21,801 [INFO] werkzeug -  * Restarting with stat
+2026-05-20 23:51:23,316 [INFO] lumina.api - Starting Lumina Board API on port 8000
+2026-05-20 23:51:23,346 [WARNING] werkzeug -  * Debugger is active!
+2026-05-20 23:51:23,361 [INFO] werkzeug -  * Debugger PIN: 143-466-584
+2026-05-20 23:51:30,423 [INFO] werkzeug - 192.168.43.206 - - [20/May/2026 23:51:30] "GET / HTTP/1.1" 200 -
+2026-05-20 23:51:33,543 [INFO] werkzeug - 192.168.43.206 - - [20/May/2026 23:51:33] "GET /api/health HTTP/1.1" 200 -
+2026-05-20 23:51:33,561 [INFO] werkzeug - 192.168.43.206 - - [20/May/2026 23:51:33] "GET /api/metrics/overview HTTP/1.1" 200 -
+2026-05-20 23:51:33,566 [INFO] werkzeug - 192.168.43.206 - - [20/May/2026 23:51:33] "GET /api/metrics/campaigns HTTP/1.1" 200 -
+2026-05-20 23:51:33,569 [INFO] werkzeug - 192.168.43.206 - - [20/May/2026 23:51:33] "GET /api/metrics/growers HTTP/1.1" 200 -
+2026-05-20 23:51:34,032 [INFO] werkzeug - 192.168.43.206 - - [20/May/2026 23:51:34] "GET /api/csv/list HTTP/1.1" 200 -
+2026-05-20 23:51:51,981 [INFO] lumina.rag - Building RAG index from ../data
+2026-05-20 23:51:51,997 [INFO] lumina.rag - Indexed 104 rows from digital_funnel_weekly
+2026-05-20 23:51:52,317 [INFO] lumina.rag - Indexed 6000 rows from growers
+2026-05-20 23:51:52,341 [INFO] lumina.rag - Indexed 500 rows from reps_territory
+2026-05-20 23:52:04,390 [INFO] lumina.rag - Indexed 310544 rows from retailer_inventory_weekly
+2026-05-20 23:52:14,266 [INFO] lumina.rag - Indexed 235042 rows from retailer_pos
+2026-05-20 23:52:15,472 [INFO] lumina.rag - Indexed 30000 rows from retailer_visit_log
+2026-05-20 23:52:15,627 [INFO] lumina.rag - Indexed 4000 rows from retailers
+2026-05-20 23:52:15,960 [INFO] lumina.rag - Indexed 4479 rows from whatsapp_campaign
+2026-05-20 23:52:16,013 [INFO] lumina.rag - Fitting TF-IDF on 590669 documents from 8 CSVs
+2026-05-20 23:52:34,333 [INFO] lumina.rag - RAG index built: 590669 docs, matrix shape (590669, 50000)
+2026-05-20 23:52:34,602 [ERROR] lumina.api - LLM call failed: 404 Client Error: Not Found for url: http://localhost:11434/v1/chat/completions
+2026-05-20 23:52:34,603 [INFO] werkzeug - 192.168.43.206 - - [20/May/2026 23:52:34] "POST /api/chat HTTP/1.1" 200 -
+2026-05-20 23:52:34,916 [INFO] werkzeug - 192.168.43.206 - - [20/May/2026 23:52:34] "POST /api/campaign/generate HTTP/1.1" 200 -
+2026-05-20 23:52:52,507 [ERROR] lumina.api - LLM call failed: 404 Client Error: Not Found for url: http://localhost:11434/v1/chat/completions
+2026-05-20 23:52:52,507 [INFO] werkzeug - 192.168.43.206 - - [20/May/2026 23:52:52] "POST /api/chat HTTP/1.1" 200 -
+2026-05-20 23:53:21,033 [ERROR] lumina.api - LLM call failed: 404 Client Error: Not Found for url: http://localhost:11434/v1/chat/completions
+2026-05-20 23:53:21,034 [INFO] werkzeug - 192.168.43.206 - - [20/May/2026 23:53:21] "POST /api/chat HTTP/1.1" 200 -
+2026-05-20 23:54:48,008 [INFO] werkzeug - 192.168.43.206 - - [20/May/2026 23:54:48] "GET / HTTP/1.1" 200 -
+2026-05-20 23:54:48,026 [INFO] werkzeug - 192.168.43.206 - - [20/May/2026 23:54:48] "GET /api/health HTTP/1.1" 200 -
+2026-05-20 23:54:48,055 [INFO] werkzeug - 192.168.43.206 - - [20/May/2026 23:54:48] "GET /api/metrics/overview HTTP/1.1" 200 -
+2026-05-20 23:54:48,062 [INFO] werkzeug - 192.168.43.206 - - [20/May/2026 23:54:48] "GET /api/metrics/campaigns HTTP/1.1" 200 -
+2026-05-20 23:54:48,069 [INFO] werkzeug - 192.168.43.206 - - [20/May/2026 23:54:48] "GET /api/metrics/growers HTTP/1.1" 200 -
+2026-05-20 23:54:48,571 [INFO] werkzeug - 192.168.43.206 - - [20/May/2026 23:54:48] "GET /api/csv/list HTTP/1.1" 200 -
+2026-05-20 23:54:50,145 [INFO] werkzeug - 192.168.43.206 - - [20/May/2026 23:54:50] "GET /api/csv/list HTTP/1.1" 200 -
+2026-05-20 23:54:55,563 [ERROR] lumina.api - LLM call failed: 404 Client Error: Not Found for url: http://localhost:11434/v1/chat/completions
+2026-05-20 23:54:55,563 [INFO] werkzeug - 192.168.43.206 - - [20/May/2026 23:54:55] "POST /api/chat HTTP/1.1" 200 -
+2026-05-20 23:56:12,050 [ERROR] lumina.api - LLM call failed: 404 Client Error: Not Found for url: http://localhost:11434/v1/chat/completions
+2026-05-20 23:56:12,051 [INFO] werkzeug - 192.168.43.206 - - [20/May/2026 23:56:12] "POST /api/chat HTTP/1.1" 200 -
+2026-05-21 00:00:29,553 [INFO] werkzeug -  * Detected change in '/Users/nikhilteja.m/lumina_board/api/app.py', reloading
+2026-05-21 00:00:30,728 [INFO] werkzeug -  * Restarting with stat
+2026-05-21 00:00:32,934 [INFO] lumina.api - Starting Lumina Board API on port 8000
+2026-05-21 00:00:32,962 [WARNING] werkzeug -  * Debugger is active!
+2026-05-21 00:00:32,974 [INFO] werkzeug -  * Debugger PIN: 143-466-584
+2026-05-21 00:00:44,375 [INFO] werkzeug - 192.168.43.206 - - [21/May/2026 00:00:44] "GET / HTTP/1.1" 200 -
+2026-05-21 00:00:44,735 [INFO] werkzeug - 192.168.43.206 - - [21/May/2026 00:00:44] "GET /api/health HTTP/1.1" 200 -
+2026-05-21 00:00:44,750 [INFO] werkzeug - 192.168.43.206 - - [21/May/2026 00:00:44] "GET /api/metrics/overview HTTP/1.1" 200 -
+2026-05-21 00:00:44,755 [INFO] werkzeug - 192.168.43.206 - - [21/May/2026 00:00:44] "GET /api/metrics/campaigns HTTP/1.1" 200 -
+2026-05-21 00:00:44,759 [INFO] werkzeug - 192.168.43.206 - - [21/May/2026 00:00:44] "GET /api/metrics/growers HTTP/1.1" 200 -
+2026-05-21 00:00:45,204 [INFO] werkzeug - 192.168.43.206 - - [21/May/2026 00:00:45] "GET /api/csv/list HTTP/1.1" 200 -
+2026-05-21 00:00:50,497 [INFO] lumina.rag - Building RAG index from ../data
+2026-05-21 00:00:50,512 [INFO] lumina.rag - Indexed 104 rows from digital_funnel_weekly
+2026-05-21 00:00:50,828 [INFO] lumina.rag - Indexed 6000 rows from growers
+2026-05-21 00:00:50,851 [INFO] lumina.rag - Indexed 500 rows from reps_territory
+2026-05-21 00:01:03,150 [INFO] lumina.rag - Indexed 310544 rows from retailer_inventory_weekly
+2026-05-21 00:01:13,180 [INFO] lumina.rag - Indexed 235042 rows from retailer_pos
+2026-05-21 00:01:14,423 [INFO] lumina.rag - Indexed 30000 rows from retailer_visit_log
+2026-05-21 00:01:14,583 [INFO] lumina.rag - Indexed 4000 rows from retailers
+2026-05-21 00:01:14,934 [INFO] lumina.rag - Indexed 4479 rows from whatsapp_campaign
+2026-05-21 00:01:14,979 [INFO] lumina.rag - Fitting TF-IDF on 590669 documents from 8 CSVs
+2026-05-21 00:01:26,450 [INFO] werkzeug - 192.168.43.206 - - [21/May/2026 00:01:26] "GET /api/csv/list HTTP/1.1" 200 -
+2026-05-21 00:01:33,917 [INFO] lumina.rag - RAG index built: 590669 docs, matrix shape (590669, 50000)
+2026-05-21 00:01:34,132 [ERROR] lumina.api - LLM call failed: 404 Client Error: Not Found for url: http://localhost:11434/chat/completions
+2026-05-21 00:01:34,133 [INFO] werkzeug - 192.168.43.206 - - [21/May/2026 00:01:34] "POST /api/chat HTTP/1.1" 200 -
+2026-05-21 00:01:53,791 [INFO] werkzeug - 192.168.43.206 - - [21/May/2026 00:01:53] "GET /api/csv/preview?file=retailer_visit_log.csv&rows=50 HTTP/1.1" 200 -
+2026-05-21 00:01:56,223 [INFO] werkzeug - 192.168.43.206 - - [21/May/2026 00:01:56] "GET /api/csv/preview?file=reps_territory.csv&rows=50 HTTP/1.1" 200 -
+2026-05-21 00:01:58,548 [INFO] werkzeug - 192.168.43.206 - - [21/May/2026 00:01:58] "GET /api/csv/preview?file=retailers.csv&rows=50 HTTP/1.1" 200 -
+2026-05-21 00:02:00,821 [INFO] werkzeug - 192.168.43.206 - - [21/May/2026 00:02:00] "GET /api/csv/preview?file=retailer_inventory_weekly.csv&rows=50 HTTP/1.1" 200 -
+2026-05-21 00:02:01,666 [INFO] werkzeug - 192.168.43.206 - - [21/May/2026 00:02:01] "GET /api/csv/preview?file=growers.csv&rows=50 HTTP/1.1" 200 -
+2026-05-21 00:02:02,531 [INFO] werkzeug - 192.168.43.206 - - [21/May/2026 00:02:02] "GET /api/csv/preview?file=digital_funnel_weekly.csv&rows=50 HTTP/1.1" 200 -
+2026-05-21 00:03:17,905 [INFO] werkzeug - 192.168.43.206 - - [21/May/2026 00:03:17] "POST /api/campaign/generate HTTP/1.1" 200 -
+2026-05-21 00:03:39,387 [INFO] werkzeug - 192.168.43.206 - - [21/May/2026 00:03:39] "GET /api/csv/preview?file=retailers.csv&rows=50 HTTP/1.1" 200 -
+2026-05-21 00:03:40,218 [INFO] werkzeug - 192.168.43.206 - - [21/May/2026 00:03:40] "GET /api/csv/preview?file=retailer_inventory_weekly.csv&rows=50 HTTP/1.1" 200 -
+2026-05-21 00:04:06,628 [INFO] werkzeug - 192.168.43.206 - - [21/May/2026 00:04:06] "POST /api/campaign/generate HTTP/1.1" 200 -
+2026-05-21 00:04:16,404 [INFO] werkzeug - 192.168.43.206 - - [21/May/2026 00:04:16] "POST /api/campaign/generate HTTP/1.1" 200 -
+2026-05-21 00:04:36,479 [INFO] werkzeug - 192.168.43.206 - - [21/May/2026 00:04:36] "GET /api/metrics/growers HTTP/1.1" 200 -
+2026-05-21 00:04:36,509 [INFO] werkzeug - 192.168.43.206 - - [21/May/2026 00:04:36] "GET /api/metrics/campaigns HTTP/1.1" 200 -
+2026-05-21 00:04:38,423 [INFO] lumina.urgency - Training urgency detector...
+2026-05-21 00:04:38,544 [INFO] lumina.urgency - IsolationForest trained on 104 campaign feature vectors
+2026-05-21 00:04:38,549 [INFO] werkzeug - 192.168.43.206 - - [21/May/2026 00:04:38] "POST /api/urgency/detect HTTP/1.1" 200 -
+2026-05-21 00:12:04,848 [INFO] werkzeug -  * Detected change in '/Users/nikhilteja.m/lumina_board/api/app.py', reloading
+2026-05-21 00:12:05,834 [INFO] werkzeug -  * Restarting with stat
+2026-05-21 00:12:07,788 [INFO] lumina.api - Starting Lumina Board API on port 8000
+2026-05-21 00:12:07,822 [WARNING] werkzeug -  * Debugger is active!
+2026-05-21 00:12:07,834 [INFO] werkzeug -  * Debugger PIN: 143-466-584
+2026-05-21 00:13:04,508 [INFO] werkzeug -  * Detected change in '/Users/nikhilteja.m/lumina_board/api/app.py', reloading
+2026-05-21 00:13:04,644 [INFO] werkzeug -  * Restarting with stat
+2026-05-21 00:13:06,270 [INFO] lumina.api - Starting Lumina Board API on port 8000
+2026-05-21 00:13:06,296 [WARNING] werkzeug -  * Debugger is active!
+2026-05-21 00:13:06,306 [INFO] werkzeug -  * Debugger PIN: 143-466-584
+2026-05-21 00:13:08,660 [INFO] werkzeug - 192.168.43.206 - - [21/May/2026 00:13:08] "GET / HTTP/1.1" 200 -
+2026-05-21 00:13:09,007 [INFO] werkzeug - 192.168.43.206 - - [21/May/2026 00:13:09] "GET /api/health HTTP/1.1" 200 -
+2026-05-21 00:13:09,016 [INFO] werkzeug - 192.168.43.206 - - [21/May/2026 00:13:09] "GET /api/metrics/overview HTTP/1.1" 200 -
+2026-05-21 00:13:09,022 [INFO] werkzeug - 192.168.43.206 - - [21/May/2026 00:13:09] "GET /api/metrics/campaigns HTTP/1.1" 200 -
+2026-05-21 00:13:09,023 [INFO] werkzeug - 192.168.43.206 - - [21/May/2026 00:13:09] "GET /api/metrics/growers HTTP/1.1" 200 -
+2026-05-21 00:13:09,464 [INFO] werkzeug - 192.168.43.206 - - [21/May/2026 00:13:09] "GET /api/csv/list HTTP/1.1" 200 -
+2026-05-21 00:13:13,545 [INFO] lumina.rag - Building RAG index from ../data
+2026-05-21 00:13:13,560 [INFO] lumina.rag - Indexed 104 rows from digital_funnel_weekly
+2026-05-21 00:13:13,875 [INFO] lumina.rag - Indexed 6000 rows from growers
+2026-05-21 00:13:13,898 [INFO] lumina.rag - Indexed 500 rows from reps_territory
+2026-05-21 00:13:25,942 [INFO] lumina.rag - Indexed 310544 rows from retailer_inventory_weekly
+2026-05-21 00:13:36,076 [INFO] lumina.rag - Indexed 235042 rows from retailer_pos
+2026-05-21 00:13:37,272 [INFO] lumina.rag - Indexed 30000 rows from retailer_visit_log
+2026-05-21 00:13:37,428 [INFO] lumina.rag - Indexed 4000 rows from retailers
+2026-05-21 00:13:37,765 [INFO] lumina.rag - Indexed 4479 rows from whatsapp_campaign
+2026-05-21 00:13:37,819 [INFO] lumina.rag - Fitting TF-IDF on 590669 documents from 8 CSVs
+2026-05-21 00:13:56,503 [INFO] lumina.rag - RAG index built: 590669 docs, matrix shape (590669, 50000)
+2026-05-21 00:14:06,067 [INFO] werkzeug - 192.168.43.206 - - [21/May/2026 00:14:06] "POST /api/chat HTTP/1.1" 200 -
+2026-05-21 00:14:35,171 [INFO] werkzeug - 192.168.43.206 - - [21/May/2026 00:14:35] "POST /api/chat HTTP/1.1" 200 -
+2026-05-21 00:15:04,628 [INFO] werkzeug - 192.168.43.206 - - [21/May/2026 00:15:04] "POST /api/chat HTTP/1.1" 200 -
+2026-05-21 00:15:22,827 [INFO] werkzeug - 192.168.43.206 - - [21/May/2026 00:15:22] "POST /api/chat HTTP/1.1" 200 -
+2026-05-21 00:17:04,514 [INFO] werkzeug - 192.168.43.206 - - [21/May/2026 00:17:04] "POST /api/chat HTTP/1.1" 200 -
+2026-05-21 00:18:25,889 [INFO] werkzeug - 192.168.43.206 - - [21/May/2026 00:18:25] "POST /api/chat HTTP/1.1" 200 -
+2026-05-21 00:20:04,276 [INFO] werkzeug - 192.168.43.206 - - [21/May/2026 00:20:04] "POST /api/chat HTTP/1.1" 200 -
+2026-05-21 00:20:34,888 [INFO] werkzeug - 192.168.43.206 - - [21/May/2026 00:20:34] "GET /api/csv/list HTTP/1.1" 200 -
+2026-05-21 00:20:36,097 [INFO] werkzeug - 192.168.43.206 - - [21/May/2026 00:20:36] "GET /api/csv/preview?file=retailer_inventory_weekly.csv&rows=50 HTTP/1.1" 200 -
+2026-05-21 00:20:52,638 [INFO] werkzeug - 192.168.43.206 - - [21/May/2026 00:20:52] "GET /api/csv/preview?file=retailer_visit_log.csv&rows=50 HTTP/1.1" 200 -
+2026-05-21 00:20:53,432 [INFO] werkzeug - 192.168.43.206 - - [21/May/2026 00:20:53] "GET /api/csv/preview?file=whatsapp_campaign.csv&rows=50 HTTP/1.1" 200 -
+2026-05-21 00:20:54,342 [INFO] werkzeug - 192.168.43.206 - - [21/May/2026 00:20:54] "GET /api/csv/preview?file=retailer_pos.csv&rows=50 HTTP/1.1" 200 -
+2026-05-21 00:20:55,176 [INFO] werkzeug - 192.168.43.206 - - [21/May/2026 00:20:55] "GET /api/csv/preview?file=growers.csv&rows=50 HTTP/1.1" 200 -
+2026-05-21 00:20:56,028 [INFO] werkzeug - 192.168.43.206 - - [21/May/2026 00:20:56] "GET /api/csv/preview?file=digital_funnel_weekly.csv&rows=50 HTTP/1.1" 200 -
+2026-05-21 00:20:56,898 [INFO] werkzeug - 192.168.43.206 - - [21/May/2026 00:20:56] "GET /api/csv/preview?file=retailers.csv&rows=50 HTTP/1.1" 200 -
+2026-05-21 00:20:57,790 [INFO] werkzeug - 192.168.43.206 - - [21/May/2026 00:20:57] "GET /api/csv/preview?file=reps_territory.csv&rows=50 HTTP/1.1" 200 -
+2026-05-21 00:22:09,808 [INFO] werkzeug -  * Detected change in '/Users/nikhilteja.m/lumina_board/api/app.py', reloading
+2026-05-21 00:22:11,067 [INFO] werkzeug -  * Restarting with stat
+2026-05-21 00:22:13,078 [INFO] lumina.api - Starting Lumina Board API on port 8000
+2026-05-21 00:22:13,108 [WARNING] werkzeug -  * Debugger is active!
+2026-05-21 00:22:13,119 [INFO] werkzeug -  * Debugger PIN: 143-466-584

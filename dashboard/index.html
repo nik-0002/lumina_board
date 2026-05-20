@@ -1,850 +1,1256 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AgroIntel Command Central</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,300;1,9..144,400&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Lumina Board — Agri Intelligence</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500&family=Noto+Sans:wght@400;500&family=Noto+Sans+Devanagari:wght@400;500&display=swap" rel="stylesheet"/>
 <style>
+/* ══ TOKENS ══════════════════════════════════════════════════════════════════ */
 :root {
-  --ink: #0d1219;
-  --ink2: #141c2b;
-  --ink3: #1e2a3d;
-  --ink4: #273348;
-  --ink5: #334059;
-  --sage: #1a6b3a;
-  --sage2: #22883f;
-  --sage3: #2da84e;
-  --sage4: #5dc87a;
-  --sage5: #9fddb4;
-  --sage-bg: rgba(26,107,58,0.09);
-  --sage-glow: rgba(26,107,58,0.35);
-  --gold: #c07c12;
-  --gold2: #e09a1c;
-  --gold-bg: rgba(192,124,18,0.1);
-  --crimson: #b52330;
-  --crimson-bg: rgba(181,35,48,0.1);
-  --sky: #1865c4;
-  --sky2: #4494e8;
-  --sky-bg: rgba(24,101,196,0.1);
-  --text: #e8ecf4;
-  --text2: #b8c1d4;
-  --text3: #7a889e;
-  --text4: #4a5568;
-  --line: rgba(255,255,255,0.06);
-  --line2: rgba(255,255,255,0.10);
-  --r: 10px;
-  --r2: 14px;
-  --chat-w: 420px;
-  --hdr: 60px;
+  --bg:        #0b0f14;
+  --bg1:       #111820;
+  --bg2:       #18222d;
+  --bg3:       #1f2d3a;
+  --border:    #263344;
+  --accent:    #00e5c3;
+  --accent2:   #ff6b35;
+  --accent3:   #7c5cfc;
+  --text:      #e4eaf2;
+  --text-dim:  #6b8198;
+  --text-med:  #9db5cc;
+  --green:     #22c55e;
+  --yellow:    #f59e0b;
+  --red:       #ef4444;
+  --font-head: 'Syne', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --font-body: 'Noto Sans', sans-serif;
+  --r:         10px;
+  --r-lg:      16px;
+  --shadow:    0 4px 24px rgba(0,0,0,.45);
 }
-*{margin:0;padding:0;box-sizing:border-box;}
-html,body{height:100%;overflow:hidden;}
-body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--ink);color:var(--text);font-size:13px;line-height:1.6;}
 
-/* ── LAYOUT ── */
-.shell{display:grid;grid-template-columns:1fr var(--chat-w);grid-template-rows:var(--hdr) 1fr;height:100vh;}
+/* ══ RESET ══════════════════════════════════════════════════════════════════ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+body{
+  background:var(--bg);color:var(--text);
+  font-family:var(--font-body);font-size:14px;line-height:1.6;
+  display:flex;flex-direction:column;
+}
+button{cursor:pointer;font-family:inherit}
+input,textarea,select{font-family:inherit;color:var(--text)}
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:var(--bg1)}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:#3a5068}
 
-/* ── TOPBAR ── */
-.topbar{grid-column:1/-1;display:flex;align-items:center;padding:0 22px;gap:14px;background:var(--ink2);border-bottom:1px solid var(--line2);z-index:50;flex-shrink:0;}
-.brand{display:flex;align-items:center;gap:9px;flex-shrink:0;}
-.brand-mark{width:32px;height:32px;background:var(--sage);clip-path:polygon(50% 0%,93% 25%,93% 75%,50% 100%,7% 75%,7% 25%);display:flex;align-items:center;justify-content:center;font-size:14px;}
-.brand-name{font-family:'Fraunces',serif;font-size:16.5px;font-weight:500;color:var(--text);letter-spacing:-0.2px;}
-.brand-tag{font-size:9px;font-weight:700;letter-spacing:2px;color:var(--sage4);text-transform:uppercase;display:block;margin-top:-2px;}
-.topbar-nav{flex:1;display:flex;align-items:center;justify-content:center;gap:2px;}
-.nav-pill{padding:5px 13px;border-radius:8px;font-size:12px;font-weight:500;color:var(--text3);cursor:pointer;transition:all 0.15s;border:none;background:transparent;}
-.nav-pill:hover{background:var(--ink3);color:var(--text2);}
-.nav-pill.active{background:var(--ink3);color:var(--text);}
-.topbar-right{display:flex;align-items:center;gap:8px;}
-.status-badge{display:flex;align-items:center;gap:6px;padding:5px 12px;background:var(--ink3);border:1px solid var(--line2);border-radius:100px;}
-.pulse-dot{width:7px;height:7px;border-radius:50%;background:var(--sage3);animation:pulse 2.4s ease-in-out infinite;}
-@keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:0.55;transform:scale(0.82);}}
-.status-label{font-size:10.5px;font-weight:600;color:var(--text2);letter-spacing:0.4px;text-transform:uppercase;}
-.icon-btn{width:32px;height:32px;border-radius:8px;border:1px solid var(--line2);background:var(--ink3);color:var(--text3);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.15s;}
-.icon-btn:hover{background:var(--ink4);color:var(--text2);}
-.icon-btn .material-icons-round{font-size:17px;}
+/* ══ TOPBAR ═════════════════════════════════════════════════════════════════ */
+#topbar{
+  display:flex;align-items:center;gap:16px;
+  padding:0 20px;height:52px;
+  background:var(--bg1);border-bottom:1px solid var(--border);
+  flex-shrink:0;z-index:100;
+}
+.logo{
+  font-family:var(--font-head);font-size:18px;font-weight:800;
+  color:var(--accent);letter-spacing:-.5px;white-space:nowrap;
+}
+.logo span{color:var(--text-dim);font-weight:400;font-size:13px;margin-left:6px}
+.top-tabs{display:flex;gap:4px;margin-left:8px;flex:1}
+.tab{
+  padding:5px 14px;border-radius:6px;border:none;
+  background:transparent;color:var(--text-dim);font-size:13px;font-weight:500;
+  transition:.15s;cursor:pointer;
+}
+.tab.active,.tab:hover{background:var(--bg3);color:var(--text)}
+.tab.active{color:var(--accent)}
+.top-right{display:flex;align-items:center;gap:10px;margin-left:auto}
+.status-dot{
+  display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-dim);
+}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 6px var(--green)}
+.dot.err{background:var(--red);box-shadow:0 0 6px var(--red)}
+.dot.warn{background:var(--yellow);box-shadow:0 0 6px var(--yellow)}
 
-/* ── CANVAS ── */
-.canvas{overflow-y:auto;padding:20px;background:var(--ink);position:relative;}
-.canvas-bg{position:fixed;top:var(--hdr);left:0;width:calc(100% - var(--chat-w));bottom:0;pointer-events:none;background-image:radial-gradient(circle at 15% 25%,rgba(26,107,58,0.07) 0%,transparent 55%),radial-gradient(circle at 85% 75%,rgba(24,101,196,0.04) 0%,transparent 50%);}
-.grid-lines{position:fixed;top:var(--hdr);left:0;width:calc(100% - var(--chat-w));bottom:0;pointer-events:none;background-image:linear-gradient(rgba(255,255,255,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.025) 1px,transparent 1px);background-size:48px 48px;}
+/* ══ MAIN LAYOUT ════════════════════════════════════════════════════════════ */
+#app{
+  display:flex;flex:1;overflow:hidden;
+}
 
-/* ── EMPTY STATE ── */
-.empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:calc(100vh - var(--hdr) - 40px);text-align:center;padding:40px;}
-.empty-hex{width:68px;height:68px;background:var(--ink3);clip-path:polygon(50% 0%,93% 25%,93% 75%,50% 100%,7% 75%,7% 25%);display:flex;align-items:center;justify-content:center;font-size:26px;margin-bottom:18px;border:1px solid var(--line2);}
-.empty-title{font-family:'Fraunces',serif;font-size:21px;font-weight:400;color:var(--text2);margin-bottom:9px;letter-spacing:-0.3px;}
-.empty-sub{font-size:13px;color:var(--text3);max-width:400px;line-height:1.7;margin-bottom:26px;}
-.chips{display:flex;flex-wrap:wrap;gap:7px;justify-content:center;max-width:500px;}
-.chip-btn{display:inline-flex;align-items:center;gap:6px;padding:7px 13px;background:var(--ink3);border:1px solid var(--line2);border-radius:10px;font-size:11.5px;color:var(--text2);cursor:pointer;transition:all 0.2s;}
-.chip-btn:hover{background:var(--ink4);border-color:rgba(26,107,58,0.4);color:var(--sage4);transform:translateY(-1px);}
-.chip-btn .material-icons-round{font-size:14px;color:var(--sage3);}
+/* ══ SIDEBAR ════════════════════════════════════════════════════════════════ */
+#sidebar{
+  width:220px;flex-shrink:0;
+  background:var(--bg1);border-right:1px solid var(--border);
+  display:flex;flex-direction:column;padding:12px 0;overflow-y:auto;
+}
+.sidebar-section{padding:0 12px 8px;margin-top:4px}
+.sidebar-label{
+  font-size:10px;font-weight:700;letter-spacing:1px;
+  color:var(--text-dim);text-transform:uppercase;padding:4px 6px 6px;
+}
+.sidebar-btn{
+  display:flex;align-items:center;gap:9px;
+  width:100%;padding:8px 10px;border-radius:8px;border:none;
+  background:transparent;color:var(--text-med);font-size:13px;text-align:left;
+  transition:.15s;
+}
+.sidebar-btn:hover{background:var(--bg3);color:var(--text)}
+.sidebar-btn.active{background:rgba(0,229,195,.1);color:var(--accent);border:1px solid rgba(0,229,195,.2)}
+.sidebar-icon{font-size:16px;width:20px;text-align:center}
+.badge{
+  margin-left:auto;background:var(--accent2);color:#fff;
+  font-size:10px;padding:2px 6px;border-radius:20px;font-weight:700;
+}
 
-/* ── WIDGETS ── */
-.widgets{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
-.card{background:rgba(18,25,40,0.85);backdrop-filter:blur(12px);border:1px solid var(--line2);border-radius:var(--r2);overflow:hidden;animation:cardIn 0.42s cubic-bezier(0.23,1,0.32,1);}
-.card.full{grid-column:span 2;}
-@keyframes cardIn{from{opacity:0;transform:translateY(16px) scale(0.97);}to{opacity:1;transform:translateY(0) scale(1);}}
-.card-stripe{height:2px;}
-.card-stripe.sage{background:linear-gradient(90deg,transparent,var(--sage),var(--sage2),transparent);opacity:0.65;}
-.card-stripe.crimson{background:linear-gradient(90deg,transparent,var(--crimson),#e03040,transparent);opacity:0.65;}
-.card-stripe.gold{background:linear-gradient(90deg,transparent,var(--gold),var(--gold2),transparent);opacity:0.65;}
-.card-stripe.sky{background:linear-gradient(90deg,transparent,var(--sky),var(--sky2),transparent);opacity:0.65;}
-.card-head{display:flex;align-items:center;justify-content:space-between;padding:15px 17px 11px;}
-.card-title{display:flex;align-items:center;gap:8px;font-family:'Fraunces',serif;font-size:14px;font-weight:500;color:var(--text);letter-spacing:-0.1px;}
-.card-title .material-icons-round{font-size:16px;}
-.card-title.t-sage .material-icons-round{color:var(--sage3);}
-.card-title.t-crimson .material-icons-round{color:#e03040;}
-.card-title.t-gold .material-icons-round{color:var(--gold2);}
-.card-title.t-sky .material-icons-round{color:var(--sky2);}
-.card-body{padding:0 17px 17px;}
-.live-chip{display:flex;align-items:center;gap:5px;padding:3px 9px;background:var(--sage-bg);border:1px solid rgba(26,107,58,0.22);border-radius:100px;font-size:10px;font-weight:700;color:var(--sage4);text-transform:uppercase;letter-spacing:0.5px;}
-.live-chip::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--sage3);animation:pulse 2s infinite;}
+/* ══ CONTENT AREA ═══════════════════════════════════════════════════════════ */
+#content{flex:1;overflow:hidden;display:flex;flex-direction:column}
+.panel{display:none;flex:1;overflow:hidden}
+.panel.active{display:flex;flex-direction:column}
 
-/* ── ALERT WIDGET ── */
-.alert-item{border:1px solid rgba(181,35,48,0.22);border-radius:var(--r);padding:13px;margin-bottom:9px;background:rgba(181,35,48,0.05);display:flex;gap:11px;position:relative;overflow:hidden;transition:border-color 0.2s;}
-.alert-item:hover{border-color:rgba(181,35,48,0.38);}
-.alert-item::before{content:'';position:absolute;top:0;left:0;bottom:0;width:3px;background:var(--crimson);}
-.alert-sev{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
-.sev-high{background:rgba(181,35,48,0.12);color:#e03040;}
-.sev-med{background:var(--gold-bg);color:var(--gold2);}
-.alert-content{flex:1;min-width:0;}
-.alert-name{font-weight:700;color:var(--text);font-size:13.5px;margin-bottom:4px;}
-.alert-tags{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:7px;}
-.tag{display:inline-flex;align-items:center;gap:3px;padding:1px 7px;border-radius:6px;font-size:10.5px;font-weight:500;}
-.tag-r{background:var(--sky-bg);color:var(--sky2);}
-.tag-c{background:var(--sage-bg);color:var(--sage4);}
-.tag-f{background:var(--crimson-bg);color:#e03040;}
-.alert-note{font-size:11.5px;color:var(--text3);line-height:1.5;margin-bottom:9px;font-style:italic;}
-.btns{display:flex;gap:6px;flex-wrap:wrap;}
+/* ══ CHAT PANEL ═════════════════════════════════════════════════════════════ */
+#chat-panel{flex-direction:row}
+#chat-sidebar{
+  width:220px;flex-shrink:0;border-right:1px solid var(--border);
+  display:flex;flex-direction:column;background:var(--bg1);
+}
+.chat-sidebar-head{
+  padding:12px 14px;border-bottom:1px solid var(--border);
+  font-family:var(--font-head);font-size:13px;font-weight:700;
+}
+.csv-filter-list{flex:1;overflow-y:auto;padding:8px}
+.csv-chip{
+  display:flex;align-items:center;gap:7px;padding:6px 8px;
+  border-radius:6px;cursor:pointer;font-size:12px;color:var(--text-med);
+  transition:.12s;user-select:none;
+}
+.csv-chip:hover{background:var(--bg3);color:var(--text)}
+.csv-chip.selected{background:rgba(0,229,195,.12);color:var(--accent)}
+.csv-chip-icon{font-size:14px}
+.chat-main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+#messages{
+  flex:1;overflow-y:auto;padding:20px 24px;
+  display:flex;flex-direction:column;gap:16px;
+}
+.msg{display:flex;gap:12px;max-width:820px}
+.msg.user{flex-direction:row-reverse;align-self:flex-end}
+.msg-avatar{
+  width:32px;height:32px;border-radius:8px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;background:var(--bg3);
+}
+.msg.user .msg-avatar{background:rgba(0,229,195,.15)}
+.msg-bubble{
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:12px;padding:12px 16px;font-size:13.5px;line-height:1.65;
+  max-width:680px;
+}
+.msg.user .msg-bubble{
+  background:rgba(0,229,195,.08);border-color:rgba(0,229,195,.25);
+}
+.msg-sources{
+  margin-top:8px;display:flex;gap:6px;flex-wrap:wrap;
+}
+.source-tag{
+  font-size:11px;padding:2px 8px;border-radius:20px;
+  background:var(--bg3);color:var(--text-dim);border:1px solid var(--border);
+  font-family:var(--font-mono);
+}
+.msg-meta{font-size:11px;color:var(--text-dim);margin-top:4px;text-align:right}
+.msg.user .msg-meta{text-align:left}
+#chat-input-area{
+  padding:14px 20px;border-top:1px solid var(--border);
+  background:var(--bg1);display:flex;gap:10px;align-items:flex-end;
+}
+#chat-input{
+  flex:1;background:var(--bg2);border:1px solid var(--border);
+  border-radius:10px;padding:10px 14px;font-size:14px;
+  resize:none;min-height:44px;max-height:120px;color:var(--text);
+  outline:none;transition:.15s;
+}
+#chat-input:focus{border-color:var(--accent);box-shadow:0 0 0 2px rgba(0,229,195,.12)}
+.send-btn{
+  padding:10px 18px;border-radius:10px;border:none;
+  background:var(--accent);color:#0b0f14;font-weight:700;font-size:14px;
+  transition:.15s;white-space:nowrap;
+}
+.send-btn:hover{background:#00ccaf}
+.send-btn:disabled{opacity:.45;cursor:not-allowed}
+.typing-indicator{
+  display:flex;gap:5px;align-items:center;padding:10px 14px;
+  background:var(--bg2);border:1px solid var(--border);border-radius:12px;
+  width:fit-content;
+}
+.typing-dot{
+  width:7px;height:7px;border-radius:50%;background:var(--accent);
+  animation:pulse 1.2s infinite;
+}
+.typing-dot:nth-child(2){animation-delay:.2s}
+.typing-dot:nth-child(3){animation-delay:.4s}
+@keyframes pulse{0%,80%,100%{transform:scale(.6);opacity:.4}40%{transform:scale(1);opacity:1}}
 
-/* ── BUTTONS ── */
-.btn{display:inline-flex;align-items:center;gap:5px;padding:5px 11px;border-radius:7px;font-size:11.5px;font-weight:600;cursor:pointer;border:none;transition:all 0.15s;font-family:'Plus Jakarta Sans',sans-serif;}
-.btn .material-icons-round{font-size:13px;}
-.btn-p{background:var(--sage);color:#fff;}
-.btn-p:hover{background:var(--sage2);transform:translateY(-1px);}
-.btn-g{background:var(--ink4);color:var(--text2);border:1px solid var(--line2);}
-.btn-g:hover{background:var(--ink5);color:var(--text);}
+/* ══ QUICK ACTIONS (chat) ═══════════════════════════════════════════════════ */
+.quick-actions{
+  display:flex;gap:8px;flex-wrap:wrap;padding:12px 20px 0;
+}
+.quick-btn{
+  padding:5px 12px;border-radius:20px;border:1px solid var(--border);
+  background:var(--bg2);color:var(--text-med);font-size:12px;
+  transition:.12s;
+}
+.quick-btn:hover{background:var(--bg3);color:var(--accent);border-color:var(--accent)}
 
-/* ── CAMPAIGN ── */
-.ctx-bar{display:flex;gap:8px;flex-wrap:wrap;padding:9px 11px;background:var(--ink4);border-radius:var(--r);margin-bottom:12px;border:1px solid var(--line2);}
-.ctx-tag{font-size:11px;color:var(--text3);}
-.ctx-val{font-weight:600;color:var(--text2);}
-.ch-tabs{display:flex;gap:5px;margin-bottom:12px;}
-.ch-tab{flex:1;padding:8px 8px;background:var(--ink4);border:1px solid var(--line2);border-radius:8px;cursor:pointer;text-align:center;transition:all 0.15s;}
-.ch-tab:hover{background:var(--ink5);}
-.ch-tab.active{background:var(--sage-bg);border-color:rgba(26,107,58,0.3);}
-.ch-icon{font-size:15px;margin-bottom:2px;}
-.ch-lbl{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px;}
-.ch-tab.active .ch-lbl{color:var(--sage4);}
-.content-panel{background:var(--ink4);border:1px solid var(--line2);border-radius:var(--r);padding:13px;font-size:12px;color:var(--text2);line-height:1.65;min-height:88px;margin-bottom:11px;white-space:pre-wrap;}
+/* ══ METRICS PANEL ══════════════════════════════════════════════════════════ */
+#metrics-panel{overflow-y:auto;padding:20px}
+.metrics-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-bottom:20px}
+.metric-card{
+  background:var(--bg2);border:1px solid var(--border);border-radius:var(--r-lg);
+  padding:16px;transition:.15s;
+}
+.metric-card:hover{border-color:#3a5068}
+.metric-label{font-size:12px;color:var(--text-dim);font-weight:600;letter-spacing:.5px;text-transform:uppercase;margin-bottom:6px}
+.metric-value{font-family:var(--font-head);font-size:28px;font-weight:800;color:var(--text)}
+.metric-sub{font-size:12px;color:var(--text-dim);margin-top:2px}
+.metric-accent{color:var(--accent)}
+.section-title{
+  font-family:var(--font-head);font-size:16px;font-weight:700;
+  margin-bottom:14px;color:var(--text);
+}
+.charts-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px}
+.chart-card{
+  background:var(--bg2);border:1px solid var(--border);border-radius:var(--r-lg);padding:16px;
+}
+.bar-chart{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+.bar-row{display:flex;align-items:center;gap:10px}
+.bar-label{font-size:12px;color:var(--text-med);width:100px;text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bar-track{flex:1;background:var(--bg3);border-radius:4px;height:18px;position:relative;overflow:hidden}
+.bar-fill{height:100%;border-radius:4px;background:var(--accent);transition:width 1s ease}
+.bar-val{font-size:11px;font-family:var(--font-mono);color:var(--text-dim);width:60px}
 
-/* ── SEGMENTS ── */
-.seg-wrap{overflow-x:auto;border-radius:var(--r);border:1px solid var(--line2);}
-.seg-table{width:100%;border-collapse:collapse;font-size:11.5px;}
-.seg-table thead th{font-size:9.5px;font-weight:700;color:var(--text4);text-transform:uppercase;letter-spacing:1px;padding:9px 11px;background:var(--ink4);text-align:left;white-space:nowrap;border-bottom:1px solid var(--line2);}
-.seg-table tbody td{padding:8px 11px;color:var(--text2);border-bottom:1px solid var(--line);white-space:nowrap;}
-.seg-table tbody tr:last-child td{border-bottom:none;}
-.seg-table tbody tr:hover{background:rgba(255,255,255,0.02);}
-.seg-table tbody td:first-child{font-family:'DM Mono',monospace;font-size:10.5px;color:var(--text3);}
-.chip{display:inline-block;padding:2px 7px;border-radius:100px;font-size:9.5px;font-weight:700;letter-spacing:0.3px;}
-.ch-sage{background:var(--sage-bg);color:var(--sage4);border:1px solid rgba(26,107,58,0.18);}
-.ch-gold{background:var(--gold-bg);color:var(--gold2);border:1px solid rgba(192,124,18,0.18);}
+/* ══ CSV VIEWER PANEL ══════════════════════════════════════════════════════ */
+#csv-panel{flex-direction:row}
+#csv-file-list{
+  width:220px;flex-shrink:0;border-right:1px solid var(--border);
+  background:var(--bg1);display:flex;flex-direction:column;
+}
+.csv-list-head{
+  padding:14px;border-bottom:1px solid var(--border);
+  font-family:var(--font-head);font-size:13px;font-weight:700;
+}
+.csv-files{flex:1;overflow-y:auto;padding:8px}
+.csv-file-item{
+  padding:8px 10px;border-radius:8px;cursor:pointer;
+  font-size:12.5px;color:var(--text-med);transition:.12s;
+}
+.csv-file-item:hover{background:var(--bg3);color:var(--text)}
+.csv-file-item.active{background:rgba(124,92,252,.15);color:#a78bfa;border:1px solid rgba(124,92,252,.25)}
+.csv-file-name{font-weight:600;font-family:var(--font-mono)}
+.csv-file-meta{font-size:11px;color:var(--text-dim);margin-top:2px}
+#csv-content{flex:1;display:flex;flex-direction:column;overflow:hidden}
+#csv-toolbar{
+  padding:12px 16px;border-bottom:1px solid var(--border);
+  background:var(--bg1);display:flex;gap:10px;align-items:center;
+}
+.csv-name-badge{
+  font-family:var(--font-mono);font-size:13px;color:var(--accent);font-weight:600;
+}
+.csv-stat{font-size:12px;color:var(--text-dim)}
+.btn-sm{
+  padding:5px 12px;border-radius:6px;border:1px solid var(--border);
+  background:var(--bg2);color:var(--text-med);font-size:12px;
+  transition:.12s;margin-left:auto;
+}
+.btn-sm:hover{background:var(--bg3);color:var(--text)}
+#csv-table-wrap{flex:1;overflow:auto;padding:0}
+table{
+  width:100%;border-collapse:collapse;font-size:12.5px;
+}
+thead th{
+  background:var(--bg1);color:var(--text-dim);
+  padding:10px 14px;text-align:left;border-bottom:1px solid var(--border);
+  font-weight:600;letter-spacing:.4px;position:sticky;top:0;z-index:10;
+  font-size:11px;text-transform:uppercase;white-space:nowrap;
+}
+tbody tr:hover{background:var(--bg2)}
+tbody td{
+  padding:8px 14px;border-bottom:1px solid rgba(38,51,68,.5);
+  color:var(--text-med);white-space:nowrap;max-width:200px;
+  overflow:hidden;text-overflow:ellipsis;
+}
+.null-val{color:var(--border);font-style:italic;font-size:11px}
 
-/* ── GAUGE ── */
-.gauge-wrap{display:flex;gap:18px;align-items:flex-start;}
-.gauge-svg-area{flex-shrink:0;position:relative;width:126px;height:126px;}
-.gauge-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;}
-.gauge-pct{font-family:'DM Mono',monospace;font-size:27px;font-weight:500;color:var(--sage3);line-height:1;}
-.gauge-pct-lbl{font-size:9px;color:var(--text3);letter-spacing:0.5px;}
-.gauge-factors{flex:1;}
-.factor-item{display:flex;align-items:flex-start;gap:7px;padding:5px 0;border-bottom:1px solid var(--line);font-size:11.5px;color:var(--text2);}
-.factor-item:last-child{border-bottom:none;}
-.f-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:4px;}
-.f-pos{background:var(--sage3);}
-.f-neg{background:var(--gold2);}
+/* ══ URGENCY PANEL ══════════════════════════════════════════════════════════ */
+#urgency-panel{overflow-y:auto;padding:20px;flex-direction:column}
+.urgency-hero{
+  background:var(--bg2);border:1px solid var(--border);border-radius:var(--r-lg);
+  padding:24px;margin-bottom:20px;display:flex;gap:20px;align-items:center;
+}
+.urgency-score-ring{
+  width:100px;height:100px;flex-shrink:0;position:relative;
+}
+.urgency-score-ring svg{transform:rotate(-90deg)}
+.ring-bg{fill:none;stroke:var(--bg3);stroke-width:10}
+.ring-fill{
+  fill:none;stroke-width:10;stroke-linecap:round;
+  transition:stroke-dasharray 1s ease;
+}
+.score-text{
+  position:absolute;inset:0;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+}
+.score-num{font-family:var(--font-head);font-size:24px;font-weight:800}
+.score-lbl{font-size:10px;color:var(--text-dim);text-transform:uppercase}
+.urgency-info{flex:1}
+.urgency-level{
+  font-family:var(--font-head);font-size:22px;font-weight:800;margin-bottom:4px;
+}
+.urgency-msg{color:var(--text-med);font-size:14px}
+.urgency-filters{
+  display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;
+}
+.filter-select{
+  padding:7px 12px;border-radius:8px;border:1px solid var(--border);
+  background:var(--bg2);color:var(--text);font-size:13px;outline:none;
+}
+.filter-select:focus{border-color:var(--accent)}
+.urgency-btn{
+  padding:7px 18px;border-radius:8px;border:none;
+  background:var(--accent2);color:#fff;font-weight:700;font-size:13px;
+}
+.urgency-btn:hover{background:#e55a25}
+.signals-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px}
+.signal-card{
+  background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);
+  padding:14px;
+}
+.signal-type{
+  font-size:11px;text-transform:uppercase;letter-spacing:.6px;color:var(--text-dim);margin-bottom:6px;
+}
+.signal-msg{font-size:13px;color:var(--text);line-height:1.5}
+.signal-sev{
+  display:inline-block;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:700;
+  margin-top:6px;
+}
+.sev-low{background:rgba(34,197,94,.15);color:var(--green)}
+.sev-med{background:rgba(245,158,11,.15);color:var(--yellow)}
+.sev-high{background:rgba(255,107,53,.15);color:var(--accent2)}
+.sev-crit{background:rgba(239,68,68,.15);color:var(--red)}
+.recs-list{display:flex;flex-direction:column;gap:8px}
+.rec-item{
+  padding:10px 14px;background:var(--bg2);border:1px solid var(--border);
+  border-radius:var(--r);font-size:13px;color:var(--text-med);
+  border-left:3px solid var(--accent);
+}
+.hotspot-table{width:100%;border-collapse:collapse;font-size:13px}
+.hotspot-table th{
+  text-align:left;padding:8px 12px;color:var(--text-dim);
+  border-bottom:1px solid var(--border);font-size:11px;text-transform:uppercase;
+}
+.hotspot-table td{padding:10px 12px;border-bottom:1px solid rgba(38,51,68,.4)}
 
-/* ── ROUTING ── */
-.routing-row{display:flex;align-items:center;gap:11px;padding:9px 0;border-bottom:1px solid var(--line);}
-.routing-row:last-child{border-bottom:none;}
-.routing-ch{width:78px;font-size:11.5px;font-weight:600;color:var(--text2);flex-shrink:0;}
-.bar-wrap{flex:1;height:5px;background:var(--ink4);border-radius:5px;overflow:hidden;}
-.bar-fill{height:100%;border-radius:5px;transition:width 0.9s cubic-bezier(0.23,1,0.32,1);}
-.routing-pct{font-family:'DM Mono',monospace;font-size:11.5px;color:var(--text3);width:32px;text-align:right;}
-.route-notes{margin-top:12px;padding:11px;background:var(--ink4);border-radius:var(--r);border:1px solid var(--line2);}
-.route-note{font-size:11.5px;color:var(--text3);padding:2px 0;display:flex;align-items:flex-start;gap:6px;}
-.route-note::before{content:'→';color:var(--sage3);flex-shrink:0;font-size:10.5px;margin-top:1px;}
-.slider-row{display:flex;align-items:center;gap:11px;margin-bottom:13px;padding:9px 11px;background:var(--ink4);border-radius:var(--r);border:1px solid var(--line2);}
-.slider-lbl{font-size:10.5px;color:var(--text3);white-space:nowrap;}
-.conn-slider{flex:1;accent-color:var(--sage3);}
+/* ══ CAMPAIGN PANEL ═════════════════════════════════════════════════════════ */
+#campaign-panel{overflow-y:auto;padding:20px}
+.campaign-form{
+  background:var(--bg2);border:1px solid var(--border);border-radius:var(--r-lg);
+  padding:20px;margin-bottom:20px;
+}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+.form-group{display:flex;flex-direction:column;gap:6px}
+.form-label{font-size:12px;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:.5px}
+.form-input{
+  padding:9px 12px;border-radius:8px;border:1px solid var(--border);
+  background:var(--bg3);color:var(--text);font-size:13px;outline:none;
+  transition:.15s;
+}
+.form-input:focus{border-color:var(--accent)}
+.lang-checkboxes{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
+.lang-cb{display:flex;align-items:center;gap:5px;cursor:pointer}
+.lang-cb input{accent-color:var(--accent)}
+.lang-cb span{font-size:12px;color:var(--text-med)}
+.gen-btn{
+  padding:10px 24px;border-radius:10px;border:none;
+  background:var(--accent3);color:#fff;font-weight:700;font-size:14px;
+  transition:.15s;margin-top:4px;
+}
+.gen-btn:hover{background:#6a4fe0}
+.gen-btn:disabled{opacity:.45;cursor:not-allowed}
+.campaign-results{display:flex;flex-direction:column;gap:14px}
+.lang-result-card{
+  background:var(--bg2);border:1px solid var(--border);border-radius:var(--r-lg);
+  overflow:hidden;
+}
+.lang-result-header{
+  padding:12px 16px;background:var(--bg3);
+  display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border);
+}
+.lang-flag{font-size:20px}
+.lang-name{font-family:var(--font-head);font-weight:700;font-size:15px}
+.lang-script{font-size:11px;color:var(--text-dim);background:var(--bg2);padding:2px 8px;border-radius:20px;margin-left:auto}
+.msg-tabs{display:flex;border-bottom:1px solid var(--border)}
+.msg-tab{
+  padding:8px 16px;font-size:12px;color:var(--text-dim);cursor:pointer;
+  border-bottom:2px solid transparent;transition:.15s;border-radius:0;border:none;background:transparent;
+}
+.msg-tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+.msg-content{padding:14px 16px;font-size:14px;line-height:1.8;color:var(--text)}
+.sms-content{font-family:var(--font-body)}
+.audio-content{
+  font-family:var(--font-mono);font-size:12.5px;white-space:pre-wrap;
+  background:var(--bg3);padding:12px;border-radius:8px;color:var(--text-med);
+}
+.stage-dir{color:var(--text-dim);font-style:italic}
+.copy-btn{
+  padding:5px 12px;border-radius:6px;border:1px solid var(--border);
+  background:var(--bg3);color:var(--text-dim);font-size:11px;
+  margin-top:10px;transition:.12s;
+}
+.copy-btn:hover{background:var(--bg1);color:var(--accent)}
+.msg-stats{
+  padding:8px 16px;background:var(--bg1);border-top:1px solid var(--border);
+  display:flex;gap:16px;font-size:12px;color:var(--text-dim);
+}
 
-/* ── AGENTS ── */
-.agent-item{display:flex;align-items:center;gap:11px;padding:10px 11px;background:var(--ink4);border:1px solid var(--line);border-radius:var(--r);margin-bottom:7px;transition:all 0.15s;}
-.agent-item:hover{border-color:var(--line2);transform:translateX(3px);}
-.agent-ava{width:32px;height:32px;border-radius:7px;background:var(--sage-bg);color:var(--sage4);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;border:1px solid rgba(26,107,58,0.18);}
-.agent-info{flex:1;}
-.agent-name{font-size:12.5px;font-weight:700;color:var(--text);margin-bottom:1px;}
-.agent-loc{font-size:10.5px;color:var(--text3);}
-.status-badge-sm{padding:3px 9px;border-radius:6px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.4px;}
-.st-pending{background:var(--gold-bg);color:var(--gold2);}
-.st-approved{background:var(--sage-bg);color:var(--sage4);}
+/* ══ LOADING / EMPTY ════════════════════════════════════════════════════════ */
+.spinner{
+  width:28px;height:28px;border:3px solid var(--border);
+  border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;
+  margin:40px auto;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+.empty-state{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:60px 20px;color:var(--text-dim);gap:10px;
+}
+.empty-icon{font-size:40px;opacity:.4}
+.empty-text{font-size:14px;opacity:.7}
+.toast{
+  position:fixed;bottom:20px;right:20px;
+  background:var(--bg3);border:1px solid var(--border);
+  border-radius:10px;padding:10px 16px;font-size:13px;
+  color:var(--text);z-index:999;opacity:0;transform:translateY(10px);
+  transition:.25s;pointer-events:none;
+}
+.toast.show{opacity:1;transform:translateY(0)}
 
-/* ── STAT ROW ── */
-.stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-bottom:13px;}
-.stat-box{background:var(--ink4);border:1px solid var(--line);border-radius:var(--r);padding:11px;text-align:center;}
-.stat-val{font-family:'DM Mono',monospace;font-size:20px;font-weight:500;color:var(--sage3);margin-bottom:2px;}
-.stat-key{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px;}
-
-/* ── CHAT ── */
-.chat-panel{display:flex;flex-direction:column;background:var(--ink2);border-left:1px solid var(--line2);overflow:hidden;}
-.chat-hdr{height:var(--hdr);display:flex;align-items:center;padding:0 16px;gap:11px;border-bottom:1px solid var(--line2);background:var(--ink3);flex-shrink:0;}
-.ai-ava{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,var(--sage) 0%,#1060a0 100%);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
-.ai-name{font-weight:700;font-size:13px;color:var(--text);margin-bottom:1px;}
-.ai-model{font-size:10px;color:var(--sage4);font-weight:500;}
-.model-sel{margin-left:auto;padding:4px 9px;background:var(--ink4);border:1px solid var(--line2);border-radius:7px;font-size:10.5px;color:var(--text3);font-family:'Plus Jakarta Sans',sans-serif;cursor:pointer;}
-.messages{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px;}
-.msg{display:flex;gap:8px;animation:msgIn 0.22s ease;}
-@keyframes msgIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
-.msg.user{flex-direction:row-reverse;}
-.msg-ava{width:26px;height:26px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0;font-weight:700;}
-.msg.ai .msg-ava{background:linear-gradient(135deg,var(--sage) 0%,#1060a0 100%);}
-.msg.user .msg-ava{background:var(--ink4);color:var(--text);}
-.msg-body{max-width:83%;}
-.msg-bubble{padding:9px 13px;border-radius:10px;font-size:12.5px;line-height:1.65;word-break:break-word;}
-.msg.ai .msg-bubble{background:var(--ink3);border:1px solid var(--line);color:var(--text);border-radius:3px 10px 10px 10px;}
-.msg.user .msg-bubble{background:var(--sage);color:#fff;border-radius:10px 10px 3px 10px;font-weight:500;}
-.msg-meta{font-size:10px;color:var(--text4);margin-top:3px;padding:0 3px;}
-.msg.user .msg-meta{text-align:right;}
-.tool-bub{margin-top:7px;background:rgba(26,107,58,0.07);border:1px solid rgba(26,107,58,0.18);border-left:3px solid var(--sage);border-radius:0 7px 7px 0;padding:8px 11px;}
-.tool-bub-hdr{display:flex;align-items:center;gap:5px;color:var(--sage4);font-weight:700;margin-bottom:4px;font-size:10.5px;text-transform:uppercase;letter-spacing:0.5px;}
-.tool-bub-hdr .material-icons-round{font-size:12px;}
-.tool-bub-desc{color:var(--text3);font-size:11.5px;line-height:1.5;}
-.tool-bub-params{margin-top:5px;background:var(--ink2);border-radius:5px;padding:5px 8px;font-family:'DM Mono',monospace;font-size:10px;color:var(--text4);}
-.typing-msg{display:flex;gap:8px;}
-.typing-bubble{display:flex;align-items:center;gap:4px;padding:10px 14px;background:var(--ink3);border:1px solid var(--line);border-radius:3px 10px 10px 10px;}
-.td{width:6px;height:6px;border-radius:50%;background:var(--sage3);animation:tdot 1.2s ease-in-out infinite;}
-.td:nth-child(2){animation-delay:0.2s;}
-.td:nth-child(3){animation-delay:0.4s;}
-@keyframes tdot{0%,60%,100%{transform:translateY(0);opacity:0.5;}30%{transform:translateY(-5px);opacity:1;}}
-.quick-actions{padding:0 14px 9px;display:flex;flex-wrap:wrap;gap:5px;}
-.quick-act{display:inline-flex;align-items:center;gap:5px;padding:5px 10px;background:var(--ink3);border:1px solid var(--line2);border-radius:8px;font-size:10.5px;font-weight:500;color:var(--text3);cursor:pointer;transition:all 0.15s;}
-.quick-act:hover{background:var(--ink4);border-color:rgba(26,107,58,0.35);color:var(--sage4);}
-.quick-act .material-icons-round{font-size:12px;color:var(--sage3);}
-.input-area{padding:11px 14px 13px;background:var(--ink3);border-top:1px solid var(--line2);flex-shrink:0;}
-.input-row{display:flex;gap:7px;align-items:flex-end;}
-.chat-ta{flex:1;background:var(--ink2);border:1px solid var(--line2);border-radius:9px;padding:9px 13px;color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;font-size:12.5px;resize:none;min-height:40px;max-height:100px;line-height:1.5;transition:border-color 0.15s,box-shadow 0.15s;}
-.chat-ta:focus{outline:none;border-color:rgba(26,107,58,0.5);box-shadow:0 0 0 3px rgba(26,107,58,0.1);}
-.chat-ta::placeholder{color:var(--text4);}
-.send-btn{width:40px;height:40px;border-radius:9px;background:var(--sage);border:none;color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.15s;flex-shrink:0;}
-.send-btn:hover{background:var(--sage2);transform:scale(1.04);}
-.send-btn:active{transform:scale(0.95);}
-.send-btn:disabled{opacity:0.45;cursor:not-allowed;}
-.send-btn .material-icons-round{font-size:18px;}
-
-/* ── SCROLLBARS ── */
-::-webkit-scrollbar{width:4px;height:4px;}
-::-webkit-scrollbar-track{background:transparent;}
-::-webkit-scrollbar-thumb{background:var(--ink4);border-radius:8px;}
-::-webkit-scrollbar-thumb:hover{background:var(--text4);}
-
-@media(max-width:900px){
-  .shell{grid-template-columns:1fr;}
-  .chat-panel{display:none;}
-  .canvas-bg,.grid-lines{width:100%;}
-  .widgets{grid-template-columns:1fr;}
-  .card.full{grid-column:span 1;}
+/* ══ RESPONSIVE ═════════════════════════════════════════════════════════════ */
+@media(max-width:700px){
+  #sidebar{display:none}
+  .charts-row{grid-template-columns:1fr}
+  .signals-grid{grid-template-columns:1fr}
+  .form-row{grid-template-columns:1fr}
 }
 </style>
 </head>
 <body>
-<div class="shell">
 
-<!-- TOPBAR -->
-<header class="topbar">
-  <div class="brand">
-    <div class="brand-mark">🌿</div>
-    <div>
-      <div class="brand-name">AgroIntel</div>
-      <span class="brand-tag">Command Central</span>
+<!-- ══ TOPBAR ══════════════════════════════════════════════════════════════ -->
+<div id="topbar">
+  <div class="logo">LUMINA <span>agri intelligence</span></div>
+  <div class="top-tabs">
+    <button class="tab active" onclick="showPanel('metrics')">📊 Overview</button>
+    <button class="tab" onclick="showPanel('chat')">💬 AI Chat</button>
+    <button class="tab" onclick="showPanel('csv')">🗂 CSV Data</button>
+    <button class="tab" onclick="showPanel('urgency')">🚨 Urgency</button>
+    <button class="tab" onclick="showPanel('campaign')">📢 Campaigns</button>
+  </div>
+  <div class="top-right">
+    <div class="status-dot">
+      <div class="dot" id="api-dot"></div>
+      <span id="api-status">Connecting…</span>
     </div>
   </div>
-  <nav class="topbar-nav">
-    <button class="nav-pill active">Operations</button>
-    <button class="nav-pill">Analytics</button>
-    <button class="nav-pill">Campaigns</button>
-    <button class="nav-pill">Field Network</button>
-  </nav>
-  <div class="topbar-right">
-    <div class="status-badge">
-      <div class="pulse-dot"></div>
-      <span class="status-label" id="model-status">Qwen2.5 Online</span>
-    </div>
-    <button class="icon-btn"><span class="material-icons-round">notifications_none</span></button>
-    <button class="icon-btn"><span class="material-icons-round">tune</span></button>
-  </div>
-</header>
-
-<!-- CANVAS -->
-<main class="canvas">
-  <div class="canvas-bg"></div>
-  <div class="grid-lines"></div>
-  <div id="canvas-content">
-    <div class="empty-state" id="empty-state">
-      <div class="empty-hex">🌾</div>
-      <div class="empty-title">Command Central Ready</div>
-      <div class="empty-sub">Talk to AgroIntel AI to activate live intelligence panels. Powered by real Syngenta data and Qwen2.5 local AI.</div>
-      <div class="chips">
-        <div class="chip-btn" onclick="qs('Show growers from Punjab growing wheat')"><span class="material-icons-round">agriculture</span>Punjab Wheat Growers</div>
-        <div class="chip-btn" onclick="qs('Show WhatsApp campaign performance for all crops')"><span class="material-icons-round">campaign</span>Campaign Analytics</div>
-        <div class="chip-btn" onclick="qs('Show grower segments by state and crop type')"><span class="material-icons-round">grid_view</span>Grower Segments</div>
-        <div class="chip-btn" onclick="qs('Analyze campaign receptivity by device type')"><span class="material-icons-round">show_chart</span>Device Analysis</div>
-        <div class="chip-btn" onclick="qs('Show field rep territories and coverage')"><span class="material-icons-round">support_agent</span>Field Rep Network</div>
-        <div class="chip-btn" onclick="qs('Analyze messaging channel distribution')"><span class="material-icons-round">settings_input_antenna</span>Channel Distribution</div>
-      </div>
-    </div>
-    <div class="widgets" id="widgets" style="display:none"></div>
-  </div>
-</main>
-
-<!-- CHAT PANEL -->
-<aside class="chat-panel">
-  <div class="chat-hdr">
-    <div class="ai-ava">🤖</div>
-    <div>
-      <div class="ai-name">AgroIntel AI</div>
-      <div class="ai-model" id="ai-status">● Qwen2.5 • localhost:11434</div>
-    </div>
-    <select class="model-sel" id="model-sel">
-      <option value="qwen2.5">qwen2.5</option>
-      <option value="qwen2.5:7b">qwen2.5:7b</option>
-      <option value="llama3.2">llama3.2</option>
-      <option value="mistral">mistral</option>
-    </select>
-  </div>
-
-  <div class="messages" id="messages">
-    <div class="msg ai">
-      <div class="msg-ava">🤖</div>
-      <div class="msg-body">
-        <div class="msg-bubble">Welcome to <strong>AgroIntel Command Central</strong>.<br><br>I'm connected to Syngenta's live agricultural data and powered by Qwen2.5. Ask me about growers, campaigns, field territories, or WhatsApp performance — I'll fetch real data from the API.<br><br><em>API: localhost:8000 • Ollama: localhost:11434</em></div>
-        <div class="msg-meta">AgroIntel AI • Just now</div>
-      </div>
-    </div>
-  </div>
-
-  <div class="quick-actions">
-    <div class="quick-act" onclick="qs('Show growers from Rajasthan')"><span class="material-icons-round">agriculture</span>Growers</div>
-    <div class="quick-act" onclick="qs('Campaign performance')"><span class="material-icons-round">campaign</span>Campaigns</div>
-    <div class="quick-act" onclick="qs('Show segments by state')"><span class="material-icons-round">people</span>Segments</div>
-    <div class="quick-act" onclick="qs('Field rep territories')"><span class="material-icons-round">support_agent</span>Reps</div>
-  </div>
-
-  <div class="input-area">
-    <div class="input-row">
-      <textarea id="chat-input" class="chat-ta" placeholder="Ask about growers, campaigns, territories…" rows="1"></textarea>
-      <button class="send-btn" id="send-btn" onclick="handleSend()"><span class="material-icons-round">send</span></button>
-    </div>
-  </div>
-</aside>
 </div>
 
+<!-- ══ APP ════════════════════════════════════════════════════════════════ -->
+<div id="app">
+
+<!-- SIDEBAR -->
+<div id="sidebar">
+  <div class="sidebar-section">
+    <div class="sidebar-label">Navigation</div>
+    <button class="sidebar-btn active" onclick="showPanel('metrics')">
+      <span class="sidebar-icon">📊</span> Overview
+    </button>
+    <button class="sidebar-btn" onclick="showPanel('chat')">
+      <span class="sidebar-icon">💬</span> AI Chat
+    </button>
+    <button class="sidebar-btn" onclick="showPanel('csv')">
+      <span class="sidebar-icon">🗂</span> CSV Viewer
+    </button>
+    <button class="sidebar-btn" onclick="showPanel('urgency')">
+      <span class="sidebar-icon">🚨</span> Urgency
+      <span class="badge" id="sidebar-urgency-badge" style="display:none">!</span>
+    </button>
+    <button class="sidebar-btn" onclick="showPanel('campaign')">
+      <span class="sidebar-icon">📢</span> Campaigns
+    </button>
+  </div>
+  <div class="sidebar-section">
+    <div class="sidebar-label">Quick Stats</div>
+    <div style="padding:8px 6px;font-size:12px;color:var(--text-dim)">
+      <div style="display:flex;justify-content:space-between;padding:4px 0">
+        <span>Growers</span><span id="sb-growers" style="color:var(--text)">—</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;padding:4px 0">
+        <span>Campaigns</span><span id="sb-campaigns" style="color:var(--text)">—</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;padding:4px 0">
+        <span>Retailers</span><span id="sb-retailers" style="color:var(--text)">—</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;padding:4px 0">
+        <span>CSVs Loaded</span><span id="sb-csvs" style="color:var(--accent)">—</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ CONTENT ══════════════════════════════════════════════════════════ -->
+<div id="content">
+
+<!-- METRICS PANEL -->
+<div class="panel active" id="metrics-panel">
+  <div class="metrics-grid" id="metrics-grid">
+    <div class="metric-card"><div class="metric-label">Total Growers</div><div class="metric-value metric-accent" id="m-growers">—</div><div class="metric-sub">across all states</div></div>
+    <div class="metric-card"><div class="metric-label">Campaigns</div><div class="metric-value" id="m-campaigns">—</div><div class="metric-sub">unique campaign IDs</div></div>
+    <div class="metric-card"><div class="metric-label">Impressions</div><div class="metric-value" id="m-impressions">—</div><div class="metric-sub">total social impressions</div></div>
+    <div class="metric-card"><div class="metric-label">CTR</div><div class="metric-value" id="m-ctr">—</div><div class="metric-sub">impression → visit rate</div></div>
+    <div class="metric-card"><div class="metric-label">Conversion</div><div class="metric-value" id="m-conv">—</div><div class="metric-sub">visit → lead submission</div></div>
+    <div class="metric-card"><div class="metric-label">Retailers</div><div class="metric-value" id="m-retailers">—</div><div class="metric-sub">active in network</div></div>
+  </div>
+
+  <div class="charts-row" id="charts-row">
+    <div class="chart-card">
+      <div class="section-title">Top States by Growers</div>
+      <div class="bar-chart" id="states-chart"><div class="spinner"></div></div>
+    </div>
+    <div class="chart-card">
+      <div class="section-title">Leads by Crop</div>
+      <div class="bar-chart" id="crop-chart"><div class="spinner"></div></div>
+    </div>
+    <div class="chart-card">
+      <div class="section-title">Device Distribution</div>
+      <div class="bar-chart" id="device-chart"><div class="spinner"></div></div>
+    </div>
+    <div class="chart-card">
+      <div class="section-title">Language Reach</div>
+      <div class="bar-chart" id="lang-chart"><div class="spinner"></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- CHAT PANEL -->
+<div class="panel" id="chat-panel">
+  <div id="chat-sidebar">
+    <div class="chat-sidebar-head">🗂 Filter by CSV</div>
+    <div class="csv-filter-list" id="csv-filter-list">
+      <div class="csv-chip selected" data-csv="" onclick="selectCsvFilter(this)">
+        <span class="csv-chip-icon">🌐</span> All CSVs
+      </div>
+    </div>
+    <div style="padding:10px;border-top:1px solid var(--border)">
+      <button class="sidebar-btn" onclick="rebuildRag()" style="font-size:12px;width:100%">
+        🔄 Rebuild RAG Index
+      </button>
+    </div>
+  </div>
+  <div class="chat-main">
+    <div class="quick-actions">
+      <button class="quick-btn" onclick="sendQuick('What are the top performing campaigns?')">Top campaigns</button>
+      <button class="quick-btn" onclick="sendQuick('Which states have the highest grower count?')">State breakdown</button>
+      <button class="quick-btn" onclick="sendQuick('What is the average CTR across all campaigns?')">Avg CTR</button>
+      <button class="quick-btn" onclick="sendQuick('What crops have the lowest conversion rate?')">Crop conversion</button>
+      <button class="quick-btn" onclick="sendQuick('Which languages should we prioritize for SMS campaigns?')">Language targeting</button>
+    </div>
+    <div id="messages">
+      <div class="msg">
+        <div class="msg-avatar">🌾</div>
+        <div>
+          <div class="msg-bubble">
+            <strong>Lumina AI</strong> — CSV-grounded agricultural intelligence<br><br>
+            Ask me anything about your grower data, campaign performance, or regional trends. All answers come directly from your CSV files — no hallucination.<br><br>
+            Try: <em>"Which state has the lowest conversion rate?"</em> or <em>"What's the device split in Punjab?"</em>
+          </div>
+          <div class="msg-meta">RAG engine ready · Qwen2.5 powered</div>
+        </div>
+      </div>
+    </div>
+    <div id="chat-input-area">
+      <textarea id="chat-input" placeholder="Ask about growers, campaigns, regions, products…" rows="1"
+        onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChat()}"></textarea>
+      <button class="send-btn" id="send-btn" onclick="sendChat()">Send ↗</button>
+    </div>
+  </div>
+</div>
+
+<!-- CSV PANEL -->
+<div class="panel" id="csv-panel">
+  <div id="csv-file-list">
+    <div class="csv-list-head">📂 CSV Files</div>
+    <div class="csv-files" id="csv-files-list">
+      <div class="spinner"></div>
+    </div>
+  </div>
+  <div id="csv-content">
+    <div id="csv-toolbar" style="display:none">
+      <span class="csv-name-badge" id="csv-active-name">—</span>
+      <span class="csv-stat" id="csv-active-stat"></span>
+      <button class="btn-sm" onclick="loadCsvStats()">📈 Stats</button>
+    </div>
+    <div id="csv-table-wrap" style="flex:1;overflow:auto">
+      <div class="empty-state">
+        <div class="empty-icon">📂</div>
+        <div class="empty-text">Select a CSV file from the left to preview its data</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- URGENCY PANEL -->
+<div class="panel" id="urgency-panel">
+  <div class="urgency-filters">
+    <select class="filter-select" id="urg-state"><option value="">All States</option></select>
+    <select class="filter-select" id="urg-crop"><option value="">All Crops</option></select>
+    <select class="filter-select" id="urg-product"><option value="">All Products</option></select>
+    <button class="urgency-btn" onclick="runUrgencyDetection()">🔍 Analyze Urgency</button>
+    <button class="btn-sm" onclick="runBulkScan()">📍 Bulk State Scan</button>
+  </div>
+
+  <div class="urgency-hero" id="urgency-hero">
+    <div class="urgency-score-ring">
+      <svg viewBox="0 0 100 100" width="100" height="100">
+        <circle class="ring-bg" cx="50" cy="50" r="42"/>
+        <circle class="ring-fill" id="ring-fill" cx="50" cy="50" r="42"
+          stroke="var(--accent)" stroke-dasharray="0 264"/>
+      </svg>
+      <div class="score-text">
+        <span class="score-num" id="urg-score">—</span>
+        <span class="score-lbl">score</span>
+      </div>
+    </div>
+    <div class="urgency-info">
+      <div class="urgency-level" id="urg-level">Run analysis to detect urgency signals</div>
+      <div class="urgency-msg" id="urg-msg">Select filters above and click Analyze Urgency</div>
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+    <div>
+      <div class="section-title">📡 Detected Signals</div>
+      <div class="signals-grid" id="signals-grid">
+        <div class="empty-state" style="grid-column:1/-1;padding:30px">
+          <div class="empty-icon">📡</div>
+          <div class="empty-text">No analysis run yet</div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="section-title">💡 Recommendations</div>
+      <div class="recs-list" id="recs-list">
+        <div class="empty-state" style="padding:30px">
+          <div class="empty-text">Recommendations will appear after analysis</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-top:20px">
+    <div class="section-title">🗺 State Urgency Hotspots</div>
+    <div id="hotspot-table-wrap">
+      <div class="empty-state" style="padding:30px">
+        <div class="empty-text">Run bulk scan to see all state urgency levels</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CAMPAIGN PANEL -->
+<div class="panel" id="campaign-panel">
+  <div class="section-title">📢 Multilingual Campaign Generator</div>
+  <div class="campaign-form">
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Campaign Type</label>
+        <select class="form-input" id="camp-type">
+          <option value="product_launch">Product Launch</option>
+          <option value="urgency_offer">Urgency Offer</option>
+          <option value="season_reminder">Season Reminder</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">State (optional)</label>
+        <input type="text" class="form-input" id="camp-state" placeholder="e.g. Punjab, Maharashtra"/>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Product Name</label>
+        <input type="text" class="form-input" id="camp-product" placeholder="e.g. Amistar Top"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Crop</label>
+        <input type="text" class="form-input" id="camp-crop" placeholder="e.g. Rice, Cotton, Wheat"/>
+      </div>
+    </div>
+    <div class="form-group" style="margin-bottom:14px">
+      <label class="form-label">Languages (leave blank to auto-detect from grower data)</label>
+      <div class="lang-checkboxes" id="lang-checkboxes">
+        <label class="lang-cb"><input type="checkbox" value="Hindi" checked/><span>हिंदी Hindi</span></label>
+        <label class="lang-cb"><input type="checkbox" value="Marathi" checked/><span>मराठी Marathi</span></label>
+        <label class="lang-cb"><input type="checkbox" value="Punjabi"/><span>ਪੰਜਾਬੀ Punjabi</span></label>
+        <label class="lang-cb"><input type="checkbox" value="Telugu"/><span>తెలుగు Telugu</span></label>
+        <label class="lang-cb"><input type="checkbox" value="Tamil"/><span>தமிழ் Tamil</span></label>
+        <label class="lang-cb"><input type="checkbox" value="Kannada"/><span>ಕನ್ನಡ Kannada</span></label>
+        <label class="lang-cb"><input type="checkbox" value="Bengali"/><span>বাংলা Bengali</span></label>
+        <label class="lang-cb"><input type="checkbox" value="Gujarati"/><span>ગુજરાતી Gujarati</span></label>
+        <label class="lang-cb"><input type="checkbox" value="English" checked/><span>English</span></label>
+      </div>
+    </div>
+    <div class="form-group" style="margin-bottom:14px">
+      <label class="form-label">Additional Context (optional)</label>
+      <textarea class="form-input" id="camp-context" rows="2" placeholder="e.g. Focus on high-value growers, mention 20% early bird discount…"></textarea>
+    </div>
+    <button class="gen-btn" id="gen-btn" onclick="generateCampaign()">✨ Generate Multilingual Messages</button>
+  </div>
+
+  <div id="campaign-results" class="campaign-results"></div>
+</div>
+
+</div><!-- /content -->
+</div><!-- /app -->
+
+<div class="toast" id="toast"></div>
+
 <script>
-const S = {
-  busy: false,
-  history: [],
-  ollamaBase: 'http://localhost:11434',
-  apiBase: 'http://localhost:8000',
-  available: null,
-  apiAvailable: null,
-  realData: {}
-};
+/* ══ CONFIG ══════════════════════════════════════════════════════════════════ */
+const API_BASE = window.location.origin + '/api';
 
-const SYS = `You are AgroIntel AI, an intelligent assistant for Syngenta's agricultural data platform.
-You have access to REAL DATA via API at localhost:8000:
-- /api/growers - 6,000 real growers with state, district, crop, language, device type
-- /api/campaigns - Real WhatsApp campaign performance data
-- /api/analytics/overview - Platform-wide statistics
-- /api/analytics/regional-performance - Performance by state
+/* ══ STATE ══════════════════════════════════════════════════════════════════ */
+let chatHistory = [];
+let selectedCsvFilter = '';
+let currentCsvFile = null;
+let activeTab = 'metrics';
 
-When users ask about data, ALWAYS respond with tool markers:
-[TOOL:fetch_growers] - for questions about growers, farmers, segments by state/crop/language
-[TOOL:fetch_campaigns] - for questions about campaigns, WhatsApp, messaging performance
-[TOOL:fetch_analytics] - for overview stats, totals, platform summary
-[TOOL:fetch_regional] - for regional breakdown, state-wise analysis
-
-Be specific and data-driven. Reference actual numbers from the API. Use Indian agricultural context (Rabi season, wheat/mustard/chickpea/potato crops, states like Punjab, Rajasthan, UP, Maharashtra).`;
-
-document.addEventListener('DOMContentLoaded', () => {
-  const ta = document.getElementById('chat-input');
-  ta.addEventListener('keydown', e => {
-    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); }
+/* ══ PANEL SWITCHING ════════════════════════════════════════════════════════ */
+function showPanel(name) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab, .sidebar-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(name + '-panel').classList.add('active');
+  document.querySelectorAll('.tab, .sidebar-btn').forEach(b => {
+    if (b.textContent.toLowerCase().includes(name) || b.getAttribute('onclick')?.includes(name)) {
+      b.classList.add('active');
+    }
   });
-  ta.addEventListener('input', () => {
-    ta.style.height = 'auto';
-    ta.style.height = Math.min(ta.scrollHeight, 100) + 'px';
-  });
-  pingServices();
-});
-
-async function pingServices() {
-  // Check Ollama
-  try {
-    const r = await fetch(`${S.ollamaBase}/api/tags`, { signal: AbortSignal.timeout(3000) });
-    S.available = r.ok;
-    document.getElementById('ai-status').textContent = r.ok ? '● Qwen2.5 • Connected' : '⚠ Ollama offline';
-    document.getElementById('model-status').textContent = r.ok ? 'Qwen2.5 Online' : 'Ollama Offline';
-  } catch {
-    S.available = false;
-    document.getElementById('ai-status').textContent = '⚠ Ollama offline';
-    document.getElementById('model-status').textContent = 'Ollama Offline';
-  }
-  
-  // Check API
-  try {
-    const r = await fetch(`${S.apiBase}/api/health`, { signal: AbortSignal.timeout(3000) });
-    S.apiAvailable = r.ok;
-    if (r.ok) {
-      console.log('API Connected: localhost:8000');
-    }
-  } catch {
-    S.apiAvailable = false;
-    console.warn('API offline - start with: python api/app.py');
-  }
+  activeTab = name;
+  if (name === 'csv' && document.getElementById('csv-files-list').childElementCount <= 1) loadCsvList();
+  if (name === 'urgency') populateUrgencyFilters();
 }
 
-function qs(text) {
-  document.getElementById('chat-input').value = text;
-  handleSend();
-}
-window.qs = qs;
-
-async function handleSend() {
-  if (S.busy) return;
-  const input = document.getElementById('chat-input');
-  const text = input.value.trim();
-  if (!text) return;
-  input.value = '';
-  input.style.height = 'auto';
-
-  addMsg('user', text);
-  S.history.push({ role: 'user', content: text });
-  S.busy = true;
-  document.getElementById('send-btn').disabled = true;
-
-  const tid = showTyping();
-
-  try {
-    const { aiText, toolCalls } = S.available ? await callOllama() : getFallback(text);
-    removeTyping(tid);
-    addMsg('ai', aiText, toolCalls);
-    S.history.push({ role: 'assistant', content: aiText });
-    if (toolCalls.length > 0) {
-      hideEmpty();
-      for (const t of toolCalls) await renderTool(t, text);
-    }
-  } catch (e) {
-    removeTyping(tid);
-    console.error('Error:', e);
-    const fb = getFallback(text);
-    addMsg('ai', fb.aiText, fb.toolCalls);
-    S.history.push({ role: 'assistant', content: fb.aiText });
-    if (fb.toolCalls.length > 0) {
-      hideEmpty();
-      for (const t of fb.toolCalls) await renderTool(t, text);
-    }
-  } finally {
-    S.busy = false;
-    document.getElementById('send-btn').disabled = false;
-  }
+/* ══ TOAST ══════════════════════════════════════════════════════════════════ */
+function toast(msg, dur = 2500) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), dur);
 }
 
-async function callOllama() {
-  const model = document.getElementById('model-sel').value;
-  const msgs = [{ role: 'system', content: SYS }, ...S.history.slice(-8)];
-  const r = await fetch(`${S.ollamaBase}/api/chat`, {
-    method: 'POST',
+/* ══ API HELPERS ════════════════════════════════════════════════════════════ */
+async function apiFetch(path, opts = {}) {
+  const resp = await fetch(API_BASE + path, {
     headers: { 'Content-Type': 'application/json' },
-    signal: AbortSignal.timeout(30000),
-    body: JSON.stringify({ model, messages: msgs, stream: false, options: { temperature: 0.7 } })
+    ...opts
   });
-  if (!r.ok) throw new Error('err');
-  const d = await r.json();
-  return parse(d.message?.content || '');
+  if (!resp.ok) throw new Error(`API ${path} → ${resp.status}`);
+  return resp.json();
 }
 
-function parse(raw) {
-  const re = /\[TOOL:([a-z_]+)\]/g;
-  const toolCalls = [];
-  let m;
-  while ((m = re.exec(raw)) !== null) toolCalls.push(m[1]);
-  const aiText = raw.replace(/\[TOOL:[a-z_]+\]/g, '').trim();
-  return { aiText, toolCalls };
-}
-
-function getFallback(text) {
-  const l = text.toLowerCase();
-  const toolCalls = [];
-  let aiText = '';
-  
-  if (l.includes('grower') || l.includes('farmer') || l.includes('segment') || l.includes('punjab') || l.includes('rajasthan') || l.includes('wheat') || l.includes('state')) {
-    toolCalls.push('fetch_growers');
-    aiText = 'Fetching grower data from the API. Loading real farmer profiles with crop calendars, device types, and geographic distribution.';
-  } else if (l.includes('campaign') || l.includes('whatsapp') || l.includes('message') || l.includes('performance') || l.includes('click') || l.includes('deliver')) {
-    toolCalls.push('fetch_campaigns');
-    aiText = 'Loading WhatsApp campaign performance data. Fetching real delivery, open, and click metrics from the Rabi 2025-26 season.';
-  } else if (l.includes('overview') || l.includes('total') || l.includes('summary') || l.includes('platform')) {
-    toolCalls.push('fetch_analytics');
-    aiText = 'Fetching platform-wide analytics. Loading total counts for growers, campaigns, and overall engagement metrics.';
-  } else if (l.includes('regional') || l.includes('by state') || l.includes('territory') || l.includes('district')) {
-    toolCalls.push('fetch_regional');
-    aiText = 'Analyzing regional performance. Fetching state-wise grower distribution and engagement patterns.';
-  } else if (l.includes('rep') || l.includes('agent') || l.includes('field') || l.includes('territory coverage')) {
-    toolCalls.push('fetch_reps');
-    aiText = 'Loading field representative network. Fetching territory assignments and coverage data.';
-  } else {
-    aiText = 'I\'m AgroIntel AI connected to real Syngenta data. Ask me about:\n• Growers (by state, crop, language)\n• WhatsApp campaigns and performance\n• Regional analytics\n• Field rep territories\n\nWhat would you like to explore?';
+/* ══ INIT ════════════════════════════════════════════════════════════════════ */
+async function init() {
+  // Check health
+  try {
+    const health = await apiFetch('/health');
+    document.getElementById('api-dot').className = 'dot';
+    document.getElementById('api-status').textContent = `${health.datasets_loaded.length} datasets`;
+    document.getElementById('sb-csvs').textContent = health.datasets_loaded.length;
+  } catch {
+    document.getElementById('api-dot').className = 'dot err';
+    document.getElementById('api-status').textContent = 'API offline';
+    toast('⚠️ API server not reachable. Start with: python api/app.py');
   }
-  return { aiText, toolCalls };
+
+  // Load metrics
+  loadMetrics();
+  loadCsvFilterList();
 }
 
-// Chat UI
-function addMsg(role, text, toolCalls = []) {
+/* ══ METRICS ════════════════════════════════════════════════════════════════ */
+async function loadMetrics() {
+  try {
+    const [overview, campaigns, growers] = await Promise.all([
+      apiFetch('/metrics/overview'),
+      apiFetch('/metrics/campaigns'),
+      apiFetch('/metrics/growers')
+    ]);
+
+    // Top cards
+    if (overview.growers) {
+      document.getElementById('m-growers').textContent = fmt(overview.growers.total);
+      document.getElementById('sb-growers').textContent = fmt(overview.growers.total);
+    }
+    if (overview.campaigns) {
+      document.getElementById('m-campaigns').textContent = overview.campaigns.total_campaigns;
+      document.getElementById('m-impressions').textContent = fmtK(overview.campaigns.total_impressions);
+      document.getElementById('m-ctr').textContent = overview.campaigns.ctr_pct + '%';
+      document.getElementById('m-conv').textContent = overview.campaigns.conversion_pct + '%';
+      document.getElementById('sb-campaigns').textContent = overview.campaigns.total_campaigns;
+    }
+    if (overview.retailers) {
+      document.getElementById('m-retailers').textContent = fmt(overview.retailers.total);
+      document.getElementById('sb-retailers').textContent = fmt(overview.retailers.total);
+    }
+
+    // Charts
+    if (overview.growers?.states) renderBarChart('states-chart', overview.growers.states, 8, 'var(--accent)');
+    if (campaigns.by_crop) renderBarChart('crop-chart', campaigns.by_crop, 8, 'var(--accent2)');
+    if (overview.growers?.devices) renderBarChart('device-chart', overview.growers.devices, 5, 'var(--accent3)');
+    if (overview.growers?.languages) renderBarChart('lang-chart', overview.growers.languages, 8, '#22c55e');
+
+  } catch (e) {
+    console.error('Metrics load error:', e);
+  }
+}
+
+function fmt(n) { return Number(n).toLocaleString('en-IN'); }
+function fmtK(n) {
+  if (n >= 1e7) return (n/1e7).toFixed(1) + 'Cr';
+  if (n >= 1e5) return (n/1e5).toFixed(1) + 'L';
+  if (n >= 1000) return (n/1000).toFixed(1) + 'K';
+  return n;
+}
+
+function renderBarChart(id, data, limit, color) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const entries = Object.entries(data).sort((a, b) => b[1] - a[1]).slice(0, limit);
+  const max = entries[0]?.[1] || 1;
+  el.innerHTML = entries.map(([k, v]) =>
+    `<div class="bar-row">
+      <div class="bar-label" title="${k}">${k}</div>
+      <div class="bar-track">
+        <div class="bar-fill" style="width:${(v/max*100).toFixed(1)}%;background:${color}"></div>
+      </div>
+      <div class="bar-val">${fmtK(v)}</div>
+    </div>`
+  ).join('');
+}
+
+/* ══ CHAT ════════════════════════════════════════════════════════════════════ */
+function selectCsvFilter(el) {
+  document.querySelectorAll('.csv-chip').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedCsvFilter = el.dataset.csv || '';
+}
+
+async function loadCsvFilterList() {
+  try {
+    const data = await apiFetch('/csv/list');
+    const list = document.getElementById('csv-filter-list');
+    const existing = list.querySelector('[data-csv=""]');
+    data.files.forEach(f => {
+      const chip = document.createElement('div');
+      chip.className = 'csv-chip';
+      chip.dataset.csv = f.name.replace('.csv', '');
+      chip.onclick = () => selectCsvFilter(chip);
+      chip.innerHTML = `<span class="csv-chip-icon">📄</span>${f.name.replace('.csv', '')} <span style="margin-left:auto;font-size:10px;color:var(--text-dim)">${f.row_count || '?'}r</span>`;
+      list.appendChild(chip);
+    });
+  } catch {}
+}
+
+async function sendChat() {
+  const input = document.getElementById('chat-input');
+  const query = input.value.trim();
+  if (!query) return;
+
+  input.value = '';
+  document.getElementById('send-btn').disabled = true;
+  appendMsg('user', query);
+
+  // Show typing indicator
+  const typingId = appendTyping();
+
+  try {
+    const resp = await apiFetch('/chat', {
+      method: 'POST',
+      body: JSON.stringify({
+        query,
+        history: chatHistory,
+        csv_filter: selectedCsvFilter || undefined
+      })
+    });
+
+    removeTyping(typingId);
+    chatHistory.push({ role: 'user', content: query });
+    chatHistory.push({ role: 'assistant', content: resp.response });
+    appendMsg('assistant', resp.response, resp.sources || []);
+  } catch (e) {
+    removeTyping(typingId);
+    appendMsg('assistant', '⚠️ Error: ' + e.message + '\n\nMake sure the API server is running: `python api/app.py`');
+  }
+
+  document.getElementById('send-btn').disabled = false;
+  input.focus();
+}
+
+function sendQuick(q) {
+  document.getElementById('chat-input').value = q;
+  showPanel('chat');
+  sendChat();
+}
+
+let typingCounter = 0;
+function appendTyping() {
+  const id = 'typing-' + (++typingCounter);
   const msgs = document.getElementById('messages');
-  const ts = new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
   const div = document.createElement('div');
-  div.className = `msg ${role}`;
-  const ava = role === 'ai' ? '🤖' : 'U';
-  const formatted = esc(text).replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\*(.*?)\*/g,'<em>$1</em>');
-  const toolHTML = toolCalls.map(tc => `
-    <div class="tool-bub">
-      <div class="tool-bub-hdr"><span class="material-icons-round">build_circle</span>Executing: ${tc}</div>
-      <div class="tool-bub-desc">${toolDesc(tc)}</div>
-      <div class="tool-bub-params">tool: "${tc}" • source: "API" • endpoint: "${getEndpoint(tc)}"</div>
-    </div>`).join('');
-  div.innerHTML = `
-    <div class="msg-ava">${ava}</div>
-    <div class="msg-body">
-      <div class="msg-bubble">${formatted}</div>
-      ${toolHTML}
-      <div class="msg-meta">${role==='ai'?'AgroIntel AI':'You'} • ${ts}</div>
-    </div>`;
-  msgs.appendChild(div);
-  msgs.scrollTop = msgs.scrollHeight;
-}
-
-function esc(s) {
-  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-}
-
-function toolDesc(t) {
-  return {
-    fetch_growers: 'Fetching grower profiles from /api/growers with filters',
-    fetch_campaigns: 'Loading WhatsApp campaign data from /api/campaigns',
-    fetch_analytics: 'Retrieving platform analytics from /api/analytics/overview',
-    fetch_regional: 'Fetching regional data from /api/analytics/regional-performance',
-    fetch_reps: 'Loading field rep data from /api/reps'
-  }[t] || 'Fetching data from API…';
-}
-
-function getEndpoint(t) {
-  return {
-    fetch_growers: '/api/growers',
-    fetch_campaigns: '/api/campaigns',
-    fetch_analytics: '/api/analytics/overview',
-    fetch_regional: '/api/analytics/regional-performance',
-    fetch_reps: '/api/reps'
-  }[t] || '/api/*';
-}
-
-function showTyping() {
-  const msgs = document.getElementById('messages');
-  const id = 'typ' + Date.now();
-  const div = document.createElement('div');
+  div.className = 'msg';
   div.id = id;
-  div.className = 'typing-msg';
-  div.innerHTML = `<div class="msg-ava" style="background:linear-gradient(135deg,var(--sage),#1060a0)">🤖</div><div class="typing-bubble"><div class="td"></div><div class="td"></div><div class="td"></div></div>`;
+  div.innerHTML = `
+    <div class="msg-avatar">🌾</div>
+    <div class="typing-indicator">
+      <div class="typing-dot"></div>
+      <div class="typing-dot"></div>
+      <div class="typing-dot"></div>
+    </div>`;
   msgs.appendChild(div);
   msgs.scrollTop = msgs.scrollHeight;
   return id;
 }
 
 function removeTyping(id) {
-  const el = document.getElementById(id);
-  if (el) el.remove();
+  document.getElementById(id)?.remove();
 }
 
-function hideEmpty() {
-  document.getElementById('empty-state').style.display = 'none';
-  document.getElementById('widgets').style.display = '';
-}
-
-// Widget helpers
-function makeCard(id, title, icon, stripe) {
-  const old = document.getElementById('w_' + id);
-  if (old) old.remove();
+function appendMsg(role, content, sources = []) {
+  const msgs = document.getElementById('messages');
   const div = document.createElement('div');
-  div.className = 'card' + (id === 'segments' || id === 'regional' ? ' full' : '');
-  div.id = 'w_' + id;
+  div.className = 'msg' + (role === 'user' ? ' user' : '');
+  const avatar = role === 'user' ? '👤' : '🌾';
+  const time = new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+
+  // Render basic markdown-ish formatting
+  const rendered = content
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.*?)\*/g, '<em>$1</em>')
+    .replace(/`(.*?)`/g, `<code style="background:var(--bg3);padding:1px 5px;border-radius:3px;font-family:var(--font-mono);font-size:12px">$1</code>`)
+    .replace(/\n/g, '<br>');
+
+  const srcHTML = sources.length
+    ? `<div class="msg-sources">${sources.map(s => `<span class="source-tag">${s}</span>`).join('')}</div>`
+    : '';
+
   div.innerHTML = `
-    <div class="card-stripe ${stripe}"></div>
-    <div class="card-head">
-      <div class="card-title t-${stripe}">
-        <span class="material-icons-round">${icon}</span>${title}
-      </div>
-      <span class="live-chip">Live</span>
-    </div>
-    <div class="card-body" id="cb_${id}"></div>`;
-  document.getElementById('widgets').appendChild(div);
-  return div;
-}
-
-async function renderTool(tool, query) {
-  const map = {
-    fetch_growers: renderGrowers,
-    fetch_campaigns: renderCampaigns,
-    fetch_analytics: renderAnalytics,
-    fetch_regional: renderRegional,
-    fetch_reps: renderReps
-  };
-  if (map[tool]) await map[tool](query);
-}
-
-// ── API DATA FETCHERS ──
-
-async function fetchAPI(endpoint) {
-  if (!S.apiAvailable) {
-    throw new Error('API not available');
-  }
-  const r = await fetch(`${S.apiBase}${endpoint}`);
-  if (!r.ok) throw new Error(`API error: ${r.status}`);
-  return r.json();
-}
-
-// ── TOOL RENDERS ──
-
-async function renderGrowers(query) {
-  try {
-    const q = query.toLowerCase();
-    let url = '/api/growers?limit=100';
-    
-    // Extract filters from query
-    if (q.includes('punjab')) url += '&state=Punjab';
-    else if (q.includes('rajasthan')) url += '&state=Rajasthan';
-    else if (q.includes('maharashtra')) url += '&state=Maharashtra';
-    else if (q.includes('up') || q.includes('uttar pradesh')) url += '&state=Uttar Pradesh';
-    
-    if (q.includes('wheat')) url += '&crop=wheat';
-    else if (q.includes('mustard')) url += '&crop=mustard';
-    else if (q.includes('chickpea')) url += '&crop=chickpea';
-    
-    const data = await fetchAPI(url);
-    
-    makeCard('growers', 'Grower Intelligence Network', 'agriculture', 'sage');
-    const b = document.getElementById('cb_growers');
-    
-    const growers = data.growers || [];
-    const total = data.total || 0;
-    
-    // Group by state
-    const byState = {};
-    const byCrop = {};
-    const byDevice = {};
-    
-    growers.forEach(g => {
-      byState[g.state] = (byState[g.state] || 0) + 1;
-      
-      try {
-        const cal = JSON.parse(g.grower_crop_calendar);
-        const crop = cal.crop || 'unknown';
-        byCrop[crop] = (byCrop[crop] || 0) + 1;
-      } catch {}
-      
-      byDevice[g.device_type] = (byDevice[g.device_type] || 0) + 1;
-    });
-    
-    const smartphone = byDevice['smartphone'] || 0;
-    const keypad = byDevice['keypad'] || 0;
-    const unknown = byDevice['unknown'] || 0;
-    
-    b.innerHTML = `
-      <div class="stat-row">
-        <div class="stat-box"><div class="stat-val">${total.toLocaleString()}</div><div class="stat-key">Total Growers</div></div>
-        <div class="stat-box"><div class="stat-val">${Object.keys(byState).length}</div><div class="stat-key">States</div></div>
-        <div class="stat-box"><div class="stat-val">${Math.round(smartphone*100/(smartphone+keypad+unknown))}%</div><div class="stat-key">Smartphone</div></div>
-      </div>
-      <div style="padding:11px;background:var(--ink4);border-radius:var(--r);border:1px solid var(--line2);margin-bottom:12px">
-        <div style="font-size:11.5px;color:var(--text3);margin-bottom:7px"><strong>Top States:</strong></div>
-        ${Object.entries(byState).sort((a,b)=>b[1]-a[1]).slice(0,5).map(([s,c])=>`
-          <div style="display:flex;justify-content:space-between;padding:3px 0;font-size:11.5px;color:var(--text2)">
-            <span>${s}</span>
-            <span style="font-family:'DM Mono',monospace;font-weight:600">${c.toLocaleString()}</span>
-          </div>
-        `).join('')}
-      </div>
-      <div style="padding:11px;background:var(--ink4);border-radius:var(--r);border:1px solid var(--line2)">
-        <div style="font-size:11.5px;color:var(--text3);margin-bottom:7px"><strong>Crop Distribution:</strong></div>
-        ${Object.entries(byCrop).sort((a,b)=>b[1]-a[1]).slice(0,4).map(([c,n])=>`
-          <div style="display:flex;justify-content:space-between;padding:3px 0;font-size:11.5px;color:var(--text2)">
-            <span>${c.charAt(0).toUpperCase()+c.slice(1)}</span>
-            <span style="font-family:'DM Mono',monospace;font-weight:600">${n.toLocaleString()}</span>
-          </div>
-        `).join('')}
-      </div>`;
-      
-    S.realData.growers = growers;
-  } catch (e) {
-    console.error('Error fetching growers:', e);
-    makeCard('growers', 'Grower Intelligence Network', 'agriculture', 'crimson');
-    document.getElementById('cb_growers').innerHTML = `<div style="color:var(--crimson);padding:11px">API Error: ${e.message}. Make sure API is running on port 8000.</div>`;
-  }
-}
-
-async function renderCampaigns(query) {
-  try {
-    // Fetch WhatsApp campaign data
-    const url = '/api/data/insights';
-    const data = await fetchAPI(url);
-    
-    makeCard('campaigns', 'WhatsApp Campaign Performance', 'campaign', 'sage');
-    const b = document.getElementById('cb_campaigns');
-    
-    // Mock campaign stats based on typical data
-    const totalMsg = 4479;
-    const delivered = Math.round(totalMsg * 0.95);
-    const opened = Math.round(totalMsg * 0.32);
-    const clicked = Math.round(totalMsg * 0.08);
-    
-    b.innerHTML = `
-      <div class="stat-row">
-        <div class="stat-box"><div class="stat-val">${totalMsg.toLocaleString()}</div><div class="stat-key">Messages Sent</div></div>
-        <div class="stat-box"><div class="stat-val">${Math.round(delivered*100/totalMsg)}%</div><div class="stat-key">Delivered</div></div>
-        <div class="stat-box"><div class="stat-val">${Math.round(opened*100/totalMsg)}%</div><div class="stat-key">Opened</div></div>
-      </div>
-      <div style="padding:11px;background:var(--sage-bg);border:1px solid rgba(26,107,58,0.18);border-radius:var(--r);margin-bottom:12px">
-        <div style="font-size:11.5px;color:var(--sage4);margin-bottom:5px"><strong>Rabi 2025-26 Campaign</strong></div>
-        <div style="font-size:11px;color:var(--text3);line-height:1.6">
-          Flagship fungicide outreach via WhatsApp targeting smartphone users across wheat, mustard, chickpea, and potato segments.
-        </div>
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px">
-        <div style="padding:9px;background:var(--ink4);border-radius:var(--r);border:1px solid var(--line2)">
-          <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px">Engagement</div>
-          <div style="font-family:'DM Mono',monospace;font-size:18px;color:var(--sage3)">${Math.round(clicked*100/totalMsg)}%</div>
-          <div style="font-size:10px;color:var(--text3)">Click rate</div>
-        </div>
-        <div style="padding:9px;background:var(--ink4);border-radius:var(--r);border:1px solid var(--line2)">
-          <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px">Reach</div>
-          <div style="font-family:'DM Mono',monospace;font-size:18px;color:var(--sage3)">${delivered.toLocaleString()}</div>
-          <div style="font-size:10px;color:var(--text3)">Delivered</div>
-        </div>
-      </div>`;
-  } catch (e) {
-    console.error('Error fetching campaigns:', e);
-    makeCard('campaigns', 'WhatsApp Campaign Performance', 'campaign', 'crimson');
-    document.getElementById('cb_campaigns').innerHTML = `<div style="color:var(--crimson);padding:11px">API Error: ${e.message}</div>`;
-  }
-}
-
-async function renderAnalytics(query) {
-  try {
-    const data = await fetchAPI('/api/analytics/overview');
-    
-    makeCard('analytics', 'Platform Analytics Overview', 'analytics', 'sky');
-    const b = document.getElementById('cb_analytics');
-    
-    const overview = data.overview || {};
-    
-    b.innerHTML = `
-      <div class="stat-row">
-        <div class="stat-box"><div class="stat-val">${(overview.total_growers || 0).toLocaleString()}</div><div class="stat-key">Total Growers</div></div>
-        <div class="stat-box"><div class="stat-val">${(overview.total_retailers || 0).toLocaleString()}</div><div class="stat-key">Retailers</div></div>
-        <div class="stat-box"><div class="stat-val">${(overview.total_campaigns || 0).toLocaleString()}</div><div class="stat-key">Campaigns</div></div>
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:12px">
-        <div style="padding:11px;background:var(--ink4);border-radius:var(--r);border:1px solid var(--line2)">
-          <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:5px">Digital Funnel</div>
-          <div style="font-family:'DM Mono',monospace;font-size:20px;color:var(--sage3);margin-bottom:2px">${(overview.total_impressions || 0).toLocaleString()}</div>
-          <div style="font-size:10px;color:var(--text3)">Total Impressions</div>
-        </div>
-        <div style="padding:11px;background:var(--ink4);border-radius:var(--r);border:1px solid var(--line2)">
-          <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:5px">Lead Generation</div>
-          <div style="font-family:'DM Mono',monospace;font-size:20px;color:var(--sage3);margin-bottom:2px">${(overview.total_submissions || 0).toLocaleString()}</div>
-          <div style="font-size:10px;color:var(--text3)">Form Submissions</div>
-        </div>
-      </div>
-      <div style="margin-top:12px;padding:11px;background:var(--sage-bg);border:1px solid rgba(26,107,58,0.18);border-radius:var(--r)">
-        <div style="font-size:11px;color:var(--sage4)">
-          <strong>Rabi 2025-26 Season:</strong> October 2025 – April 2026 campaign cycle
-        </div>
-      </div>`;
-  } catch (e) {
-    console.error('Error fetching analytics:', e);
-    makeCard('analytics', 'Platform Analytics Overview', 'analytics', 'crimson');
-    document.getElementById('cb_analytics').innerHTML = `<div style="color:var(--crimson);padding:11px">API Error: ${e.message}</div>`;
-  }
-}
-
-async function renderRegional(query) {
-  try {
-    const data = await fetchAPI('/api/analytics/regional-performance');
-    
-    makeCard('regional', 'Regional Performance Matrix', 'map', 'sky');
-    const b = document.getElementById('cb_regional');
-    
-    const regional = data.regional_data || {};
-    const sorted = Object.entries(regional).sort((a,b) => b[1] - a[1]);
-    
-    const total = sorted.reduce((sum, [,v]) => sum + v, 0);
-    
-    b.innerHTML = `
-      <div style="display:flex;gap:9px;margin-bottom:12px;align-items:center">
-        <div style="flex:1;padding:8px 11px;background:var(--sky-bg);border:1px solid rgba(24,101,196,0.18);border-radius:var(--r);font-size:11.5px;color:var(--sky2)">
-          <strong>${sorted.length} states</strong> with active grower network • ${total.toLocaleString()} total farmers
-        </div>
-      </div>
-      <div class="seg-wrap">
-        <table class="seg-table">
-          <thead><tr><th>State</th><th>Growers</th><th>Share</th><th>Status</th></tr></thead>
-          <tbody>
-            ${sorted.map(([state, count]) => {
-              const pct = Math.round(count * 100 / total);
-              return `<tr>
-                <td style="font-weight:600;color:var(--text)">${state}</td>
-                <td style="font-family:'DM Mono',monospace;font-weight:600;color:var(--text)">${count.toLocaleString()}</td>
-                <td style="font-family:'DM Mono',monospace">${pct}%</td>
-                <td><span class="chip ch-sage">Active</span></td>
-              </tr>`;
-            }).join('')}
-          </tbody>
-        </table>
-      </div>`;
-  } catch (e) {
-    console.error('Error fetching regional data:', e);
-    makeCard('regional', 'Regional Performance Matrix', 'map', 'crimson');
-    document.getElementById('cb_regional').innerHTML = `<div style="color:var(--crimson);padding:11px">API Error: ${e.message}</div>`;
-  }
-}
-
-async function renderReps(query) {
-  makeCard('reps', 'Field Representative Network', 'support_agent', 'gold');
-  const b = document.getElementById('cb_reps');
-  
-  b.innerHTML = `
-    <div style="padding:8px 11px;background:var(--gold-bg);border:1px solid rgba(192,124,18,0.18);border-radius:var(--r);font-size:11.5px;color:var(--gold2);margin-bottom:12px">
-      <strong>500 field representatives</strong> managing territory coverage across key agricultural districts
-    </div>
-    <div style="padding:11px;background:var(--ink4);border-radius:var(--r);border:1px solid var(--line2)">
-      <div style="font-size:11.5px;color:var(--text3);line-height:1.65">
-        Field rep data includes territory assignments, district coverage, and tehsil-level mapping for granular campaign deployment and on-ground verification.
-      </div>
-    </div>
-    <div class="btns" style="margin-top:12px">
-      <button class="btn btn-g" style="font-size:11px"><span class="material-icons-round">people</span>View Rep Details</button>
-      <button class="btn btn-g" style="font-size:11px"><span class="material-icons-round">map</span>Territory Map</button>
+    <div class="msg-avatar">${avatar}</div>
+    <div>
+      <div class="msg-bubble">${rendered}${srcHTML}</div>
+      <div class="msg-meta">${time}${role === 'assistant' && sources.length ? ` · ${sources.length} source(s)` : ''}</div>
     </div>`;
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
 }
+
+async function rebuildRag() {
+  toast('🔄 Rebuilding RAG index…');
+  try {
+    const r = await apiFetch('/rag/rebuild', { method: 'POST' });
+    toast(`✅ RAG rebuilt — ${r.total_documents} docs`);
+  } catch (e) { toast('❌ ' + e.message); }
+}
+
+/* ══ CSV VIEWER ═════════════════════════════════════════════════════════════ */
+async function loadCsvList() {
+  try {
+    const data = await apiFetch('/csv/list');
+    const el = document.getElementById('csv-files-list');
+    el.innerHTML = '';
+    data.files.forEach(f => {
+      const item = document.createElement('div');
+      item.className = 'csv-file-item';
+      item.onclick = () => openCsvFile(f.name, item);
+      item.innerHTML = `
+        <div class="csv-file-name">${f.name}</div>
+        <div class="csv-file-meta">${f.row_count || '?'} rows · ${f.size_kb || '?'} KB · ${(f.columns || []).length} cols</div>`;
+      el.appendChild(item);
+    });
+    document.getElementById('sb-csvs').textContent = data.files.length;
+  } catch (e) {
+    document.getElementById('csv-files-list').innerHTML = `<div style="padding:12px;color:var(--red);font-size:12px">Error: ${e.message}</div>`;
+  }
+}
+
+async function openCsvFile(filename, el) {
+  document.querySelectorAll('.csv-file-item').forEach(i => i.classList.remove('active'));
+  el.classList.add('active');
+  currentCsvFile = filename;
+
+  document.getElementById('csv-active-name').textContent = filename;
+  document.getElementById('csv-toolbar').style.display = 'flex';
+  document.getElementById('csv-table-wrap').innerHTML = '<div class="spinner"></div>';
+
+  try {
+    const data = await apiFetch('/csv/preview?file=' + encodeURIComponent(filename) + '&rows=50');
+    document.getElementById('csv-active-stat').textContent = `${data.total_shown} rows shown · ${data.columns.length} columns`;
+    renderTable(data.columns, data.rows);
+  } catch (e) {
+    document.getElementById('csv-table-wrap').innerHTML = `<div class="empty-state"><div class="empty-text">Error loading: ${e.message}</div></div>`;
+  }
+}
+
+function renderTable(cols, rows) {
+  const wrap = document.getElementById('csv-table-wrap');
+  const thead = `<thead><tr>${cols.map(c => `<th>${c}</th>`).join('')}</tr></thead>`;
+  const tbody = rows.map(row =>
+    `<tr>${cols.map(c => {
+      const v = row[c];
+      return `<td>${v === null || v === undefined || v === '' ? '<span class="null-val">null</span>' : v}</td>`;
+    }).join('')}</tr>`
+  ).join('');
+  wrap.innerHTML = `<table>${thead}<tbody>${tbody}</tbody></table>`;
+}
+
+async function loadCsvStats() {
+  if (!currentCsvFile) return;
+  try {
+    const data = await apiFetch('/csv/stats?file=' + encodeURIComponent(currentCsvFile));
+    const info = `📊 ${currentCsvFile}: ${data.shape.rows} rows × ${data.shape.cols} cols\n\nNull counts:\n${JSON.stringify(data.null_counts, null, 2)}`;
+    alert(info);
+  } catch (e) { toast('Error: ' + e.message); }
+}
+
+/* ══ URGENCY PANEL ══════════════════════════════════════════════════════════ */
+async function populateUrgencyFilters() {
+  try {
+    const g = await apiFetch('/metrics/growers');
+    const stateEl = document.getElementById('urg-state');
+    const states = Object.keys(g.states || {}).sort();
+    stateEl.innerHTML = '<option value="">All States</option>' + states.map(s => `<option value="${s}">${s}</option>`).join('');
+
+    const c = await apiFetch('/metrics/campaigns');
+    const cropEl = document.getElementById('urg-crop');
+    const crops = Object.keys(c.by_crop || {}).sort();
+    cropEl.innerHTML = '<option value="">All Crops</option>' + crops.map(c => `<option value="${c}">${c}</option>`).join('');
+  } catch {}
+}
+
+async function runUrgencyDetection() {
+  const state = document.getElementById('urg-state').value;
+  const crop = document.getElementById('urg-crop').value;
+  const product = document.getElementById('urg-product').value;
+
+  document.getElementById('urg-level').textContent = 'Analyzing…';
+  document.getElementById('urg-score').textContent = '…';
+  document.getElementById('signals-grid').innerHTML = '<div class="spinner" style="grid-column:1/-1"></div>';
+  document.getElementById('recs-list').innerHTML = '<div class="spinner"></div>';
+
+  try {
+    const data = await apiFetch('/urgency/detect', {
+      method: 'POST',
+      body: JSON.stringify({ state: state || null, crop: crop || null, product: product || null })
+    });
+
+    // Update ring
+    const score = data.urgency_score;
+    const circumference = 2 * Math.PI * 42;
+    const filled = (score / 100) * circumference;
+    const ring = document.getElementById('ring-fill');
+    ring.style.strokeDasharray = `${filled} ${circumference}`;
+    const color = score >= 75 ? 'var(--red)' : score >= 50 ? 'var(--accent2)' : score >= 25 ? 'var(--yellow)' : 'var(--green)';
+    ring.style.stroke = color;
+
+    document.getElementById('urg-score').textContent = score;
+    document.getElementById('urg-score').style.color = color;
+    document.getElementById('urg-level').textContent = data.urgency_icon + ' ' + data.urgency_level;
+    document.getElementById('urg-msg').textContent = data.urgency_message;
+
+    // Show urgency badge on sidebar
+    if (score >= 50) {
+      document.getElementById('sidebar-urgency-badge').style.display = 'inline-block';
+    }
+
+    // Signals
+    const sigGrid = document.getElementById('signals-grid');
+    if (data.signals && data.signals.length > 0) {
+      sigGrid.innerHTML = data.signals.map(s => {
+        const sevClass = s.severity >= 75 ? 'sev-crit' : s.severity >= 50 ? 'sev-high' : s.severity >= 25 ? 'sev-med' : 'sev-low';
+        return `<div class="signal-card">
+          <div class="signal-type">${s.type.replace(/_/g,' ')}</div>
+          <div class="signal-msg">${s.message}</div>
+          <span class="signal-sev ${sevClass}">Severity ${s.severity || 0}</span>
+        </div>`;
+      }).join('');
+    } else {
+      sigGrid.innerHTML = '<div class="empty-state" style="grid-column:1/-1"><div class="empty-icon">✅</div><div class="empty-text">No concerning signals detected</div></div>';
+    }
+
+    // Recommendations
+    const recsList = document.getElementById('recs-list');
+    if (data.recommendations && data.recommendations.length > 0) {
+      recsList.innerHTML = data.recommendations.map(r => `<div class="rec-item">${r}</div>`).join('');
+    } else {
+      recsList.innerHTML = '<div class="rec-item">No specific actions required at this time</div>';
+    }
+
+  } catch (e) {
+    document.getElementById('urg-level').textContent = 'Error: ' + e.message;
+    toast('❌ Urgency detection failed: ' + e.message);
+  }
+}
+
+async function runBulkScan() {
+  document.getElementById('hotspot-table-wrap').innerHTML = '<div class="spinner"></div>';
+  try {
+    const data = await apiFetch('/urgency/bulk');
+    if (!data.results || data.results.length === 0) {
+      document.getElementById('hotspot-table-wrap').innerHTML = '<div class="empty-state"><div class="empty-text">No data</div></div>';
+      return;
+    }
+    const html = `<table class="hotspot-table">
+      <thead><tr><th>State</th><th>Urgency Score</th><th>Level</th><th>Top Signal</th></tr></thead>
+      <tbody>${data.results.map(r => `
+        <tr>
+          <td><strong>${r.state}</strong></td>
+          <td><span style="color:${r.urgency_score>=75?'var(--red)':r.urgency_score>=50?'var(--accent2)':r.urgency_score>=25?'var(--yellow)':'var(--green)'}">
+            ${r.urgency_score}
+          </span></td>
+          <td>${r.urgency_icon} ${r.urgency_level}</td>
+          <td style="color:var(--text-dim);font-size:12px">${r.top_signal}</td>
+        </tr>`).join('')}
+      </tbody>
+    </table>
+    <div style="margin-top:10px;font-size:12px;color:var(--text-dim)">
+      Scanned ${data.total_states_scanned} states · ${data.critical_states} critical
+    </div>`;
+    document.getElementById('hotspot-table-wrap').innerHTML = html;
+  } catch (e) {
+    document.getElementById('hotspot-table-wrap').innerHTML = `<div class="empty-state"><div class="empty-text">Error: ${e.message}</div></div>`;
+  }
+}
+
+/* ══ CAMPAIGN GENERATOR ═════════════════════════════════════════════════════ */
+async function generateCampaign() {
+  const btn = document.getElementById('gen-btn');
+  btn.disabled = true;
+  btn.textContent = '⏳ Generating…';
+
+  const langs = Array.from(document.querySelectorAll('#lang-checkboxes input:checked')).map(el => el.value);
+
+  const payload = {
+    campaign_type: document.getElementById('camp-type').value,
+    product: document.getElementById('camp-product').value,
+    crop: document.getElementById('camp-crop').value,
+    state: document.getElementById('camp-state').value,
+    languages: langs,
+    context: document.getElementById('camp-context').value
+  };
+
+  document.getElementById('campaign-results').innerHTML = '<div class="spinner"></div>';
+
+  try {
+    const data = await apiFetch('/campaign/generate', {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    });
+
+    const results = data.messages || {};
+    const cards = Object.entries(results).map(([lang, content]) => {
+      if (content.error) {
+        return `<div class="lang-result-card">
+          <div class="lang-result-header">
+            <span class="lang-name">${lang}</span>
+            <span style="color:var(--red);font-size:12px">Error: ${content.error}</span>
+          </div>
+        </div>`;
+      }
+
+      const smsId = 'sms-' + lang.replace(/\s/g,'');
+      const audioId = 'aud-' + lang.replace(/\s/g,'');
+      const tabSmsId = 'tab-sms-' + lang.replace(/\s/g,'');
+      const tabAudId = 'tab-aud-' + lang.replace(/\s/g,'');
+
+      // Format audio script with stage direction highlighting
+      const audioHTML = (content.audio_script || 'Not generated').replace(
+        /\[([^\]]+)\]/g,
+        '<span class="stage-dir">[$1]</span>'
+      ).replace(/\n/g,'<br>');
+
+      return `<div class="lang-result-card">
+        <div class="lang-result-header">
+          <span class="lang-name">${lang}</span>
+          <span class="lang-script">${content.script || ''}</span>
+        </div>
+        <div class="msg-tabs">
+          <button class="msg-tab active" id="${tabSmsId}" onclick="switchMsgTab('${lang}','sms')">📱 SMS</button>
+          <button class="msg-tab" id="${tabAudId}" onclick="switchMsgTab('${lang}','audio')">🎙 Audio Script</button>
+        </div>
+        <div class="msg-content" id="${smsId}">
+          <div class="sms-content">${(content.sms||'').replace(/\n/g,'<br>')}</div>
+          <button class="copy-btn" onclick="copyText('${escapeJs(content.sms || '')}')">📋 Copy SMS</button>
+        </div>
+        <div class="msg-content" id="${audioId}" style="display:none">
+          <div class="audio-content">${audioHTML}</div>
+          <button class="copy-btn" onclick="copyText('${escapeJs(content.audio_script || '')}')">📋 Copy Script</button>
+        </div>
+        <div class="msg-stats">
+          <span>📏 ${content.char_count || 0} chars</span>
+          <span>📨 ${content.sms_parts || 1} SMS part(s)</span>
+          <span>⏱ ~${content.estimated_audio_duration_sec || '?'}s audio</span>
+        </div>
+      </div>`;
+    });
+
+    document.getElementById('campaign-results').innerHTML = cards.join('');
+    toast(`✅ Generated ${Object.keys(results).length} language variants`);
+  } catch (e) {
+    document.getElementById('campaign-results').innerHTML = `<div class="empty-state"><div class="empty-icon">❌</div><div class="empty-text">Error: ${e.message}</div></div>`;
+    toast('❌ Generation failed: ' + e.message);
+  }
+
+  btn.disabled = false;
+  btn.textContent = '✨ Generate Multilingual Messages';
+}
+
+function switchMsgTab(lang, type) {
+  const smsId = 'sms-' + lang.replace(/\s/g,'');
+  const audioId = 'aud-' + lang.replace(/\s/g,'');
+  const tabSmsId = 'tab-sms-' + lang.replace(/\s/g,'');
+  const tabAudId = 'tab-aud-' + lang.replace(/\s/g,'');
+
+  if (type === 'sms') {
+    document.getElementById(smsId).style.display = 'block';
+    document.getElementById(audioId).style.display = 'none';
+    document.getElementById(tabSmsId).classList.add('active');
+    document.getElementById(tabAudId).classList.remove('active');
+  } else {
+    document.getElementById(smsId).style.display = 'none';
+    document.getElementById(audioId).style.display = 'block';
+    document.getElementById(tabSmsId).classList.remove('active');
+    document.getElementById(tabAudId).classList.add('active');
+  }
+}
+
+function escapeJs(str) {
+  return (str || '').replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/\n/g,'\\n');
+}
+
+async function copyText(text) {
+  try {
+    await navigator.clipboard.writeText(text);
+    toast('📋 Copied to clipboard!');
+  } catch { toast('Copy failed'); }
+}
+
+/* ══ BOOT ════════════════════════════════════════════════════════════════════ */
+window.addEventListener('load', init);
 </script>
 </body>
 </html>
