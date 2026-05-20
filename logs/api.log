@@ -1,0 +1,101 @@
+2026-05-19 23:06:21,881 - __main__ - INFO - Initializing API services...
+2026-05-19 23:06:22,574 - __main__ - INFO - All services initialized successfully
+2026-05-19 23:06:22,581 - __main__ - INFO - Starting Syngenta Agricultural Marketing Platform API
+2026-05-19 23:06:22,581 - __main__ - INFO - Dashboard available at: http://localhost:5000/dashboard
+2026-05-19 23:06:22,581 - __main__ - INFO - API documentation available at: http://localhost:5000/api
+2026-05-19 23:09:40,041 - __main__ - INFO - Initializing API services...
+2026-05-19 23:09:40,916 - __main__ - INFO - All services initialized successfully
+2026-05-19 23:09:40,924 - __main__ - INFO - Starting Syngenta Agricultural Marketing Platform API
+2026-05-19 23:09:40,924 - __main__ - INFO - Dashboard available at: http://localhost:5000/dashboard
+2026-05-19 23:09:40,924 - __main__ - INFO - API documentation available at: http://localhost:5000/api
+2026-05-19 23:09:41,073 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:8000
+ * Running on http://192.168.43.206:8000
+2026-05-19 23:09:41,073 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2026-05-19 23:09:58,285 - werkzeug - INFO - 127.0.0.1 - - [19/May/2026 23:09:58] "[33mGET / HTTP/1.1[0m" 404 -
+2026-05-19 23:09:58,688 - werkzeug - INFO - 127.0.0.1 - - [19/May/2026 23:09:58] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2026-05-19 23:10:05,436 - werkzeug - INFO - 127.0.0.1 - - [19/May/2026 23:10:05] "[33mGET /dashboard HTTP/1.1[0m" 404 -
+2026-05-19 23:10:40,298 - werkzeug - INFO - 127.0.0.1 - - [19/May/2026 23:10:40] "GET /dashboard HTTP/1.1" 200 -
+2026-05-19 23:25:32,944 - werkzeug - INFO - 127.0.0.1 - - [19/May/2026 23:25:32] "GET /dashboard HTTP/1.1" 200 -
+2026-05-19 23:27:00,131 - werkzeug - INFO - 127.0.0.1 - - [19/May/2026 23:27:00] "GET /dashboard HTTP/1.1" 200 -
+2026-05-19 23:27:02,942 - werkzeug - INFO - 127.0.0.1 - - [19/May/2026 23:27:02] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2026-05-19 23:27:24,349 - werkzeug - INFO - 127.0.0.1 - - [19/May/2026 23:27:24] "[33mGET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1[0m" 404 -
+2026-05-19 23:30:45,304 - werkzeug - INFO - 127.0.0.1 - - [19/May/2026 23:30:45] "[36mGET /dashboard HTTP/1.1[0m" 304 -
+2026-05-19 23:30:45,356 - werkzeug - INFO - 127.0.0.1 - - [19/May/2026 23:30:45] "[33mGET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1[0m" 404 -
+2026-05-19 23:39:59,897 - werkzeug - INFO - 127.0.0.1 - - [19/May/2026 23:39:59] "GET /dashboard HTTP/1.1" 200 -
+2026-05-19 23:42:24,484 - werkzeug - INFO - 127.0.0.1 - - [19/May/2026 23:42:24] "GET /dashboard HTTP/1.1" 200 -
+2026-05-19 23:42:24,513 - werkzeug - INFO - 127.0.0.1 - - [19/May/2026 23:42:24] "[33mGET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1[0m" 404 -
+2026-05-19 23:42:24,528 - werkzeug - INFO - 127.0.0.1 - - [19/May/2026 23:42:24] "GET /api/campaigns?period=7d HTTP/1.1" 200 -
+2026-05-19 23:42:24,532 - werkzeug - INFO - 127.0.0.1 - - [19/May/2026 23:42:24] "GET /api/campaigns/camp_001/analytics?period=7d HTTP/1.1" 200 -
+2026-05-19 23:46:15,420 - werkzeug - INFO - 127.0.0.1 - - [19/May/2026 23:46:15] "GET /dashboard HTTP/1.1" 200 -
+2026-05-19 23:46:15,714 - werkzeug - INFO - 127.0.0.1 - - [19/May/2026 23:46:15] "GET /api/campaigns?period=7d HTTP/1.1" 200 -
+2026-05-19 23:46:15,725 - werkzeug - INFO - 127.0.0.1 - - [19/May/2026 23:46:15] "GET /api/campaigns/camp_001/analytics?period=7d HTTP/1.1" 200 -
+2026-05-19 23:46:22,543 - werkzeug - INFO - 127.0.0.1 - - [19/May/2026 23:46:22] "GET /api/campaigns/camp_002/analytics?period=7d HTTP/1.1" 200 -
+2026-05-19 23:46:23,451 - werkzeug - INFO - 127.0.0.1 - - [19/May/2026 23:46:23] "GET /api/campaigns/camp_003/analytics?period=7d HTTP/1.1" 200 -
+2026-05-19 23:46:24,829 - werkzeug - INFO - 127.0.0.1 - - [19/May/2026 23:46:24] "GET /api/campaigns/camp_004/analytics?period=7d HTTP/1.1" 200 -
+2026-05-19 23:46:25,645 - werkzeug - INFO - 127.0.0.1 - - [19/May/2026 23:46:25] "GET /api/campaigns/camp_005/analytics?period=7d HTTP/1.1" 200 -
+2026-05-19 23:46:27,463 - werkzeug - INFO - 127.0.0.1 - - [19/May/2026 23:46:27] "GET /api/campaigns/camp_001/analytics?period=7d HTTP/1.1" 200 -
+2026-05-19 23:46:28,681 - werkzeug - INFO - 127.0.0.1 - - [19/May/2026 23:46:28] "GET /api/campaigns/camp_002/analytics?period=7d HTTP/1.1" 200 -
+2026-05-20 00:01:13,418 - werkzeug - INFO - 127.0.0.1 - - [20/May/2026 00:01:13] "GET /dashboard HTTP/1.1" 200 -
+2026-05-20 00:01:14,239 - werkzeug - INFO - 127.0.0.1 - - [20/May/2026 00:01:14] "GET /api/campaigns?period=7d HTTP/1.1" 200 -
+2026-05-20 00:01:23,803 - werkzeug - INFO - 127.0.0.1 - - [20/May/2026 00:01:23] "GET /api/campaigns HTTP/1.1" 200 -
+2026-05-20 00:03:09,427 - werkzeug - INFO - 127.0.0.1 - - [20/May/2026 00:03:09] "GET /api/campaigns HTTP/1.1" 200 -
+2026-05-20 00:07:36,876 - werkzeug - INFO - 127.0.0.1 - - [20/May/2026 00:07:36] "GET /api/campaigns?period=7d HTTP/1.1" 200 -
+2026-05-20 00:07:40,224 - werkzeug - INFO - 127.0.0.1 - - [20/May/2026 00:07:40] "[36mGET /dashboard HTTP/1.1[0m" 304 -
+2026-05-20 00:07:40,251 - werkzeug - INFO - 127.0.0.1 - - [20/May/2026 00:07:40] "GET /api/campaigns?period=7d HTTP/1.1" 200 -
+2026-05-20 00:31:28,741 - werkzeug - INFO - 127.0.0.1 - - [20/May/2026 00:31:28] "GET /api/campaigns?period=7d HTTP/1.1" 200 -
+2026-05-20 00:33:04,822 - werkzeug - INFO - 127.0.0.1 - - [20/May/2026 00:33:04] "GET /api/campaigns?period=7d HTTP/1.1" 200 -
+2026-05-20 00:33:10,037 - werkzeug - INFO - 127.0.0.1 - - [20/May/2026 00:33:10] "GET /api/campaigns?period=7d HTTP/1.1" 200 -
+2026-05-20 00:35:19,622 - werkzeug - INFO - 127.0.0.1 - - [20/May/2026 00:35:19] "GET /api/campaigns?period=7d HTTP/1.1" 200 -
+2026-05-20 00:35:22,184 - werkzeug - INFO - 127.0.0.1 - - [20/May/2026 00:35:22] "GET /api/campaigns?period=7d HTTP/1.1" 200 -
+2026-05-20 00:37:02,662 - werkzeug - INFO - 127.0.0.1 - - [20/May/2026 00:37:02] "GET /api/campaigns?period=7d HTTP/1.1" 200 -
+2026-05-20 00:37:07,096 - werkzeug - INFO - 127.0.0.1 - - [20/May/2026 00:37:07] "GET /api/campaigns HTTP/1.1" 200 -
+2026-05-20 00:37:37,501 - werkzeug - INFO - 127.0.0.1 - - [20/May/2026 00:37:37] "GET /api/campaigns HTTP/1.1" 200 -
+2026-05-20 00:49:28,056 - werkzeug - INFO - 127.0.0.1 - - [20/May/2026 00:49:28] "GET /api/campaigns?period=7d HTTP/1.1" 200 -
+2026-05-20 00:49:28,134 - werkzeug - INFO - 127.0.0.1 - - [20/May/2026 00:49:28] "GET /api/campaigns?period=7d HTTP/1.1" 200 -
+2026-05-20 00:49:31,138 - werkzeug - INFO - 127.0.0.1 - - [20/May/2026 00:49:31] "GET /api/campaigns HTTP/1.1" 200 -
+2026-05-20 00:50:07,634 - werkzeug - INFO - 127.0.0.1 - - [20/May/2026 00:50:07] "GET /api/campaigns HTTP/1.1" 200 -
+2026-05-20 00:50:15,651 - werkzeug - INFO - 127.0.0.1 - - [20/May/2026 00:50:15] "GET /api/campaigns HTTP/1.1" 200 -
+2026-05-20 00:50:23,289 - werkzeug - INFO - 127.0.0.1 - - [20/May/2026 00:50:23] "GET /api/campaigns?period=7d HTTP/1.1" 200 -
+2026-05-20 00:50:26,734 - werkzeug - INFO - 127.0.0.1 - - [20/May/2026 00:50:26] "GET /api/campaigns?period=7d HTTP/1.1" 200 -
+2026-05-20 00:58:34,100 - werkzeug - INFO - 127.0.0.1 - - [20/May/2026 00:58:34] "GET /api/campaigns?period=7d HTTP/1.1" 200 -
+2026-05-20 00:58:35,482 - werkzeug - INFO - 127.0.0.1 - - [20/May/2026 00:58:35] "GET /api/campaigns?period=7d HTTP/1.1" 200 -
+2026-05-20 00:58:36,627 - werkzeug - INFO - 127.0.0.1 - - [20/May/2026 00:58:36] "GET /api/campaigns?period=7d HTTP/1.1" 200 -
+2026-05-20 00:58:51,651 - werkzeug - INFO - 127.0.0.1 - - [20/May/2026 00:58:51] "GET /api/campaigns?period=7d HTTP/1.1" 200 -
+2026-05-20 00:59:25,537 - werkzeug - INFO - 127.0.0.1 - - [20/May/2026 00:59:25] "GET /api/campaigns?period=7d HTTP/1.1" 200 -
+2026-05-20 00:59:58,711 - werkzeug - INFO - 127.0.0.1 - - [20/May/2026 00:59:58] "GET /api/campaigns?period=7d HTTP/1.1" 200 -
+2026-05-20 01:00:02,413 - werkzeug - INFO - 127.0.0.1 - - [20/May/2026 01:00:02] "GET /api/campaigns?period=7d HTTP/1.1" 200 -
+2026-05-20 01:00:09,435 - werkzeug - INFO - 127.0.0.1 - - [20/May/2026 01:00:09] "GET /api/campaigns?period=7d HTTP/1.1" 200 -
+2026-05-20 01:01:07,424 - werkzeug - INFO - 127.0.0.1 - - [20/May/2026 01:01:07] "GET /api/campaigns HTTP/1.1" 200 -
+2026-05-20 01:01:30,818 - werkzeug - INFO - 127.0.0.1 - - [20/May/2026 01:01:30] "GET /api/campaigns HTTP/1.1" 200 -
+2026-05-20 01:02:38,266 - werkzeug - INFO - 127.0.0.1 - - [20/May/2026 01:02:38] "GET /api/campaigns HTTP/1.1" 200 -
+2026-05-20 01:03:18,457 - werkzeug - INFO - 127.0.0.1 - - [20/May/2026 01:03:18] "GET /api/campaigns HTTP/1.1" 200 -
+2026-05-20 01:03:44,850 - werkzeug - INFO - 127.0.0.1 - - [20/May/2026 01:03:44] "GET /api/campaigns HTTP/1.1" 200 -
+2026-05-20 01:04:30,472 - werkzeug - INFO - 127.0.0.1 - - [20/May/2026 01:04:30] "GET /api/campaigns HTTP/1.1" 200 -
+2026-05-20 01:06:08,918 - werkzeug - INFO - 127.0.0.1 - - [20/May/2026 01:06:08] "GET /api/campaigns HTTP/1.1" 200 -
+2026-05-20 01:06:43,291 - werkzeug - INFO - 127.0.0.1 - - [20/May/2026 01:06:43] "GET /api/campaigns HTTP/1.1" 200 -
+2026-05-20 01:06:51,237 - werkzeug - INFO - 127.0.0.1 - - [20/May/2026 01:06:51] "GET /api/campaigns HTTP/1.1" 200 -
+2026-05-20 01:09:25,354 - werkzeug - INFO - 127.0.0.1 - - [20/May/2026 01:09:25] "GET /api/campaigns HTTP/1.1" 200 -
+2026-05-20 01:09:44,456 - werkzeug - INFO - 127.0.0.1 - - [20/May/2026 01:09:44] "GET /api/campaigns HTTP/1.1" 200 -
+2026-05-20 01:10:13,661 - werkzeug - INFO - 127.0.0.1 - - [20/May/2026 01:10:13] "GET /api/campaigns?period=7d HTTP/1.1" 200 -
+2026-05-20 01:10:15,005 - werkzeug - INFO - 127.0.0.1 - - [20/May/2026 01:10:15] "GET /api/campaigns?period=7d HTTP/1.1" 200 -
+2026-05-20 01:10:25,437 - werkzeug - INFO - 127.0.0.1 - - [20/May/2026 01:10:25] "GET /api/campaigns HTTP/1.1" 200 -
+2026-05-20 01:10:41,234 - werkzeug - INFO - 127.0.0.1 - - [20/May/2026 01:10:41] "GET /api/campaigns HTTP/1.1" 200 -
+2026-05-20 01:10:47,850 - werkzeug - INFO - 127.0.0.1 - - [20/May/2026 01:10:47] "GET /api/campaigns HTTP/1.1" 200 -
+2026-05-20 01:11:04,657 - werkzeug - INFO - 127.0.0.1 - - [20/May/2026 01:11:04] "GET /api/campaigns HTTP/1.1" 200 -
+2026-05-20 01:12:32,760 - werkzeug - INFO - 127.0.0.1 - - [20/May/2026 01:12:32] "GET /api/campaigns HTTP/1.1" 200 -
+2026-05-20 01:21:30,304 - werkzeug - INFO - 127.0.0.1 - - [20/May/2026 01:21:30] "GET /dashboard HTTP/1.1" 200 -
+2026-05-20 01:21:31,027 - werkzeug - INFO - 127.0.0.1 - - [20/May/2026 01:21:31] "GET /api/campaigns?period=7d HTTP/1.1" 200 -
+2026-05-20 01:23:24,481 - werkzeug - INFO - 127.0.0.1 - - [20/May/2026 01:23:24] "GET /api/campaigns?period=7d HTTP/1.1" 200 -
+2026-05-20 01:23:34,081 - werkzeug - INFO - 127.0.0.1 - - [20/May/2026 01:23:34] "GET /api/campaigns HTTP/1.1" 200 -
+2026-05-20 01:23:42,558 - werkzeug - INFO - 127.0.0.1 - - [20/May/2026 01:23:42] "GET /api/campaigns HTTP/1.1" 200 -
+2026-05-20 01:38:13,078 - werkzeug - INFO - 127.0.0.1 - - [20/May/2026 01:38:13] "GET /dashboard HTTP/1.1" 200 -
+2026-05-20 01:59:57,580 - werkzeug - INFO - 127.0.0.1 - - [20/May/2026 01:59:57] "GET /dashboard HTTP/1.1" 200 -
+2026-05-20 02:02:47,086 - werkzeug - INFO - 127.0.0.1 - - [20/May/2026 02:02:47] "GET /dashboard HTTP/1.1" 200 -
+2026-05-20 02:07:57,898 - werkzeug - INFO - 127.0.0.1 - - [20/May/2026 02:07:57] "GET /dashboard HTTP/1.1" 200 -
+2026-05-20 02:12:51,657 - werkzeug - INFO - 127.0.0.1 - - [20/May/2026 02:12:51] "GET /dashboard HTTP/1.1" 200 -
+2026-05-20 02:16:10,233 - werkzeug - INFO - 127.0.0.1 - - [20/May/2026 02:16:10] "GET /dashboard HTTP/1.1" 200 -
+2026-05-20 02:16:27,175 - werkzeug - INFO - 127.0.0.1 - - [20/May/2026 02:16:27] "GET /dashboard HTTP/1.1" 200 -
+2026-05-20 11:51:17,318 - werkzeug - INFO - 127.0.0.1 - - [20/May/2026 11:51:17] "GET /api/campaigns HTTP/1.1" 200 -
+2026-05-20 11:59:47,911 - werkzeug - INFO - 127.0.0.1 - - [20/May/2026 11:59:47] "GET /api/campaigns HTTP/1.1" 200 -

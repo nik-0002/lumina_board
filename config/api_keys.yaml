@@ -1,0 +1,30 @@
+# API Keys and Configuration (use environment variables in production)
+ollama:
+  base_url: "http://localhost:11434"
+  model: "qwen2.5"
+  temperature: 0.7
+  max_tokens: 512
+
+huggingface:
+  model_id: "espnet/kan-bayashi_ljspeech_vits"
+  device: "cpu"
+
+messaging:
+  adb:
+    enabled: true
+    phone_number: "+91XXXXXXXXXX"
+  twilio:
+    enabled: false
+    account_sid: "${TWILIO_ACCOUNT_SID}"
+    auth_token: "${TWILIO_AUTH_TOKEN}"
+    phone_number: "+1XXXXXXXXXX"
+
+gov_apis:
+  imd_weather: "https://api.openweathermap.org/data/2.5"
+  agrisnet: "https://agrisnet.dadisnet.gov.in/api"
+  pest_surveillance: "https://ppqs.gov.in/api"
+
+vector_store:
+  type: "faiss"
+  embedding_model: "sentence-transformers/all-MiniLM-L6-v2"
+  index_path: "./data/vector_indices"

@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AgroIntel Command Central</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,300;1,9..144,400&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+<style>
+:root {
+  --ink: #0d1219;
+  --ink2: #141c2b;
+  --ink3: #1e2a3d;
+  --ink4: #273348;
+  --ink5: #334059;
+  --sage: #1a6b3a;
+  --sage2: #22883f;
+  --sage3: #2da84e;
+  --sage4: #5dc87a;
+  --sage5: #9fddb4;
+  --sage-bg: rgba(26,107,58,0.09);
+  --sage-glow: rgba(26,107,58,0.35);
+  --gold: #c07c12;
+  --gold2: #e09a1c;
+  --gold-bg: rgba(192,124,18,0.1);
+  --crimson: #b52330;
+  --crimson-bg: rgba(181,35,48,0.1);
+  --sky: #1865c4;
+  --sky2: #4494e8;
+  --sky-bg: rgba(24,101,196,0.1);
+  --text: #e8ecf4;
+  --text2: #b8c1d4;
+  --text3: #7a889e;
+  --text4: #4a5568;
+  --line: rgba(255,255,255,0.06);
+  --line2: rgba(255,255,255,0.10);
+  --r: 10px;
+  --r2: 14px;
+  --chat-w: 420px;
+  --hdr: 60px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{height:100%;overflow:hidden;}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--ink);color:var(--text);font-size:13px;line-height:1.6;}
+
+/* ── LAYOUT ── */
+.shell{display:grid;grid-template-columns:1fr var(--chat-w);grid-template-rows:var(--hdr) 1fr;height:100vh;}
+
+/* ── TOPBAR ── */
+.topbar{grid-column:1/-1;display:flex;align-items:center;padding:0 22px;gap:14px;background:var(--ink2);border-bottom:1px solid var(--line2);z-index:50;flex-shrink:0;}
+.brand{display:flex;align-items:center;gap:9px;flex-shrink:0;}
+.brand-mark{width:32px;height:32px;background:var(--sage);clip-path:polygon(50% 0%,93% 25%,93% 75%,50% 100%,7% 75%,7% 25%);display:flex;align-items:center;justify-content:center;font-size:14px;}
+.brand-name{font-family:'Fraunces',serif;font-size:16.5px;font-weight:500;color:var(--text);letter-spacing:-0.2px;}
+.brand-tag{font-size:9px;font-weight:700;letter-spacing:2px;color:var(--sage4);text-transform:uppercase;display:block;margin-top:-2px;}
+.topbar-nav{flex:1;display:flex;align-items:center;justify-content:center;gap:2px;}
+.nav-pill{padding:5px 13px;border-radius:8px;font-size:12px;font-weight:500;color:var(--text3);cursor:pointer;transition:all 0.15s;border:none;background:transparent;}
+.nav-pill:hover{background:var(--ink3);color:var(--text2);}
+.nav-pill.active{background:var(--ink3);color:var(--text);}
+.topbar-right{display:flex;align-items:center;gap:8px;}
+.status-badge{display:flex;align-items:center;gap:6px;padding:5px 12px;background:var(--ink3);border:1px solid var(--line2);border-radius:100px;}
+.pulse-dot{width:7px;height:7px;border-radius:50%;background:var(--sage3);animation:pulse 2.4s ease-in-out infinite;}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:0.55;transform:scale(0.82);}}
+.status-label{font-size:10.5px;font-weight:600;color:var(--text2);letter-spacing:0.4px;text-transform:uppercase;}
+.icon-btn{width:32px;height:32px;border-radius:8px;border:1px solid var(--line2);background:var(--ink3);color:var(--text3);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.15s;}
+.icon-btn:hover{background:var(--ink4);color:var(--text2);}
+.icon-btn .material-icons-round{font-size:17px;}
+
+/* ── CANVAS ── */
+.canvas{overflow-y:auto;padding:20px;background:var(--ink);position:relative;}
+.canvas-bg{position:fixed;top:var(--hdr);left:0;width:calc(100% - var(--chat-w));bottom:0;pointer-events:none;background-image:radial-gradient(circle at 15% 25%,rgba(26,107,58,0.07) 0%,transparent 55%),radial-gradient(circle at 85% 75%,rgba(24,101,196,0.04) 0%,transparent 50%);}
+.grid-lines{position:fixed;top:var(--hdr);left:0;width:calc(100% - var(--chat-w));bottom:0;pointer-events:none;background-image:linear-gradient(rgba(255,255,255,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.025) 1px,transparent 1px);background-size:48px 48px;}
+
+/* ── EMPTY STATE ── */
+.empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:calc(100vh - var(--hdr) - 40px);text-align:center;padding:40px;}
+.empty-hex{width:68px;height:68px;background:var(--ink3);clip-path:polygon(50% 0%,93% 25%,93% 75%,50% 100%,7% 75%,7% 25%);display:flex;align-items:center;justify-content:center;font-size:26px;margin-bottom:18px;border:1px solid var(--line2);}
+.empty-title{font-family:'Fraunces',serif;font-size:21px;font-weight:400;color:var(--text2);margin-bottom:9px;letter-spacing:-0.3px;}
+.empty-sub{font-size:13px;color:var(--text3);max-width:400px;line-height:1.7;margin-bottom:26px;}
+.chips{display:flex;flex-wrap:wrap;gap:7px;justify-content:center;max-width:500px;}
+.chip-btn{display:inline-flex;align-items:center;gap:6px;padding:7px 13px;background:var(--ink3);border:1px solid var(--line2);border-radius:10px;font-size:11.5px;color:var(--text2);cursor:pointer;transition:all 0.2s;}
+.chip-btn:hover{background:var(--ink4);border-color:rgba(26,107,58,0.4);color:var(--sage4);transform:translateY(-1px);}
+.chip-btn .material-icons-round{font-size:14px;color:var(--sage3);}
+
+/* ── WIDGETS ── */
+.widgets{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.card{background:rgba(18,25,40,0.85);backdrop-filter:blur(12px);border:1px solid var(--line2);border-radius:var(--r2);overflow:hidden;animation:cardIn 0.42s cubic-bezier(0.23,1,0.32,1);}
+.card.full{grid-column:span 2;}
+@keyframes cardIn{from{opacity:0;transform:translateY(16px) scale(0.97);}to{opacity:1;transform:translateY(0) scale(1);}}
+.card-stripe{height:2px;}
+.card-stripe.sage{background:linear-gradient(90deg,transparent,var(--sage),var(--sage2),transparent);opacity:0.65;}
+.card-stripe.crimson{background:linear-gradient(90deg,transparent,var(--crimson),#e03040,transparent);opacity:0.65;}
+.card-stripe.gold{background:linear-gradient(90deg,transparent,var(--gold),var(--gold2),transparent);opacity:0.65;}
+.card-stripe.sky{background:linear-gradient(90deg,transparent,var(--sky),var(--sky2),transparent);opacity:0.65;}
+.card-head{display:flex;align-items:center;justify-content:space-between;padding:15px 17px 11px;}
+.card-title{display:flex;align-items:center;gap:8px;font-family:'Fraunces',serif;font-size:14px;font-weight:500;color:var(--text);letter-spacing:-0.1px;}
+.card-title .material-icons-round{font-size:16px;}
+.card-title.t-sage .material-icons-round{color:var(--sage3);}
+.card-title.t-crimson .material-icons-round{color:#e03040;}
+.card-title.t-gold .material-icons-round{color:var(--gold2);}
+.card-title.t-sky .material-icons-round{color:var(--sky2);}
+.card-body{padding:0 17px 17px;}
+.live-chip{display:flex;align-items:center;gap:5px;padding:3px 9px;background:var(--sage-bg);border:1px solid rgba(26,107,58,0.22);border-radius:100px;font-size:10px;font-weight:700;color:var(--sage4);text-transform:uppercase;letter-spacing:0.5px;}
+.live-chip::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--sage3);animation:pulse 2s infinite;}
+
+/* ── ALERT WIDGET ── */
+.alert-item{border:1px solid rgba(181,35,48,0.22);border-radius:var(--r);padding:13px;margin-bottom:9px;background:rgba(181,35,48,0.05);display:flex;gap:11px;position:relative;overflow:hidden;transition:border-color 0.2s;}
+.alert-item:hover{border-color:rgba(181,35,48,0.38);}
+.alert-item::before{content:'';position:absolute;top:0;left:0;bottom:0;width:3px;background:var(--crimson);}
+.alert-sev{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+.sev-high{background:rgba(181,35,48,0.12);color:#e03040;}
+.sev-med{background:var(--gold-bg);color:var(--gold2);}
+.alert-content{flex:1;min-width:0;}
+.alert-name{font-weight:700;color:var(--text);font-size:13.5px;margin-bottom:4px;}
+.alert-tags{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:7px;}
+.tag{display:inline-flex;align-items:center;gap:3px;padding:1px 7px;border-radius:6px;font-size:10.5px;font-weight:500;}
+.tag-r{background:var(--sky-bg);color:var(--sky2);}
+.tag-c{background:var(--sage-bg);color:var(--sage4);}
+.tag-f{background:var(--crimson-bg);color:#e03040;}
+.alert-note{font-size:11.5px;color:var(--text3);line-height:1.5;margin-bottom:9px;font-style:italic;}
+.btns{display:flex;gap:6px;flex-wrap:wrap;}
+
+/* ── BUTTONS ── */
+.btn{display:inline-flex;align-items:center;gap:5px;padding:5px 11px;border-radius:7px;font-size:11.5px;font-weight:600;cursor:pointer;border:none;transition:all 0.15s;font-family:'Plus Jakarta Sans',sans-serif;}
+.btn .material-icons-round{font-size:13px;}
+.btn-p{background:var(--sage);color:#fff;}
+.btn-p:hover{background:var(--sage2);transform:translateY(-1px);}
+.btn-g{background:var(--ink4);color:var(--text2);border:1px solid var(--line2);}
+.btn-g:hover{background:var(--ink5);color:var(--text);}
+
+/* ── CAMPAIGN ── */
+.ctx-bar{display:flex;gap:8px;flex-wrap:wrap;padding:9px 11px;background:var(--ink4);border-radius:var(--r);margin-bottom:12px;border:1px solid var(--line2);}
+.ctx-tag{font-size:11px;color:var(--text3);}
+.ctx-val{font-weight:600;color:var(--text2);}
+.ch-tabs{display:flex;gap:5px;margin-bottom:12px;}
+.ch-tab{flex:1;padding:8px 8px;background:var(--ink4);border:1px solid var(--line2);border-radius:8px;cursor:pointer;text-align:center;transition:all 0.15s;}
+.ch-tab:hover{background:var(--ink5);}
+.ch-tab.active{background:var(--sage-bg);border-color:rgba(26,107,58,0.3);}
+.ch-icon{font-size:15px;margin-bottom:2px;}
+.ch-lbl{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px;}
+.ch-tab.active .ch-lbl{color:var(--sage4);}
+.content-panel{background:var(--ink4);border:1px solid var(--line2);border-radius:var(--r);padding:13px;font-size:12px;color:var(--text2);line-height:1.65;min-height:88px;margin-bottom:11px;white-space:pre-wrap;}
+
+/* ── SEGMENTS ── */
+.seg-wrap{overflow-x:auto;border-radius:var(--r);border:1px solid var(--line2);}
+.seg-table{width:100%;border-collapse:collapse;font-size:11.5px;}
+.seg-table thead th{font-size:9.5px;font-weight:700;color:var(--text4);text-transform:uppercase;letter-spacing:1px;padding:9px 11px;background:var(--ink4);text-align:left;white-space:nowrap;border-bottom:1px solid var(--line2);}
+.seg-table tbody td{padding:8px 11px;color:var(--text2);border-bottom:1px solid var(--line);white-space:nowrap;}
+.seg-table tbody tr:last-child td{border-bottom:none;}
+.seg-table tbody tr:hover{background:rgba(255,255,255,0.02);}
+.seg-table tbody td:first-child{font-family:'DM Mono',monospace;font-size:10.5px;color:var(--text3);}
+.chip{display:inline-block;padding:2px 7px;border-radius:100px;font-size:9.5px;font-weight:700;letter-spacing:0.3px;}
+.ch-sage{background:var(--sage-bg);color:var(--sage4);border:1px solid rgba(26,107,58,0.18);}
+.ch-gold{background:var(--gold-bg);color:var(--gold2);border:1px solid rgba(192,124,18,0.18);}
+
+/* ── GAUGE ── */
+.gauge-wrap{display:flex;gap:18px;align-items:flex-start;}
+.gauge-svg-area{flex-shrink:0;position:relative;width:126px;height:126px;}
+.gauge-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;}
+.gauge-pct{font-family:'DM Mono',monospace;font-size:27px;font-weight:500;color:var(--sage3);line-height:1;}
+.gauge-pct-lbl{font-size:9px;color:var(--text3);letter-spacing:0.5px;}
+.gauge-factors{flex:1;}
+.factor-item{display:flex;align-items:flex-start;gap:7px;padding:5px 0;border-bottom:1px solid var(--line);font-size:11.5px;color:var(--text2);}
+.factor-item:last-child{border-bottom:none;}
+.f-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:4px;}
+.f-pos{background:var(--sage3);}
+.f-neg{background:var(--gold2);}
+
+/* ── ROUTING ── */
+.routing-row{display:flex;align-items:center;gap:11px;padding:9px 0;border-bottom:1px solid var(--line);}
+.routing-row:last-child{border-bottom:none;}
+.routing-ch{width:78px;font-size:11.5px;font-weight:600;color:var(--text2);flex-shrink:0;}
+.bar-wrap{flex:1;height:5px;background:var(--ink4);border-radius:5px;overflow:hidden;}
+.bar-fill{height:100%;border-radius:5px;transition:width 0.9s cubic-bezier(0.23,1,0.32,1);}
+.routing-pct{font-family:'DM Mono',monospace;font-size:11.5px;color:var(--text3);width:32px;text-align:right;}
+.route-notes{margin-top:12px;padding:11px;background:var(--ink4);border-radius:var(--r);border:1px solid var(--line2);}
+.route-note{font-size:11.5px;color:var(--text3);padding:2px 0;display:flex;align-items:flex-start;gap:6px;}
+.route-note::before{content:'→';color:var(--sage3);flex-shrink:0;font-size:10.5px;margin-top:1px;}
+.slider-row{display:flex;align-items:center;gap:11px;margin-bottom:13px;padding:9px 11px;background:var(--ink4);border-radius:var(--r);border:1px solid var(--line2);}
+.slider-lbl{font-size:10.5px;color:var(--text3);white-space:nowrap;}
+.conn-slider{flex:1;accent-color:var(--sage3);}
+
+/* ── AGENTS ── */
+.agent-item{display:flex;align-items:center;gap:11px;padding:10px 11px;background:var(--ink4);border:1px solid var(--line);border-radius:var(--r);margin-bottom:7px;transition:all 0.15s;}
+.agent-item:hover{border-color:var(--line2);transform:translateX(3px);}
+.agent-ava{width:32px;height:32px;border-radius:7px;background:var(--sage-bg);color:var(--sage4);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;border:1px solid rgba(26,107,58,0.18);}
+.agent-info{flex:1;}
+.agent-name{font-size:12.5px;font-weight:700;color:var(--text);margin-bottom:1px;}
+.agent-loc{font-size:10.5px;color:var(--text3);}
+.status-badge-sm{padding:3px 9px;border-radius:6px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.4px;}
+.st-pending{background:var(--gold-bg);color:var(--gold2);}
+.st-approved{background:var(--sage-bg);color:var(--sage4);}
+
+/* ── STAT ROW ── */
+.stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-bottom:13px;}
+.stat-box{background:var(--ink4);border:1px solid var(--line);border-radius:var(--r);padding:11px;text-align:center;}
+.stat-val{font-family:'DM Mono',monospace;font-size:20px;font-weight:500;color:var(--sage3);margin-bottom:2px;}
+.stat-key{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px;}
+
+/* ── CHAT ── */
+.chat-panel{display:flex;flex-direction:column;background:var(--ink2);border-left:1px solid var(--line2);overflow:hidden;}
+.chat-hdr{height:var(--hdr);display:flex;align-items:center;padding:0 16px;gap:11px;border-bottom:1px solid var(--line2);background:var(--ink3);flex-shrink:0;}
+.ai-ava{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,var(--sage) 0%,#1060a0 100%);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
+.ai-name{font-weight:700;font-size:13px;color:var(--text);margin-bottom:1px;}
+.ai-model{font-size:10px;color:var(--sage4);font-weight:500;}
+.model-sel{margin-left:auto;padding:4px 9px;background:var(--ink4);border:1px solid var(--line2);border-radius:7px;font-size:10.5px;color:var(--text3);font-family:'Plus Jakarta Sans',sans-serif;cursor:pointer;}
+.messages{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px;}
+.msg{display:flex;gap:8px;animation:msgIn 0.22s ease;}
+@keyframes msgIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+.msg.user{flex-direction:row-reverse;}
+.msg-ava{width:26px;height:26px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0;font-weight:700;}
+.msg.ai .msg-ava{background:linear-gradient(135deg,var(--sage) 0%,#1060a0 100%);}
+.msg.user .msg-ava{background:var(--ink4);color:var(--text);}
+.msg-body{max-width:83%;}
+.msg-bubble{padding:9px 13px;border-radius:10px;font-size:12.5px;line-height:1.65;word-break:break-word;}
+.msg.ai .msg-bubble{background:var(--ink3);border:1px solid var(--line);color:var(--text);border-radius:3px 10px 10px 10px;}
+.msg.user .msg-bubble{background:var(--sage);color:#fff;border-radius:10px 10px 3px 10px;font-weight:500;}
+.msg-meta{font-size:10px;color:var(--text4);margin-top:3px;padding:0 3px;}
+.msg.user .msg-meta{text-align:right;}
+.tool-bub{margin-top:7px;background:rgba(26,107,58,0.07);border:1px solid rgba(26,107,58,0.18);border-left:3px solid var(--sage);border-radius:0 7px 7px 0;padding:8px 11px;}
+.tool-bub-hdr{display:flex;align-items:center;gap:5px;color:var(--sage4);font-weight:700;margin-bottom:4px;font-size:10.5px;text-transform:uppercase;letter-spacing:0.5px;}
+.tool-bub-hdr .material-icons-round{font-size:12px;}
+.tool-bub-desc{color:var(--text3);font-size:11.5px;line-height:1.5;}
+.tool-bub-params{margin-top:5px;background:var(--ink2);border-radius:5px;padding:5px 8px;font-family:'DM Mono',monospace;font-size:10px;color:var(--text4);}
+.typing-msg{display:flex;gap:8px;}
+.typing-bubble{display:flex;align-items:center;gap:4px;padding:10px 14px;background:var(--ink3);border:1px solid var(--line);border-radius:3px 10px 10px 10px;}
+.td{width:6px;height:6px;border-radius:50%;background:var(--sage3);animation:tdot 1.2s ease-in-out infinite;}
+.td:nth-child(2){animation-delay:0.2s;}
+.td:nth-child(3){animation-delay:0.4s;}
+@keyframes tdot{0%,60%,100%{transform:translateY(0);opacity:0.5;}30%{transform:translateY(-5px);opacity:1;}}
+.quick-actions{padding:0 14px 9px;display:flex;flex-wrap:wrap;gap:5px;}
+.quick-act{display:inline-flex;align-items:center;gap:5px;padding:5px 10px;background:var(--ink3);border:1px solid var(--line2);border-radius:8px;font-size:10.5px;font-weight:500;color:var(--text3);cursor:pointer;transition:all 0.15s;}
+.quick-act:hover{background:var(--ink4);border-color:rgba(26,107,58,0.35);color:var(--sage4);}
+.quick-act .material-icons-round{font-size:12px;color:var(--sage3);}
+.input-area{padding:11px 14px 13px;background:var(--ink3);border-top:1px solid var(--line2);flex-shrink:0;}
+.input-row{display:flex;gap:7px;align-items:flex-end;}
+.chat-ta{flex:1;background:var(--ink2);border:1px solid var(--line2);border-radius:9px;padding:9px 13px;color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;font-size:12.5px;resize:none;min-height:40px;max-height:100px;line-height:1.5;transition:border-color 0.15s,box-shadow 0.15s;}
+.chat-ta:focus{outline:none;border-color:rgba(26,107,58,0.5);box-shadow:0 0 0 3px rgba(26,107,58,0.1);}
+.chat-ta::placeholder{color:var(--text4);}
+.send-btn{width:40px;height:40px;border-radius:9px;background:var(--sage);border:none;color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.15s;flex-shrink:0;}
+.send-btn:hover{background:var(--sage2);transform:scale(1.04);}
+.send-btn:active{transform:scale(0.95);}
+.send-btn:disabled{opacity:0.45;cursor:not-allowed;}
+.send-btn .material-icons-round{font-size:18px;}
+
+/* ── SCROLLBARS ── */
+::-webkit-scrollbar{width:4px;height:4px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--ink4);border-radius:8px;}
+::-webkit-scrollbar-thumb:hover{background:var(--text4);}
+
+@media(max-width:900px){
+  .shell{grid-template-columns:1fr;}
+  .chat-panel{display:none;}
+  .canvas-bg,.grid-lines{width:100%;}
+  .widgets{grid-template-columns:1fr;}
+  .card.full{grid-column:span 1;}
+}
+</style>
+</head>
+<body>
+<div class="shell">
+
+<!-- TOPBAR -->
+<header class="topbar">
+  <div class="brand">
+    <div class="brand-mark">🌿</div>
+    <div>
+      <div class="brand-name">AgroIntel</div>
+      <span class="brand-tag">Command Central</span>
+    </div>
+  </div>
+  <nav class="topbar-nav">
+    <button class="nav-pill active">Operations</button>
+    <button class="nav-pill">Analytics</button>
+    <button class="nav-pill">Campaigns</button>
+    <button class="nav-pill">Field Network</button>
+  </nav>
+  <div class="topbar-right">
+    <div class="status-badge">
+      <div class="pulse-dot"></div>
+      <span class="status-label" id="model-status">Qwen2.5 Online</span>
+    </div>
+    <button class="icon-btn"><span class="material-icons-round">notifications_none</span></button>
+    <button class="icon-btn"><span class="material-icons-round">tune</span></button>
+  </div>
+</header>
+
+<!-- CANVAS -->
+<main class="canvas">
+  <div class="canvas-bg"></div>
+  <div class="grid-lines"></div>
+  <div id="canvas-content">
+    <div class="empty-state" id="empty-state">
+      <div class="empty-hex">🌾</div>
+      <div class="empty-title">Command Central Ready</div>
+      <div class="empty-sub">Talk to AgroIntel AI to activate live intelligence panels. Each query triggers contextual tools and data visualizations.</div>
+      <div class="chips">
+        <div class="chip-btn" onclick="qs('Show active pest alerts in Andhra Pradesh')"><span class="material-icons-round">pest_control</span>Pest Alerts — AP</div>
+        <div class="chip-btn" onclick="qs('Generate WhatsApp campaign for rice farmers in Guntur in Telugu')"><span class="material-icons-round">campaign</span>Generate Rice Campaign</div>
+        <div class="chip-btn" onclick="qs('Show micro-segment matrix across AP farmers')"><span class="material-icons-round">grid_view</span>Micro-Segment Matrix</div>
+        <div class="chip-btn" onclick="qs('Predict campaign receptivity score for current audience')"><span class="material-icons-round">show_chart</span>Predict Receptivity</div>
+        <div class="chip-btn" onclick="qs('Show field agent verification queue')"><span class="material-icons-round">support_agent</span>Field Agent Queue</div>
+        <div class="chip-btn" onclick="qs('Analyze channel routing for low connectivity rural areas')"><span class="material-icons-round">settings_input_antenna</span>Channel Optimization</div>
+      </div>
+    </div>
+    <div class="widgets" id="widgets" style="display:none"></div>
+  </div>
+</main>
+
+<!-- CHAT PANEL -->
+<aside class="chat-panel">
+  <div class="chat-hdr">
+    <div class="ai-ava">🤖</div>
+    <div>
+      <div class="ai-name">AgroIntel AI</div>
+      <div class="ai-model" id="ai-status">● Qwen2.5 • localhost:11434</div>
+    </div>
+    <select class="model-sel" id="model-sel">
+      <option value="qwen2.5">qwen2.5</option>
+      <option value="qwen2.5:7b">qwen2.5:7b</option>
+      <option value="llama3.2">llama3.2</option>
+      <option value="mistral">mistral</option>
+    </select>
+  </div>
+
+  <div class="messages" id="messages">
+    <div class="msg ai">
+      <div class="msg-ava">🤖</div>
+      <div class="msg-body">
+        <div class="msg-bubble">Welcome to <strong>AgroIntel Command Central</strong>.<br><br>I'm your AI operations assistant. Ask me about pest alerts, campaign generation, farmer segments, performance prediction, or field agent coordination — I'll activate the right intelligence panels automatically.<br><br><em>Powered by Qwen2.5 via Ollama.</em></div>
+        <div class="msg-meta">AgroIntel AI • Just now</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="quick-actions">
+    <div class="quick-act" onclick="qs('Show pest alerts')"><span class="material-icons-round">pest_control</span>Pest Alerts</div>
+    <div class="quick-act" onclick="qs('Generate campaign in Telugu')"><span class="material-icons-round">campaign</span>Campaign</div>
+    <div class="quick-act" onclick="qs('Show farmer segments')"><span class="material-icons-round">people</span>Segments</div>
+    <div class="quick-act" onclick="qs('Show field agent queue')"><span class="material-icons-round">support_agent</span>Agents</div>
+  </div>
+
+  <div class="input-area">
+    <div class="input-row">
+      <textarea id="chat-input" class="chat-ta" placeholder="Ask about pests, campaigns, segments…" rows="1"></textarea>
+      <button class="send-btn" id="send-btn" onclick="handleSend()"><span class="material-icons-round">send</span></button>
+    </div>
+  </div>
+</aside>
+</div>
+
+<script>
+const S = {
+  busy: false,
+  history: [],
+  ollamaBase: 'http://localhost:11434',
+  available: null
+};
+
+const SYS = `You are AgroIntel AI, an intelligent assistant embedded in Syngenta's agricultural marketing operations platform for India.
+You help with six core capabilities:
+1. Pest Alert Monitoring — detect and respond to biological threats (Brown Plant Hopper, Pink Bollworm, Blast Disease, etc.)
+2. Multi-Channel Campaign Generation — WhatsApp, SMS, and IVR content in vernacular languages (Telugu, Tamil, Marathi, Hindi, Punjabi)
+3. Farmer Micro-Segmentation — precision targeting across region/crop/language/growth stage axes
+4. Campaign Receptivity Prediction — ML-scored engagement forecasting before deployment
+5. Field Agent Coordination — local verification queue and approval pipeline management
+6. Low-Bandwidth Channel Routing — adaptive distribution for rural feature phone users
+
+When the user asks about any of these capabilities, respond naturally AND include tool call markers in EXACTLY this format (no spaces, lowercase):
+[TOOL:show_pest_alerts] — for pest/disease/threat alerts
+[TOOL:generate_campaign] — for campaign or content generation
+[TOOL:show_segments] — for farmer segmentation or targeting
+[TOOL:predict_performance] — for receptivity scoring or ROI prediction
+[TOOL:show_agents] — for field agent queue or verification
+[TOOL:analyze_routing] — for channel routing or connectivity optimization
+
+You may combine multiple tool markers in one response. Be concise and operationally focused. Use real Indian agricultural context (AP, Maharashtra, Punjab, Tamil Nadu; Rice, Cotton, Sugarcane, Wheat).`;
+
+document.addEventListener('DOMContentLoaded', () => {
+  const ta = document.getElementById('chat-input');
+  ta.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); }
+  });
+  ta.addEventListener('input', () => {
+    ta.style.height = 'auto';
+    ta.style.height = Math.min(ta.scrollHeight, 100) + 'px';
+  });
+  pingOllama();
+});
+
+async function pingOllama() {
+  try {
+    const r = await fetch(`${S.ollamaBase}/api/tags`, { signal: AbortSignal.timeout(3000) });
+    S.available = r.ok;
+    document.getElementById('ai-status').textContent = r.ok ? '● Qwen2.5 • Connected' : '⚠ Ollama offline — fallback active';
+    document.getElementById('model-status').textContent = r.ok ? 'Qwen2.5 Online' : 'Fallback Mode';
+  } catch {
+    S.available = false;
+    document.getElementById('ai-status').textContent = '⚠ Ollama offline — fallback active';
+    document.getElementById('model-status').textContent = 'Fallback Mode';
+  }
+}
+
+function qs(text) {
+  document.getElementById('chat-input').value = text;
+  handleSend();
+}
+window.qs = qs;
+
+async function handleSend() {
+  if (S.busy) return;
+  const input = document.getElementById('chat-input');
+  const text = input.value.trim();
+  if (!text) return;
+  input.value = '';
+  input.style.height = 'auto';
+
+  addMsg('user', text);
+  S.history.push({ role: 'user', content: text });
+  S.busy = true;
+  document.getElementById('send-btn').disabled = true;
+
+  const tid = showTyping();
+
+  try {
+    const { aiText, toolCalls } = S.available ? await callOllama() : getFallback(text);
+    removeTyping(tid);
+    addMsg('ai', aiText, toolCalls);
+    S.history.push({ role: 'assistant', content: aiText });
+    if (toolCalls.length > 0) {
+      hideEmpty();
+      for (const t of toolCalls) await renderTool(t);
+    }
+  } catch {
+    removeTyping(tid);
+    const fb = getFallback(text);
+    addMsg('ai', fb.aiText, fb.toolCalls);
+    S.history.push({ role: 'assistant', content: fb.aiText });
+    if (fb.toolCalls.length > 0) {
+      hideEmpty();
+      for (const t of fb.toolCalls) await renderTool(t);
+    }
+  } finally {
+    S.busy = false;
+    document.getElementById('send-btn').disabled = false;
+  }
+}
+
+async function callOllama() {
+  const model = document.getElementById('model-sel').value;
+  const msgs = [{ role: 'system', content: SYS }, ...S.history.slice(-8)];
+  const r = await fetch(`${S.ollamaBase}/api/chat`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    signal: AbortSignal.timeout(30000),
+    body: JSON.stringify({ model, messages: msgs, stream: false, options: { temperature: 0.7 } })
+  });
+  if (!r.ok) throw new Error('err');
+  const d = await r.json();
+  return parse(d.message?.content || '');
+}
+
+function parse(raw) {
+  const re = /\[TOOL:([a-z_]+)\]/g;
+  const toolCalls = [];
+  let m;
+  while ((m = re.exec(raw)) !== null) toolCalls.push(m[1]);
+  const aiText = raw.replace(/\[TOOL:[a-z_]+\]/g, '').trim();
+  return { aiText, toolCalls };
+}
+
+function getFallback(text) {
+  const l = text.toLowerCase();
+  const toolCalls = [];
+  let aiText = '';
+  if (l.includes('pest') || l.includes('alert') || l.includes('disease') || l.includes('threat') || l.includes('hopper') || l.includes('bollworm')) {
+    toolCalls.push('show_pest_alerts');
+    aiText = 'I\'ve detected active bio-threats in your monitored regions. Loading the Bio-Urgency Monitor with current high-risk alerts that need immediate action.';
+  } else if (l.includes('campaign') || l.includes('generate') || l.includes('whatsapp') || l.includes('sms') || l.includes('ivr') || l.includes('content') || l.includes('message')) {
+    toolCalls.push('generate_campaign');
+    aiText = 'Generating a multi-channel campaign with hyper-local Telugu content. Producing WhatsApp, SMS, and IVR variants optimized for the current pest outbreak context.';
+  } else if (l.includes('segment') || l.includes('matrix') || l.includes('target') || l.includes('micro')) {
+    toolCalls.push('show_segments');
+    aiText = 'Loading your micro-segment matrix. I can see 8 active permutations across AP, Maharashtra, Punjab, and Tamil Nadu with varying crop stages and language profiles.';
+  } else if (l.includes('predict') || l.includes('performance') || l.includes('receptivity') || l.includes('roi') || l.includes('score') || l.includes('conversion')) {
+    toolCalls.push('predict_performance');
+    aiText = 'Running the predictive receptivity model against your current campaign parameters. The ML scoring engine is analyzing hyper-local signals including dialect match, growth stage, and outbreak alignment.';
+  } else if (l.includes('agent') || l.includes('field') || l.includes('verify') || l.includes('queue') || l.includes('approval')) {
+    toolCalls.push('show_agents');
+    aiText = 'Opening the Field Agent Bridge. I can see pending verifications in Guntur, Krishna, and Wardha districts awaiting local rep approval before campaign deployment.';
+  } else if (l.includes('channel') || l.includes('routing') || l.includes('connectivity') || l.includes('bandwidth') || l.includes('feature phone') || l.includes('ivr') || l.includes('rural')) {
+    toolCalls.push('analyze_routing');
+    aiText = 'Analyzing channel distribution for your target geography. Low-connectivity areas are being automatically re-routed to IVR voice and SMS fallback channels for maximum reach.';
+  } else {
+    aiText = 'I\'m AgroIntel AI — your operations assistant. I can activate tools for pest alerts, campaign generation, farmer segmentation, performance prediction, field agent coordination, and channel routing. What would you like to explore?';
+  }
+  return { aiText, toolCalls };
+}
+
+// Chat UI
+function addMsg(role, text, toolCalls = []) {
+  const msgs = document.getElementById('messages');
+  const ts = new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+  const div = document.createElement('div');
+  div.className = `msg ${role}`;
+  const ava = role === 'ai' ? '🤖' : 'U';
+  const formatted = esc(text).replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\*(.*?)\*/g,'<em>$1</em>');
+  const toolHTML = toolCalls.map(tc => `
+    <div class="tool-bub">
+      <div class="tool-bub-hdr"><span class="material-icons-round">build_circle</span>Executing: ${tc}</div>
+      <div class="tool-bub-desc">${toolDesc(tc)}</div>
+      <div class="tool-bub-params">tool: "${tc}" • mode: "auto" • region: "AP/MH"</div>
+    </div>`).join('');
+  div.innerHTML = `
+    <div class="msg-ava">${ava}</div>
+    <div class="msg-body">
+      <div class="msg-bubble">${formatted}</div>
+      ${toolHTML}
+      <div class="msg-meta">${role==='ai'?'AgroIntel AI':'You'} • ${ts}</div>
+    </div>`;
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function esc(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function toolDesc(t) {
+  return {
+    show_pest_alerts: 'Loading Bio-Urgency Monitor with real-time pest and disease threat data',
+    generate_campaign: 'Generating multi-channel WhatsApp, SMS, and IVR content with vernacular localization',
+    show_segments: 'Building micro-segment matrix across region × crop × language × growth stage',
+    predict_performance: 'Running ML receptivity scoring on current campaign parameters',
+    show_agents: 'Pulling field agent verification queue and approval pipeline',
+    analyze_routing: 'Analyzing channel distribution based on connectivity and device profiles'
+  }[t] || 'Executing tool…';
+}
+
+function showTyping() {
+  const msgs = document.getElementById('messages');
+  const id = 'typ' + Date.now();
+  const div = document.createElement('div');
+  div.id = id;
+  div.className = 'typing-msg';
+  div.innerHTML = `<div class="msg-ava" style="background:linear-gradient(135deg,var(--sage),#1060a0)">🤖</div><div class="typing-bubble"><div class="td"></div><div class="td"></div><div class="td"></div></div>`;
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+  return id;
+}
+
+function removeTyping(id) {
+  const el = document.getElementById(id);
+  if (el) el.remove();
+}
+
+function hideEmpty() {
+  document.getElementById('empty-state').style.display = 'none';
+  document.getElementById('widgets').style.display = '';
+}
+
+// Widget helpers
+function makeCard(id, title, icon, stripe) {
+  const old = document.getElementById('w_' + id);
+  if (old) old.remove();
+  const div = document.createElement('div');
+  div.className = 'card' + (id === 'segments' || id === 'routing' ? ' full' : '');
+  div.id = 'w_' + id;
+  div.innerHTML = `
+    <div class="card-stripe ${stripe}"></div>
+    <div class="card-head">
+      <div class="card-title t-${stripe}">
+        <span class="material-icons-round">${icon}</span>${title}
+      </div>
+      <span class="live-chip">Live</span>
+    </div>
+    <div class="card-body" id="cb_${id}"></div>`;
+  document.getElementById('widgets').appendChild(div);
+  return div;
+}
+
+async function renderTool(tool) {
+  const map = {
+    show_pest_alerts: renderAlerts,
+    generate_campaign: renderCampaign,
+    show_segments: renderSegments,
+    predict_performance: renderReceptivity,
+    show_agents: renderAgents,
+    analyze_routing: renderRouting
+  };
+  if (map[tool]) map[tool]();
+}
+
+// ── TOOL RENDERS ──
+
+function renderAlerts() {
+  makeCard('alerts', 'Bio-Urgency Monitor', 'pest_control', 'crimson');
+  const b = document.getElementById('cb_alerts');
+  b.innerHTML = `
+    <div class="stat-row">
+      <div class="stat-box"><div class="stat-val" style="color:#e03040">2</div><div class="stat-key">Active Alerts</div></div>
+      <div class="stat-box"><div class="stat-val">2,520</div><div class="stat-key">Farmers at Risk</div></div>
+      <div class="stat-box"><div class="stat-val" style="color:var(--gold2)">48h</div><div class="stat-key">Action Window</div></div>
+    </div>
+    <div class="alert-item">
+      <div class="alert-sev sev-high"><span class="material-icons-round">crisis_alert</span></div>
+      <div class="alert-content">
+        <div class="alert-name">Brown Plant Hopper</div>
+        <div class="alert-tags">
+          <span class="tag tag-r">📍 Guntur, AP</span>
+          <span class="tag tag-c">🌾 Rice — Tillering Stage</span>
+          <span class="tag tag-f">👥 1,840 farmers</span>
+        </div>
+        <div class="alert-note">88% humidity + post-monsoon conditions. Tillering stage is most vulnerable. Immediate intervention critical within 48h.</div>
+        <div class="btns">
+          <button class="btn btn-p" onclick="qs('Generate an urgent campaign for Brown Plant Hopper in Guntur in Telugu')"><span class="material-icons-round">campaign</span>Generate Campaign</button>
+          <button class="btn btn-g"><span class="material-icons-round">analytics</span>Details</button>
+        </div>
+      </div>
+    </div>
+    <div class="alert-item">
+      <div class="alert-sev sev-med"><span class="material-icons-round">warning</span></div>
+      <div class="alert-content">
+        <div class="alert-name">Pink Bollworm</div>
+        <div class="alert-tags">
+          <span class="tag tag-r">📍 Wardha, MH</span>
+          <span class="tag tag-c">🌾 Cotton — Flowering Stage</span>
+          <span class="tag tag-f">👥 680 farmers</span>
+        </div>
+        <div class="alert-note">Early detection. Preventive spray window still open — 4 days remaining before critical threshold.</div>
+        <div class="btns">
+          <button class="btn btn-p" onclick="qs('Generate campaign for Pink Bollworm in Wardha in Marathi')"><span class="material-icons-round">campaign</span>Generate Campaign</button>
+          <button class="btn btn-g"><span class="material-icons-round">analytics</span>Details</button>
+        </div>
+      </div>
+    </div>`;
+}
+
+function renderCampaign() {
+  makeCard('campaign', 'Vernacular Creative Sandbox', 'auto_awesome', 'sage');
+  const b = document.getElementById('cb_campaign');
+  const C = {
+    whatsapp: `🌾 *గుంటూర్ రైతు మిత్రులకు హెచ్చరిక* 🚨\n\nమీ వరి పంటలో బ్రౌన్ ప్లాంట్ హాపర్ కీటకం గుర్తించబడింది.\n\n✅ వెంటనే: Imidacloprid 70% WS @ 5g/ఎకరా\n💧 తేమ 88% — అత్యవసర చర్య అవసరం\n⏰ 48 గంటల్లో స్ప్రే చేయండి\n\n📞 ఏజెంట్: రమేష్ కుమార్\n📱 9876543210`,
+    sms: `[SYNGENTA] ALERT: BrownPlantHopper in Guntur rice. Spray Imidacloprid 5g/acre NOW. High humidity=high risk. Agt Ramesh: 9876543210`,
+    ivr: `[Telugu IVR — 60s]\n\nనమస్కారం రైతు మిత్రులకు. సిండ్జెంటా రైతు సహాయ కేంద్రం నుండి అత్యవసర సందేశం.\n\nమీ ప్రాంతంలో బ్రౌన్ ప్లాంట్ హాపర్ కీటకం అత్యధిక ప్రమాద స్థాయిలో ఉంది. వెంటనే Imidacloprid 70% WS స్ప్రే చేయండి.\n\nమరిన్ని వివరాలకు 1 నొక్కండి. మీ దగ్గర ఏజెంట్ కోసం 2 నొక్కండి.`
+  };
+  window._CC = C;
+  b.innerHTML = `
+    <div class="ctx-bar">
+      <div class="ctx-tag">Crop: <span class="ctx-val">Rice</span></div>
+      <div class="ctx-tag">Region: <span class="ctx-val">Guntur, AP</span></div>
+      <div class="ctx-tag">Language: <span class="ctx-val">Telugu</span></div>
+      <div class="ctx-tag">Stage: <span class="ctx-val">Tillering</span></div>
+      <div class="ctx-tag">Threat: <span class="ctx-val">Brown Plant Hopper</span></div>
+    </div>
+    <div class="ch-tabs" id="ch-tabs">
+      <div class="ch-tab active" onclick="switchCh('whatsapp',this)"><div class="ch-icon">💬</div><div class="ch-lbl">WhatsApp</div></div>
+      <div class="ch-tab" onclick="switchCh('sms',this)"><div class="ch-icon">📱</div><div class="ch-lbl">SMS</div></div>
+      <div class="ch-tab" onclick="switchCh('ivr',this)"><div class="ch-icon">📞</div><div class="ch-lbl">IVR Voice</div></div>
+    </div>
+    <div class="content-panel" id="cpanel">${escContent(C.whatsapp)}</div>
+    <div class="btns">
+      <button class="btn btn-p"><span class="material-icons-round">rocket_launch</span>Deploy Campaign</button>
+      <button class="btn btn-g" onclick="qs('Regenerate campaign with more urgency and farmer trust signals')"><span class="material-icons-round">refresh</span>Regenerate</button>
+      <button class="btn btn-g"><span class="material-icons-round">translate</span>Translate</button>
+    </div>`;
+}
+
+window.switchCh = function(ch, el) {
+  document.querySelectorAll('.ch-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  const p = document.getElementById('cpanel');
+  if (p && window._CC) p.innerHTML = escContent(window._CC[ch]);
+};
+
+function escContent(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>').replace(/\*(.*?)\*/g,'<em>$1</em>');
+}
+
+function renderSegments() {
+  makeCard('segments', 'Micro-Segment Matrix', 'grid_view', 'sky');
+  const b = document.getElementById('cb_segments');
+  const segs = [
+    { id:'SEG-AP-001', reg:'Guntur',     crop:'Rice',      lang:'Telugu',  stage:'Tillering',     f:312, s:'active' },
+    { id:'SEG-AP-002', reg:'Prakasam',   crop:'Cotton',    lang:'Telugu',  stage:'Flowering',     f:228, s:'active' },
+    { id:'SEG-AP-003', reg:'Krishna',    crop:'Rice',      lang:'Telugu',  stage:'Panicle',       f:184, s:'active' },
+    { id:'SEG-MH-001', reg:'Wardha',     crop:'Cotton',    lang:'Marathi', stage:'Boll',          f:401, s:'active' },
+    { id:'SEG-MH-002', reg:'Amravati',   crop:'Soybean',   lang:'Marathi', stage:'Vegetative',    f:156, s:'scheduled' },
+    { id:'SEG-PB-001', reg:'Ludhiana',   crop:'Wheat',     lang:'Punjabi', stage:'Grain fill',    f:299, s:'active' },
+    { id:'SEG-TN-001', reg:'Thanjavur',  crop:'Rice',      lang:'Tamil',   stage:'Tillering',     f:340, s:'active' },
+    { id:'SEG-TN-002', reg:'Coimbatore', crop:'Sugarcane', lang:'Tamil',   stage:'Grand growth',  f:188, s:'scheduled' },
+  ];
+  b.innerHTML = `
+    <div style="display:flex;gap:9px;margin-bottom:12px;align-items:center">
+      <div style="flex:1;padding:8px 11px;background:var(--sage-bg);border:1px solid rgba(26,107,58,0.18);border-radius:var(--r);font-size:11.5px;color:var(--sage4)"><strong>8 micro-segments</strong> active across 4 states • 1,808 farmers targeted</div>
+      <button class="btn btn-g" style="font-size:11px"><span class="material-icons-round">add</span>New Segment</button>
+    </div>
+    <div class="seg-wrap">
+      <table class="seg-table">
+        <thead><tr><th>ID</th><th>Region</th><th>Crop</th><th>Language</th><th>Growth Stage</th><th>Farmers</th><th>Status</th></tr></thead>
+        <tbody>
+          ${segs.map(s=>`<tr>
+            <td>${s.id}</td>
+            <td>${s.reg}</td>
+            <td>${s.crop}</td>
+            <td>${s.lang}</td>
+            <td>${s.stage}</td>
+            <td style="font-family:'DM Mono',monospace;font-weight:600;color:var(--text)">${s.f.toLocaleString()}</td>
+            <td><span class="chip ${s.s==='active'?'ch-sage':'ch-gold'}">${s.s}</span></td>
+          </tr>`).join('')}
+        </tbody>
+      </table>
+    </div>`;
+}
+
+function renderReceptivity() {
+  makeCard('receptivity', 'Predictive Receptivity Score', 'show_chart', 'sage');
+  const b = document.getElementById('cb_receptivity');
+  const score = 74;
+  const circ = 2 * Math.PI * 50;
+  const offset = circ * (1 - score / 100);
+  const factors = [
+    { pos: true,  text: 'Hyper-local dialect (Telugu — Guntur variant)' },
+    { pos: true,  text: 'Active pest outbreak alignment confirmed' },
+    { pos: true,  text: 'Correct growth stage targeting (Tillering)' },
+    { pos: true,  text: 'Trusted local field agent referenced' },
+    { pos: false, text: 'Sent during low-activity window (2–4 PM)' }
+  ];
+  b.innerHTML = `
+    <div class="gauge-wrap">
+      <div class="gauge-svg-area">
+        <svg viewBox="0 0 126 126" width="126" height="126">
+          <circle cx="63" cy="63" r="50" fill="none" stroke="var(--ink4)" stroke-width="9"/>
+          <circle cx="63" cy="63" r="50" fill="none" stroke="var(--sage3)" stroke-width="9"
+            stroke-linecap="round"
+            stroke-dasharray="${circ.toFixed(1)}"
+            stroke-dashoffset="${offset.toFixed(1)}"
+            transform="rotate(-90 63 63)"
+            style="transition:stroke-dashoffset 1.2s cubic-bezier(0.23,1,0.32,1)"/>
+        </svg>
+        <div class="gauge-center">
+          <div class="gauge-pct">${score}%</div>
+          <div class="gauge-pct-lbl">Engagement</div>
+        </div>
+      </div>
+      <div class="gauge-factors">
+        <div style="font-size:10.5px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:7px">Scoring Factors</div>
+        ${factors.map(f=>`
+          <div class="factor-item">
+            <div class="f-dot ${f.pos?'f-pos':'f-neg'}"></div>
+            <div>${f.text}</div>
+          </div>`).join('')}
+        <div style="margin-top:10px">
+          <button class="btn btn-g" style="font-size:11px" onclick="qs('Optimize campaign tone to colloquial storytelling to improve receptivity score')">
+            <span class="material-icons-round">tune</span>Optimize Score
+          </button>
+        </div>
+      </div>
+    </div>`;
+}
+
+function renderAgents() {
+  makeCard('agents', 'Field Agent Bridge', 'support_agent', 'gold');
+  const b = document.getElementById('cb_agents');
+  const agents = [
+    { n:'Ramesh Kumar', i:'RK', loc:'Guntur Dist, AP',    c:3, s:'pending' },
+    { n:'Lakshmi Devi', i:'LD', loc:'Krishna Dist, AP',   c:2, s:'pending' },
+    { n:'Suresh Reddy', i:'SR', loc:'Prakasam Dist, AP',  c:5, s:'approved' },
+    { n:'Anita Sharma', i:'AS', loc:'Wardha Dist, MH',    c:1, s:'pending' },
+  ];
+  const pending = agents.filter(a=>a.s==='pending').length;
+  b.innerHTML = `
+    <div style="padding:8px 11px;background:var(--gold-bg);border:1px solid rgba(192,124,18,0.18);border-radius:var(--r);font-size:11.5px;color:var(--gold2);margin-bottom:12px">
+      <strong>${pending} campaigns</strong> awaiting local rep verification before deployment
+    </div>
+    ${agents.map(a=>`
+      <div class="agent-item">
+        <div class="agent-ava">${a.i}</div>
+        <div class="agent-info">
+          <div class="agent-name">${a.n}</div>
+          <div class="agent-loc">${a.loc} • ${a.c} campaign${a.c>1?'s':''} queued</div>
+        </div>
+        <span class="status-badge-sm st-${a.s}">${a.s}</span>
+        ${a.s==='pending'?`<button class="btn btn-p" style="font-size:10.5px;padding:4px 8px;margin-left:6px"><span class="material-icons-round">check</span>Approve</button>`:''}
+      </div>`).join('')}
+    <div class="btns" style="margin-top:5px">
+      <button class="btn btn-g" style="font-size:11px">
+        <span class="material-icons-round">auto_awesome</span>Auto-Approve High Urgency
+      </button>
+    </div>`;
+}
+
+function renderRouting() {
+  makeCard('routing', 'Channel Optimization Matrix', 'settings_input_antenna', 'sky');
+  const b = document.getElementById('cb_routing');
+  b.innerHTML = `
+    <div class="slider-row">
+      <span class="slider-lbl">🔴 Low Connectivity</span>
+      <input type="range" class="conn-slider" id="conn-sl" min="0" max="100" value="30" oninput="updateR(this.value)">
+      <span class="slider-lbl">High Connectivity 🟢</span>
+    </div>
+    <div id="r-bars"></div>
+    <div class="route-notes" id="r-notes"></div>`;
+  updateR(30);
+}
+
+window.updateR = function(v) {
+  v = parseInt(v);
+  const t = v / 100;
+  const ivr = Math.round(62 - (62-20)*t);
+  const sms = Math.round(28 + (30-28)*t);
+  const wa = 100 - ivr - sms;
+  const bars = document.getElementById('r-bars');
+  const notes = document.getElementById('r-notes');
+  if (!bars || !notes) return;
+  bars.innerHTML = [
+    { n:'IVR Voice', p:ivr, c:'#e03040' },
+    { n:'SMS',       p:sms, c:'var(--gold2)' },
+    { n:'WhatsApp',  p:wa,  c:'var(--sage3)' }
+  ].map(c=>`
+    <div class="routing-row">
+      <div class="routing-ch">${c.n}</div>
+      <div class="bar-wrap"><div class="bar-fill" style="width:${c.p}%;background:${c.c}"></div></div>
+      <div class="routing-pct">${c.p}%</div>
+    </div>`).join('');
+  notes.innerHTML = (v < 40
+    ? [`${Math.round(68-v/2)}% feature phone penetration in target area`,`2G/3G network detected — optimizing for low bandwidth`,`IVR shows ${(3.2-v/50*0.8).toFixed(1)}x higher engagement in rural segments`,`SMS fallback active for congestion periods`]
+    : [`Smartphone penetration above ${Math.round(50+v/2)}% in target area`,`4G/5G coverage enabling rich WhatsApp media`,`WhatsApp video + image content activated`,`IVR retained as fallback for elderly farmers`]
+  ).map(n=>`<div class="route-note">${n}</div>`).join('');
+};
+</script>
+</body>
+</html>

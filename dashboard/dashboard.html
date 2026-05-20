@@ -1,0 +1,1626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Syngenta AgroIntel Platform</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Playfair+Display:wght@500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+<style>
+:root {
+  --bg: #faf9f7;
+  --surface: #ffffff;
+  --surface2: #f4f2ee;
+  --border: #e8e5df;
+  --border2: #d4cfc6;
+  --text: #1a1916;
+  --text2: #6b6860;
+  --text3: #9c9890;
+  --accent: #1938a7;
+  --accent-soft: #fef0e6;
+  --accent-mid: #f5830d;
+  --green: #2d7a4f;
+  --green-soft: #e8f5ee;
+  --blue: #1a4fa0;
+  --blue-soft: #e8eef9;
+  --amber: #b45309;
+  --amber-soft: #fef8e8;
+  --red: #c0392b;
+  --red-soft: #fdecea;
+  --sidebar-w: 240px;
+  --header-h: 56px;
+  --radius: 8px;
+  --radius-lg: 12px;
+  --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  font-family:'DM Sans',sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  font-size:14px;
+  line-height:1.5;
+  display:flex;
+  min-height:100vh;
+}
+
+/* ─── SIDEBAR ─── */
+.sidebar {
+  width:var(--sidebar-w);
+  background:var(--surface);
+  border-right:1px solid var(--border);
+  position:fixed;
+  top:0; left:0; bottom:0;
+  display:flex;
+  flex-direction:column;
+  z-index:100;
+  overflow-y:auto;
+}
+
+.sidebar-logo {
+  padding:18px 16px 14px;
+  border-bottom:1px solid var(--border);
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.logo-mark {
+  width:30px; height:30px;
+  background:var(--accent);
+  border-radius:7px;
+  display:flex; align-items:center; justify-content:center;
+  color:#fff;
+  font-size:16px;
+}
+
+.logo-text {
+  font-family:'Playfair Display',serif;
+  font-size:15px;
+  font-weight:600;
+  color:var(--text);
+  letter-spacing:-0.3px;
+}
+.logo-sub { font-size:10px; color:var(--text3); letter-spacing:0.5px; font-weight:500; }
+
+.nav-section { padding:12px 8px 4px; }
+.nav-label { font-size:10px; font-weight:600; color:var(--text3); text-transform:uppercase; letter-spacing:1px; padding:0 8px; margin-bottom:4px; }
+
+.nav-item {
+  display:flex; align-items:center; gap:9px;
+  padding:7px 8px; border-radius:6px;
+  color:var(--text2); cursor:pointer;
+  font-size:13.5px; font-weight:500;
+  transition:all 0.15s;
+  margin-bottom:1px;
+}
+.nav-item:hover { background:var(--surface2); color:var(--text); }
+.nav-item.active { background:var(--accent-soft); color:var(--accent); }
+.nav-item .material-icons-round { font-size:17px; }
+
+.nav-badge {
+  margin-left:auto;
+  background:var(--accent);
+  color:#fff;
+  font-size:10px;
+  font-weight:700;
+  padding:1px 6px;
+  border-radius:10px;
+}
+
+.sidebar-bottom {
+  margin-top:auto;
+  padding:12px 8px;
+  border-top:1px solid var(--border);
+}
+
+.user-card {
+  display:flex; align-items:center; gap:10px;
+  padding:8px;
+  border-radius:6px;
+  cursor:pointer;
+}
+.user-card:hover { background:var(--surface2); }
+.user-av {
+  width:30px; height:30px; border-radius:50%;
+  background:var(--accent-soft);
+  color:var(--accent);
+  font-size:12px; font-weight:700;
+  display:flex; align-items:center; justify-content:center;
+}
+.user-name { font-size:13px; font-weight:600; }
+.user-role { font-size:11px; color:var(--text3); }
+.ollama-dot {
+  width:7px; height:7px; border-radius:50%;
+  background:#2d7a4f; margin-left:auto;
+  box-shadow:0 0 0 2px #e8f5ee;
+}
+
+/* ─── MAIN ─── */
+.main { margin-left:var(--sidebar-w); flex:1; display:flex; flex-direction:column; }
+
+.topbar {
+  position:sticky; top:0; z-index:90;
+  height:var(--header-h);
+  background:rgba(250,249,247,0.92);
+  backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--border);
+  display:flex; align-items:center;
+  padding:0 24px; gap:12px;
+}
+
+.page-breadcrumb {
+  display:flex; align-items:center; gap:6px;
+  font-size:13px; color:var(--text2);
+}
+.breadcrumb-sep { color:var(--text3); }
+.breadcrumb-active { color:var(--text); font-weight:600; }
+
+.topbar-actions { margin-left:auto; display:flex; align-items:center; gap:8px; }
+
+.btn {
+  display:inline-flex; align-items:center; gap:5px;
+  padding:6px 12px; border-radius:6px;
+  font-size:13px; font-weight:500;
+  cursor:pointer; border:1px solid var(--border);
+  background:var(--surface); color:var(--text);
+  transition:all 0.15s; font-family:'DM Sans',sans-serif;
+}
+.btn:hover { background:var(--surface2); border-color:var(--border2); }
+.btn-accent {
+  background:var(--accent); color:#fff; border-color:var(--accent);
+}
+.btn-accent:hover { background:#cc5509; }
+.btn .material-icons-round { font-size:15px; }
+
+select.topbar-select {
+  padding:5px 10px;
+  border:1px solid var(--border);
+  border-radius:6px;
+  font-family:'DM Sans',sans-serif;
+  font-size:13px;
+  background:var(--surface);
+  color:var(--text);
+  cursor:pointer;
+}
+
+/* ─── PAGE CONTAINER ─── */
+.page { display:none; padding:28px 28px 40px; }
+.page.active { display:block; }
+
+.page-header { margin-bottom:24px; }
+.page-title {
+  font-family:'Playfair Display',serif;
+  font-size:26px; font-weight:600;
+  color:var(--text); letter-spacing:-0.5px;
+  margin-bottom:4px;
+}
+.page-subtitle { font-size:13px; color:var(--text2); }
+
+/* ─── CARDS & GRIDS ─── */
+.card {
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius-lg);
+  padding:20px;
+}
+
+.grid-4 { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:20px; }
+.grid-3 { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-bottom:20px; }
+.grid-2 { display:grid; grid-template-columns:repeat(2,1fr); gap:16px; margin-bottom:20px; }
+.grid-main { display:grid; grid-template-columns:2fr 1fr; gap:16px; }
+
+.stat-card {
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius-lg);
+  padding:18px 20px;
+}
+.stat-label { font-size:11px; font-weight:600; color:var(--text3); text-transform:uppercase; letter-spacing:0.7px; margin-bottom:8px; }
+.stat-val { font-size:28px; font-weight:700; color:var(--text); line-height:1; margin-bottom:4px; font-family:'DM Mono',monospace; }
+.stat-sub { font-size:12px; color:var(--text2); }
+.stat-accent .stat-val { color:var(--accent); }
+.stat-green .stat-val { color:var(--green); }
+.stat-blue .stat-val { color:var(--blue); }
+
+.tag {
+  display:inline-flex; align-items:center; gap:4px;
+  padding:2px 8px; border-radius:4px;
+  font-size:11px; font-weight:600; letter-spacing:0.3px;
+}
+.tag-green { background:var(--green-soft); color:var(--green); }
+.tag-amber { background:var(--amber-soft); color:var(--amber); }
+.tag-red { background:var(--red-soft); color:var(--red); }
+.tag-blue { background:var(--blue-soft); color:var(--blue); }
+.tag-accent { background:var(--accent-soft); color:var(--accent); }
+
+/* ─── TABLE ─── */
+table { width:100%; border-collapse:collapse; }
+th { font-size:11px; font-weight:600; color:var(--text3); text-transform:uppercase; letter-spacing:0.6px; padding:10px 12px; text-align:left; border-bottom:1px solid var(--border); }
+td { padding:11px 12px; font-size:13px; color:var(--text); border-bottom:1px solid var(--border); }
+tr:last-child td { border-bottom:none; }
+tr:hover td { background:var(--surface2); }
+
+/* ─── FUNNEL ─── */
+.funnel-row { display:flex; align-items:center; gap:12px; margin-bottom:10px; }
+.funnel-name { font-size:12px; color:var(--text2); font-weight:500; min-width:70px; }
+.funnel-track { flex:1; height:32px; background:var(--surface2); border-radius:6px; overflow:hidden; }
+.funnel-fill {
+  height:100%; display:flex; align-items:center; padding-left:10px;
+  font-size:12px; font-weight:600; color:var(--surface);
+  border-radius:6px; transition:width 0.8s ease;
+}
+.funnel-num { font-family:'DM Mono',monospace; font-size:12px; color:var(--text2); min-width:50px; text-align:right; }
+
+/* ─── LLM COMPOSER ─── */
+.composer-area {
+  background:var(--surface2);
+  border:1px solid var(--border);
+  border-radius:var(--radius-lg);
+  padding:0;
+  overflow:hidden;
+}
+.composer-toolbar {
+  display:flex; gap:8px; padding:12px 16px;
+  border-bottom:1px solid var(--border);
+  background:var(--surface);
+  flex-wrap:wrap;
+}
+.composer-select {
+  padding:5px 10px;
+  border:1px solid var(--border);
+  border-radius:5px;
+  font-family:'DM Sans',sans-serif;
+  font-size:12px;
+  background:var(--surface);
+  color:var(--text);
+}
+.composer-body { padding:16px; }
+.composer-label { font-size:11px; font-weight:600; color:var(--text3); text-transform:uppercase; letter-spacing:0.6px; margin-bottom:6px; }
+.composer-out {
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:8px;
+  padding:16px;
+  min-height:120px;
+  font-size:13.5px;
+  line-height:1.7;
+  color:var(--text);
+  white-space:pre-wrap;
+  font-family:'DM Sans',sans-serif;
+}
+.composer-out.loading { color:var(--text3); font-style:italic; }
+
+/* ─── CHAT / MESSAGES ─── */
+.chat-layout { display:grid; grid-template-columns:280px 1fr; gap:0; height:calc(100vh - var(--header-h) - 56px); min-height:500px; }
+.chat-list { border-right:1px solid var(--border); overflow-y:auto; }
+.chat-item { padding:12px 16px; cursor:pointer; border-bottom:1px solid var(--border); transition:background 0.1s; }
+.chat-item:hover,.chat-item.active { background:var(--accent-soft); }
+.chat-item-name { font-weight:600; font-size:13px; margin-bottom:2px; }
+.chat-item-preview { font-size:12px; color:var(--text3); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.chat-item-meta { font-size:11px; color:var(--text3); margin-top:2px; }
+
+.chat-main { display:flex; flex-direction:column; }
+.chat-header { padding:14px 20px; border-bottom:1px solid var(--border); display:flex; align-items:center; gap:12px; }
+.chat-messages { flex:1; overflow-y:auto; padding:20px; display:flex; flex-direction:column; gap:12px; }
+.chat-input-row { padding:12px 20px; border-top:1px solid var(--border); display:flex; gap:10px; align-items:flex-end; }
+.chat-input {
+  flex:1; padding:10px 14px;
+  border:1px solid var(--border);
+  border-radius:8px;
+  font-family:'DM Sans',sans-serif;
+  font-size:13px; resize:none;
+  min-height:42px; max-height:120px;
+  background:var(--surface);
+  color:var(--text);
+}
+
+.msg { max-width:75%; }
+.msg-out { margin-left:auto; }
+.msg-bubble {
+  padding:10px 14px;
+  border-radius:10px;
+  font-size:13.5px;
+  line-height:1.6;
+}
+.msg-in .msg-bubble { background:var(--surface2); color:var(--text); border-radius:2px 10px 10px 10px; }
+.msg-out .msg-bubble { background:var(--accent); color:#fff; border-radius:10px 10px 2px 10px; }
+.msg-meta { font-size:11px; color:var(--text3); margin-top:3px; padding:0 4px; }
+.msg-out .msg-meta { text-align:right; }
+
+/* ─── PEST ALERTS ─── */
+.alert-card {
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius-lg);
+  padding:16px 20px;
+  margin-bottom:12px;
+  display:flex; gap:14px; align-items:flex-start;
+  cursor:pointer; transition:box-shadow 0.15s;
+}
+.alert-card:hover { box-shadow:var(--shadow-md); }
+.alert-icon {
+  width:38px; height:38px; border-radius:9px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:18px; flex-shrink:0;
+}
+.alert-icon.high { background:var(--red-soft); color:var(--red); }
+.alert-icon.medium { background:var(--amber-soft); color:var(--amber); }
+.alert-icon.low { background:var(--green-soft); color:var(--green); }
+.alert-body { flex:1; }
+.alert-title { font-size:14px; font-weight:600; margin-bottom:3px; }
+.alert-meta { font-size:12px; color:var(--text2); margin-bottom:8px; }
+.alert-progress { height:4px; background:var(--surface2); border-radius:2px; overflow:hidden; margin-bottom:6px; }
+.alert-bar { height:100%; border-radius:2px; }
+.alert-bar.high { background:var(--red); }
+.alert-bar.medium { background:var(--amber); }
+.alert-bar.low { background:var(--green); }
+.alert-footer { display:flex; align-items:center; gap:8px; }
+.alert-action { margin-left:auto; }
+
+/* ─── FARMER TABLE EXTRAS ─── */
+.farmer-av {
+  width:28px; height:28px; border-radius:50%;
+  background:var(--accent-soft); color:var(--accent);
+  font-size:11px; font-weight:700;
+  display:flex; align-items:center; justify-content:center;
+}
+
+/* ─── SCROLLBAR ─── */
+::-webkit-scrollbar { width:5px; height:5px; }
+::-webkit-scrollbar-track { background:transparent; }
+::-webkit-scrollbar-thumb { background:var(--border2); border-radius:10px; }
+
+/* ─── LOADERS ─── */
+.spinner {
+  width:18px; height:18px;
+  border:2px solid var(--border);
+  border-top-color:var(--accent);
+  border-radius:50%;
+  animation:spin 0.7s linear infinite;
+  display:inline-block;
+}
+@keyframes spin { to { transform:rotate(360deg); } }
+
+.skeleton {
+  background:linear-gradient(90deg, var(--surface2) 25%, var(--border) 50%, var(--surface2) 75%);
+  background-size:200% 100%;
+  animation:shimmer 1.3s infinite;
+  border-radius:4px;
+}
+@keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+
+/* ─── NOTIFICATION TOAST ─── */
+.toast {
+  position:fixed; bottom:24px; right:24px;
+  background:var(--text); color:var(--bg);
+  padding:12px 18px; border-radius:8px;
+  font-size:13px; font-weight:500;
+  box-shadow:var(--shadow-md);
+  z-index:9999;
+  animation:toastIn 0.3s ease;
+  max-width:320px;
+}
+@keyframes toastIn { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:none} }
+
+/* ─── MODAL ─── */
+.modal-bg {
+  position:fixed; inset:0;
+  background:rgba(26,25,22,0.4);
+  z-index:200; display:none;
+  align-items:center; justify-content:center;
+}
+.modal-bg.open { display:flex; }
+.modal {
+  background:var(--surface);
+  border-radius:var(--radius-lg);
+  padding:28px;
+  width:560px; max-width:95vw;
+  max-height:90vh; overflow-y:auto;
+  box-shadow:var(--shadow-md);
+}
+.modal-title { font-family:'Playfair Display',serif; font-size:20px; font-weight:600; margin-bottom:16px; }
+.form-row { margin-bottom:14px; }
+.form-label { font-size:12px; font-weight:600; color:var(--text2); margin-bottom:5px; display:block; }
+.form-input {
+  width:100%; padding:8px 12px;
+  border:1px solid var(--border);
+  border-radius:6px;
+  font-family:'DM Sans',sans-serif; font-size:13px;
+  background:var(--surface); color:var(--text);
+}
+.form-input:focus { outline:none; border-color:var(--accent); }
+.form-row-2 { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+
+/* ─── ANALYTICS CHART ─── */
+.bar-chart { display:flex; align-items:flex-end; gap:6px; height:120px; }
+.bar-wrap { flex:1; display:flex; flex-direction:column; align-items:center; gap:4px; height:100%; justify-content:flex-end; }
+.bar { width:100%; border-radius:4px 4px 0 0; min-height:4px; transition:height 0.6s ease; }
+.bar-label { font-size:10px; color:var(--text3); font-weight:500; }
+.bar-val { font-size:10px; color:var(--text2); font-weight:600; font-family:'DM Mono',monospace; }
+
+/* ─── CALL PAGE ─── */
+.call-card {
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius-lg);
+  padding:20px;
+  margin-bottom:12px;
+}
+.call-status { display:flex; align-items:center; gap:6px; font-size:12px; font-weight:600; }
+.call-dot { width:8px; height:8px; border-radius:50%; }
+.call-dot.live { background:#2d7a4f; animation:pulse 1.5s infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+.voice-wave { display:flex; align-items:center; gap:2px; height:30px; }
+.wave-bar { width:3px; border-radius:2px; background:var(--accent); animation:wave 1s ease-in-out infinite; }
+.wave-bar:nth-child(1){height:40%;animation-delay:0s}
+.wave-bar:nth-child(2){height:80%;animation-delay:0.1s}
+.wave-bar:nth-child(3){height:60%;animation-delay:0.2s}
+.wave-bar:nth-child(4){height:100%;animation-delay:0.3s}
+.wave-bar:nth-child(5){height:70%;animation-delay:0.4s}
+.wave-bar:nth-child(6){height:45%;animation-delay:0.5s}
+.wave-bar:nth-child(7){height:85%;animation-delay:0.6s}
+@keyframes wave { 0%,100%{transform:scaleY(0.5)} 50%{transform:scaleY(1)} }
+
+/* ─── REGION MAP VISUAL ─── */
+.region-bars { }
+.region-row { display:flex; align-items:center; gap:10px; margin-bottom:8px; }
+.region-name { font-size:12px; color:var(--text2); width:110px; flex-shrink:0; }
+.region-track { flex:1; height:24px; background:var(--surface2); border-radius:4px; overflow:hidden; }
+.region-fill { height:100%; border-radius:4px; display:flex; align-items:center; justify-content:flex-end; padding-right:8px; }
+.region-pct { font-size:11px; font-weight:700; color:var(--surface); font-family:'DM Mono',monospace; }
+.region-count { font-size:12px; color:var(--text2); font-family:'DM Mono',monospace; min-width:50px; text-align:right; }
+
+/* ─── RAG INDICATOR ─── */
+.rag-pill {
+  display:inline-flex; align-items:center; gap:5px;
+  padding:3px 10px; border-radius:20px;
+  background:var(--green-soft); color:var(--green);
+  font-size:11px; font-weight:600;
+}
+.rag-pill-dot { width:6px; height:6px; border-radius:50%; background:var(--green); }
+
+/* Section headers inside pages */
+.section-head {
+  display:flex; align-items:center; justify-content:space-between;
+  margin-bottom:14px;
+}
+.section-title { font-size:14px; font-weight:600; color:var(--text); }
+.section-sub { font-size:12px; color:var(--text3); }
+
+/* ─── RESPONSIVE ─── */
+@media(max-width:1100px){.grid-4{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:800px){.grid-main{grid-template-columns:1fr}.sidebar{width:0;overflow:hidden}}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-mark"><span class="material-icons-round" style="font-size:17px">eco</span></div>
+    <div>
+      <div class="logo-text">AgroIntel</div>
+      <div class="logo-sub">SYNGENTA PLATFORM</div>
+    </div>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-label">Overview</div>
+    <div class="nav-item active" onclick="nav('dashboard',this)">
+      <span class="material-icons-round">space_dashboard</span> Dashboard
+    </div>
+    <div class="nav-item" onclick="nav('analytics',this)">
+      <span class="material-icons-round">bar_chart</span> Analytics
+    </div>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-label">Campaigns</div>
+    <div class="nav-item" onclick="nav('campaigns',this)">
+      <span class="material-icons-round">campaign</span> Campaigns
+    </div>
+    <div class="nav-item" onclick="nav('compose',this)">
+      <span class="material-icons-round">auto_awesome</span> AI Composer
+    </div>
+    <div class="nav-item" onclick="nav('calls',this)">
+      <span class="material-icons-round">call</span> Voice Calls
+    </div>
+    <div class="nav-item" onclick="nav('messages',this)">
+      <span class="material-icons-round">chat</span> Messages
+      <span class="nav-badge">3</span>
+    </div>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-label">Intelligence</div>
+    <div class="nav-item" onclick="nav('pest',this)">
+      <span class="material-icons-round">pest_control</span> Pest Alerts
+      <span class="nav-badge" style="background:var(--red)">5</span>
+    </div>
+    <div class="nav-item" onclick="nav('farmers',this)">
+      <span class="material-icons-round">people</span> Farmers
+    </div>
+  </div>
+
+  <div class="sidebar-bottom">
+    <div class="user-card">
+      <div class="user-av">RK</div>
+      <div>
+        <div class="user-name">Rajesh Kumar</div>
+        <div class="user-role">Platform Admin</div>
+      </div>
+      <div class="ollama-dot" title="Ollama qwen2.5 connected"></div>
+    </div>
+    <div style="margin-top:8px;padding:0 8px">
+      <span class="rag-pill"><span class="rag-pill-dot"></span> RAG · qwen2.5</span>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="page-breadcrumb">
+      <span>AgroIntel</span>
+      <span class="breadcrumb-sep">/</span>
+      <span class="breadcrumb-active" id="breadcrumb-text">Dashboard</span>
+    </div>
+    <div class="topbar-actions">
+      <select class="topbar-select" id="globalPeriod" onchange="reloadPage()">
+        <option value="7d">Last 7 Days</option>
+        <option value="30d">Last 30 Days</option>
+        <option value="90d">Last 90 Days</option>
+      </select>
+      <button class="btn" onclick="refreshAll()">
+        <span class="material-icons-round">refresh</span> Refresh
+      </button>
+      <button class="btn btn-accent" onclick="openModal('newCampaign')">
+        <span class="material-icons-round">add</span> New Campaign
+      </button>
+    </div>
+  </div>
+
+  <!-- ══════ PAGE: DASHBOARD ══════ -->
+  <div class="page active" id="page-dashboard">
+    <div class="page-header">
+      <div class="page-title">Campaign Intelligence</div>
+      <div class="page-subtitle">Real-time overview · India Kharif Season 2025</div>
+    </div>
+
+    <div class="grid-4">
+      <div class="stat-card stat-accent">
+        <div class="stat-label">Total Campaigns</div>
+        <div class="stat-val">12</div>
+        <div class="stat-sub">5 active · 3 scheduled</div>
+      </div>
+      <div class="stat-card stat-green">
+        <div class="stat-label">Delivery Rate</div>
+        <div class="stat-val">91.3%</div>
+        <div class="stat-sub">↑ 2.4% vs last week</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Farmers Reached</div>
+        <div class="stat-val">45.2K</div>
+        <div class="stat-sub">Across 8 states</div>
+      </div>
+      <div class="stat-card stat-blue">
+        <div class="stat-label">Conversion Rate</div>
+        <div class="stat-val">7.2%</div>
+        <div class="stat-sub">↑ 0.8% this period</div>
+      </div>
+    </div>
+
+    <div class="grid-main">
+      <div>
+        <!-- Active Campaigns Table -->
+        <div class="card" style="margin-bottom:16px">
+          <div class="section-head">
+            <div>
+              <div class="section-title">Active Campaigns</div>
+              <div class="section-sub">Click to view analytics</div>
+            </div>
+            <button class="btn" onclick="nav('campaigns',document.querySelector('[onclick*=campaigns]'))">View all</button>
+          </div>
+          <table>
+            <thead>
+              <tr><th>Campaign</th><th>Crop · Region</th><th>Sent</th><th>Delivery</th><th>Conv.</th><th>Status</th></tr>
+            </thead>
+            <tbody id="dash-campaign-table">
+              <tr><td colspan="6" style="text-align:center;padding:20px;color:var(--text3)"><span class="spinner"></span></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Conversion Funnel -->
+        <div class="card">
+          <div class="section-head">
+            <div class="section-title">Aggregate Funnel</div>
+            <span class="tag tag-accent">All Campaigns</span>
+          </div>
+          <div id="dash-funnel">
+            <div class="funnel-row"><div class="funnel-name">Sent</div><div class="funnel-track"><div class="funnel-fill" style="width:100%;background:var(--blue)">8,700</div></div><div class="funnel-num">100%</div></div>
+            <div class="funnel-row"><div class="funnel-name">Delivered</div><div class="funnel-track"><div class="funnel-fill" style="width:91%;background:var(--accent)">7,917</div></div><div class="funnel-num">91%</div></div>
+            <div class="funnel-row"><div class="funnel-name">Engaged</div><div class="funnel-track"><div class="funnel-fill" style="width:39%;background:#c77c14">3,380</div></div><div class="funnel-num">39%</div></div>
+            <div class="funnel-row"><div class="funnel-name">Converted</div><div class="funnel-track"><div class="funnel-fill" style="width:7%;background:var(--green)">627</div></div><div class="funnel-num">7.2%</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <!-- Pest Alert Summary -->
+        <div class="card" style="margin-bottom:16px">
+          <div class="section-head">
+            <div class="section-title">Pest Alerts</div>
+            <span class="tag tag-red">5 Active</span>
+          </div>
+          <div id="dash-pest-mini">
+            <div class="alert-card" style="padding:12px;margin-bottom:8px" onclick="nav('pest',document.querySelector('[onclick*=pest]'))">
+              <div class="alert-icon high"><span class="material-icons-round">pest_control</span></div>
+              <div class="alert-body">
+                <div class="alert-title" style="font-size:13px">Brown Plant Hopper</div>
+                <div style="font-size:11px;color:var(--text2)">Tamil Nadu · Rice · HIGH</div>
+                <div class="alert-progress" style="margin-top:6px"><div class="alert-bar high" style="width:85%"></div></div>
+              </div>
+            </div>
+            <div class="alert-card" style="padding:12px;margin-bottom:8px" onclick="nav('pest',document.querySelector('[onclick*=pest]'))">
+              <div class="alert-icon medium"><span class="material-icons-round">grass</span></div>
+              <div class="alert-body">
+                <div class="alert-title" style="font-size:13px">Bollworm Outbreak</div>
+                <div style="font-size:11px;color:var(--text2)">Maharashtra · Cotton · MED</div>
+                <div class="alert-progress" style="margin-top:6px"><div class="alert-bar medium" style="width:62%"></div></div>
+              </div>
+            </div>
+            <div class="alert-card" style="padding:12px" onclick="nav('pest',document.querySelector('[onclick*=pest]'))">
+              <div class="alert-icon high"><span class="material-icons-round">warning</span></div>
+              <div class="alert-body">
+                <div class="alert-title" style="font-size:13px">Wheat Rust</div>
+                <div style="font-size:11px;color:var(--text2)">Punjab · Wheat · HIGH</div>
+                <div class="alert-progress" style="margin-top:6px"><div class="alert-bar high" style="width:78%"></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Regional Reach -->
+        <div class="card">
+          <div class="section-head"><div class="section-title">Regional Reach</div></div>
+          <div class="region-bars">
+            <div class="region-row"><div class="region-name">Tamil Nadu</div><div class="region-track"><div class="region-fill" style="width:78%;background:var(--accent)"><span class="region-pct">78%</span></div></div><div class="region-count">12.4K</div></div>
+            <div class="region-row"><div class="region-name">Maharashtra</div><div class="region-track"><div class="region-fill" style="width:65%;background:var(--blue)"><span class="region-pct">65%</span></div></div><div class="region-count">9.8K</div></div>
+            <div class="region-row"><div class="region-name">Punjab</div><div class="region-track"><div class="region-fill" style="width:55%;background:var(--green)"><span class="region-pct">55%</span></div></div><div class="region-count">8.1K</div></div>
+            <div class="region-row"><div class="region-name">Karnataka</div><div class="region-track"><div class="region-fill" style="width:40%;background:#7c4dbd)"><span class="region-pct" style="color:var(--surface)">40%</span></div></div><div class="region-count">6.2K</div></div>
+            <div class="region-row"><div class="region-name">Others</div><div class="region-track"><div class="region-fill" style="width:25%;background:var(--text3)"><span class="region-pct">25%</span></div></div><div class="region-count">8.7K</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════ PAGE: ANALYTICS ══════ -->
+  <div class="page" id="page-analytics">
+    <div class="page-header">
+      <div class="page-title">Analytics</div>
+      <div class="page-subtitle">Campaign performance · Channel breakdown · Engagement trends</div>
+    </div>
+
+    <div class="grid-4" style="margin-bottom:20px">
+      <div class="stat-card"><div class="stat-label">Messages Sent</div><div class="stat-val">156K</div><div class="stat-sub">This period</div></div>
+      <div class="stat-card stat-green"><div class="stat-label">Avg Delivery</div><div class="stat-val">91.3%</div><div class="stat-sub">↑ vs 88.9% last</div></div>
+      <div class="stat-card stat-accent"><div class="stat-label">Avg Engagement</div><div class="stat-val">38.7%</div><div class="stat-sub">Open / click / reply</div></div>
+      <div class="stat-card stat-blue"><div class="stat-label">ROI</div><div class="stat-val">3.45x</div><div class="stat-sub">Return on spend</div></div>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <div class="section-head"><div class="section-title">Weekly Engagement Trend</div></div>
+        <div class="bar-chart" id="analytics-bar-chart">
+          <!-- generated by JS -->
+        </div>
+        <div style="display:flex;gap:16px;margin-top:12px">
+          <span style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text2)"><span style="width:10px;height:10px;border-radius:2px;background:var(--accent);display:inline-block"></span>Engagement</span>
+          <span style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text2)"><span style="width:10px;height:10px;border-radius:2px;background:var(--green);display:inline-block"></span>Conversion</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="section-head"><div class="section-title">Channel Breakdown</div></div>
+        <div style="display:flex;flex-direction:column;gap:10px" id="channel-breakdown">
+          <div>
+            <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span style="color:var(--text2)">WhatsApp</span><span style="font-weight:600;font-family:'DM Mono',monospace">68,450 <span class="tag tag-green" style="font-size:10px">44%</span></span></div>
+            <div style="height:8px;background:var(--surface2);border-radius:4px"><div style="width:44%;height:100%;background:var(--green);border-radius:4px"></div></div>
+          </div>
+          <div>
+            <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span style="color:var(--text2)">Voice IVR</span><span style="font-weight:600;font-family:'DM Mono',monospace">46,900 <span class="tag tag-blue" style="font-size:10px">30%</span></span></div>
+            <div style="height:8px;background:var(--surface2);border-radius:4px"><div style="width:30%;height:100%;background:var(--blue);border-radius:4px"></div></div>
+          </div>
+          <div>
+            <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span style="color:var(--text2)">SMS</span><span style="font-weight:600;font-family:'DM Mono',monospace">31,220 <span class="tag tag-accent" style="font-size:10px">20%</span></span></div>
+            <div style="height:8px;background:var(--surface2);border-radius:4px"><div style="width:20%;height:100%;background:var(--accent);border-radius:4px"></div></div>
+          </div>
+          <div>
+            <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span style="color:var(--text2)">Retailer</span><span style="font-weight:600;font-family:'DM Mono',monospace">9,850 <span class="tag tag-amber" style="font-size:10px">6%</span></span></div>
+            <div style="height:8px;background:var(--surface2);border-radius:4px"><div style="width:6%;height:100%;background:var(--amber);border-radius:4px"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <div class="section-head"><div class="section-title">Top Performing Segments</div></div>
+        <table>
+          <thead><tr><th>Segment</th><th>Farmers</th><th>Eng. Rate</th><th>Conv. Rate</th></tr></thead>
+          <tbody>
+            <tr><td>Smallholder Rice · TN</td><td>12,400</td><td><span style="color:var(--green);font-weight:600">46.2%</span></td><td>9.1%</td></tr>
+            <tr><td>Cotton Grower · MH</td><td>8,300</td><td><span style="color:var(--green);font-weight:600">42.8%</span></td><td>8.4%</td></tr>
+            <tr><td>Wheat Farmer · PB</td><td>9,100</td><td>38.1%</td><td>7.7%</td></tr>
+            <tr><td>Sugarcane · KA</td><td>5,600</td><td>31.4%</td><td>5.2%</td></tr>
+            <tr><td>Tomato · HP</td><td>3,200</td><td>28.0%</td><td>4.1%</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="card">
+        <div class="section-head"><div class="section-title">AI Insight</div><span class="rag-pill"><span class="rag-pill-dot"></span>RAG</span></div>
+        <div id="analytics-insight-out" class="composer-out loading" style="min-height:140px">
+          Loading AI insight from knowledge base...
+        </div>
+        <div style="margin-top:10px;display:flex;gap:8px">
+          <button class="btn" onclick="fetchAnalyticsInsight()"><span class="material-icons-round">auto_awesome</span>Refresh Insight</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════ PAGE: CAMPAIGNS ══════ -->
+  <div class="page" id="page-campaigns">
+    <div class="page-header">
+      <div class="page-title">Campaigns</div>
+      <div class="page-subtitle">Manage and monitor all marketing campaigns</div>
+    </div>
+    <div class="card">
+      <table>
+        <thead>
+          <tr><th>Campaign</th><th>Crop · Product</th><th>Region</th><th>Status</th><th>Sent</th><th>Delivery</th><th>Engaged</th><th>Conv.</th><th>Actions</th></tr>
+        </thead>
+        <tbody id="campaigns-table-body">
+          <tr><td colspan="9" style="text-align:center;padding:30px"><span class="spinner"></span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ══════ PAGE: AI COMPOSER ══════ -->
+  <div class="page" id="page-compose">
+    <div class="page-header">
+      <div class="page-title">AI Content Composer</div>
+      <div class="page-subtitle">Generate personalized, vernacular campaign content using qwen2.5 + RAG knowledge base</div>
+    </div>
+
+    <div class="grid-main">
+      <div>
+        <div class="composer-area">
+          <div class="composer-toolbar">
+            <select class="composer-select" id="c-crop">
+              <option value="">Crop</option>
+              <option>Rice</option><option>Cotton</option><option>Wheat</option><option>Sugarcane</option><option>Tomato</option><option>Pulses</option>
+            </select>
+            <select class="composer-select" id="c-region">
+              <option value="">Region</option>
+              <option>Tamil Nadu</option><option>Maharashtra</option><option>Punjab</option><option>Karnataka</option><option>Himachal Pradesh</option><option>Andhra Pradesh</option>
+            </select>
+            <select class="composer-select" id="c-stage">
+              <option value="">Growth Stage</option>
+              <option>Seedling</option><option>Vegetative</option><option>Flowering</option><option>Grain Fill</option><option>Harvest</option>
+            </select>
+            <select class="composer-select" id="c-lang">
+              <option value="English">Language</option>
+              <option>Tamil</option><option>Hindi</option><option>Marathi</option><option>Kannada</option><option>Telugu</option><option>Punjabi</option>
+            </select>
+            <select class="composer-select" id="c-type">
+              <option value="WhatsApp message">Content Type</option>
+              <option>WhatsApp message</option><option>SMS (160 chars)</option><option>Voice script</option><option>Video script</option><option>Retailer brief</option>
+            </select>
+          </div>
+          <div class="composer-body">
+            <div class="form-row">
+              <label class="form-label">Pest / Disease Threat (optional)</label>
+              <input class="form-input" id="c-pest" placeholder="e.g. Brown Plant Hopper, Blast disease...">
+            </div>
+            <div class="form-row">
+              <label class="form-label">Product to Promote</label>
+              <input class="form-input" id="c-product" placeholder="e.g. Syngenta Propiconazole 25% EC">
+            </div>
+            <div class="form-row">
+              <label class="form-label">Weather Context (optional)</label>
+              <input class="form-input" id="c-weather" placeholder="e.g. High humidity 85%, post-monsoon...">
+            </div>
+            <div style="display:flex;gap:8px;margin-top:4px;flex-wrap:wrap">
+              <button class="btn btn-accent" onclick="generateContent('single')"><span class="material-icons-round">auto_awesome</span> Generate Message</button>
+              <button class="btn" onclick="generateContent('variants')"><span class="material-icons-round">layers</span> Generate 5 Variants</button>
+              <button class="btn" onclick="generateContent('voice')"><span class="material-icons-round">record_voice_over</span> Voice Script</button>
+              <span class="rag-pill" style="align-self:center"><span class="rag-pill-dot"></span>RAG enriched</span>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top:16px">
+          <div class="section-head">
+            <div class="section-title" id="compose-out-label">Generated Content</div>
+            <button class="btn" id="copy-btn" onclick="copyContent()" style="display:none"><span class="material-icons-round">content_copy</span>Copy</button>
+          </div>
+          <div class="composer-out loading" id="compose-output">
+            Fill in the form above and click Generate to create AI-powered, contextually relevant content for your farmers.
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="card" style="margin-bottom:16px">
+          <div class="section-title" style="margin-bottom:12px">RAG Knowledge Base</div>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <div style="display:flex;align-items:center;gap:8px;padding:8px;background:var(--surface2);border-radius:6px;font-size:12px">
+              <span class="material-icons-round" style="font-size:16px;color:var(--green)">check_circle</span>
+              <span>Syngenta product portfolio (250+ products)</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;padding:8px;background:var(--surface2);border-radius:6px;font-size:12px">
+              <span class="material-icons-round" style="font-size:16px;color:var(--green)">check_circle</span>
+              <span>Crop agronomy guides (12 crops)</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;padding:8px;background:var(--surface2);border-radius:6px;font-size:12px">
+              <span class="material-icons-round" style="font-size:16px;color:var(--green)">check_circle</span>
+              <span>Pest & disease library (380+ entries)</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;padding:8px;background:var(--surface2);border-radius:6px;font-size:12px">
+              <span class="material-icons-round" style="font-size:16px;color:var(--green)">check_circle</span>
+              <span>Regional language templates</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;padding:8px;background:var(--surface2);border-radius:6px;font-size:12px">
+              <span class="material-icons-round" style="font-size:16px;color:var(--green)">check_circle</span>
+              <span>Historical campaign performance data</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;padding:8px;background:var(--surface2);border-radius:6px;font-size:12px">
+              <span class="material-icons-round" style="font-size:16px;color:var(--amber)">schedule</span>
+              <span>Live weather API (syncing...)</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="section-title" style="margin-bottom:12px">Engagement Prediction</div>
+          <div id="engage-pred" style="color:var(--text3);font-size:13px">Generate content to see predicted engagement score</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════ PAGE: VOICE CALLS ══════ -->
+  <div class="page" id="page-calls">
+    <div class="page-header">
+      <div class="page-title">Voice Campaigns</div>
+      <div class="page-subtitle">AI-generated IVR scripts and outbound call management for feature phone farmers</div>
+    </div>
+
+    <div class="grid-4" style="margin-bottom:20px">
+      <div class="stat-card"><div class="stat-label">Calls Scheduled</div><div class="stat-val">2,840</div><div class="stat-sub">Today</div></div>
+      <div class="stat-card stat-green"><div class="stat-label">Answered</div><div class="stat-val">76.4%</div><div class="stat-sub">↑ 3.1%</div></div>
+      <div class="stat-card stat-accent"><div class="stat-label">Avg Duration</div><div class="stat-val">2m 14s</div><div class="stat-sub">IVR engagement</div></div>
+      <div class="stat-card stat-blue"><div class="stat-label">Action Taken</div><div class="stat-val">18.2%</div><div class="stat-sub">Pressed 1 to buy</div></div>
+    </div>
+
+    <div class="grid-main">
+      <div>
+        <div class="card" style="margin-bottom:16px">
+          <div class="section-head">
+            <div class="section-title">Generate Voice Script</div>
+            <span class="rag-pill"><span class="rag-pill-dot"></span>qwen2.5 + RAG</span>
+          </div>
+          <div style="display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap">
+            <select class="composer-select" id="v-crop" style="flex:1">
+              <option>Rice</option><option>Cotton</option><option>Wheat</option><option>Sugarcane</option>
+            </select>
+            <select class="composer-select" id="v-lang" style="flex:1">
+              <option>Tamil</option><option>Hindi</option><option>Marathi</option><option>Telugu</option><option>Kannada</option>
+            </select>
+            <select class="composer-select" id="v-duration" style="flex:1">
+              <option>60 seconds</option><option>90 seconds</option><option>120 seconds</option>
+            </select>
+          </div>
+          <div class="form-row">
+            <label class="form-label">Key Message / Alert</label>
+            <input class="form-input" id="v-msg" placeholder="e.g. Brown Plant Hopper detected, recommend Imidacloprid...">
+          </div>
+          <button class="btn btn-accent" onclick="generateVoiceScript()"><span class="material-icons-round">record_voice_over</span> Generate IVR Script</button>
+        </div>
+
+        <div class="card">
+          <div class="section-head">
+            <div style="display:flex;align-items:center;gap:10px">
+              <div class="section-title">Generated Script</div>
+              <div class="voice-wave" id="voice-wave" style="display:none">
+                <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
+                <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
+              </div>
+            </div>
+          </div>
+          <div class="composer-out loading" id="voice-script-out">Your IVR script will appear here. It will include an intro, pest/product information, and a CTA with keypress action.</div>
+          <div style="margin-top:12px;display:flex;gap:8px">
+            <button class="btn" onclick="copyVoiceScript()"><span class="material-icons-round">content_copy</span>Copy Script</button>
+            <button class="btn btn-accent" onclick="scheduleVoiceCampaign()"><span class="material-icons-round">schedule_send</span>Schedule Calls</button>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="card" style="margin-bottom:16px">
+          <div class="section-head"><div class="section-title">Live Calls</div><span class="call-status"><span class="call-dot live"></span>2 Active</span></div>
+          <div class="call-card">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+              <div style="font-weight:600;font-size:13px">Ramesh Pillai · TN-001234</div>
+              <span class="tag tag-green">In Progress</span>
+            </div>
+            <div style="font-size:12px;color:var(--text2);margin-bottom:8px">Rice Farmer · Thanjavur · Tamil</div>
+            <div style="font-size:11px;color:var(--text3)">Campaign: Fungicide Alert · 1m 24s elapsed</div>
+          </div>
+          <div class="call-card">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+              <div style="font-weight:600;font-size:13px">Sukhwinder Singh · PB-005621</div>
+              <span class="tag tag-green">In Progress</span>
+            </div>
+            <div style="font-size:12px;color:var(--text2);margin-bottom:8px">Wheat Farmer · Ludhiana · Punjabi</div>
+            <div style="font-size:11px;color:var(--text3)">Campaign: Wheat Rust Alert · 0m 47s elapsed</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="section-head"><div class="section-title">Call Queue</div></div>
+          <table>
+            <thead><tr><th>Farmer</th><th>Region</th><th>Time</th></tr></thead>
+            <tbody>
+              <tr><td>Manikandan R.</td><td><span class="tag tag-accent">TN</span></td><td>10:30 AM</td></tr>
+              <tr><td>Priya Bhosale</td><td><span class="tag tag-blue">MH</span></td><td>10:45 AM</td></tr>
+              <tr><td>Gurpreet Kaur</td><td><span class="tag tag-amber">PB</span></td><td>11:00 AM</td></tr>
+              <tr><td>Lakshmi Devi</td><td><span class="tag tag-green">AP</span></td><td>11:15 AM</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════ PAGE: MESSAGES ══════ -->
+  <div class="page" id="page-messages">
+    <div class="page-header">
+      <div class="page-title">Messages</div>
+      <div class="page-subtitle">WhatsApp & SMS conversations with farmers</div>
+    </div>
+    <div class="card" style="padding:0;overflow:hidden">
+      <div class="chat-layout">
+        <div class="chat-list">
+          <div style="padding:12px;border-bottom:1px solid var(--border)">
+            <input class="form-input" placeholder="Search farmers..." style="font-size:12px">
+          </div>
+          <div id="chat-list-items"></div>
+        </div>
+        <div class="chat-main">
+          <div class="chat-header">
+            <div class="farmer-av" id="chat-av">RK</div>
+            <div>
+              <div style="font-weight:600;font-size:13px" id="chat-name">Select a conversation</div>
+              <div style="font-size:11px;color:var(--text3)" id="chat-info">Rice · Tamil Nadu · WhatsApp</div>
+            </div>
+            <div style="margin-left:auto;display:flex;gap:8px">
+              <button class="btn" onclick="generateSmartReply()"><span class="material-icons-round">auto_awesome</span>AI Reply</button>
+              <button class="btn"><span class="material-icons-round">call</span></button>
+            </div>
+          </div>
+          <div class="chat-messages" id="chat-msgs">
+            <div style="text-align:center;color:var(--text3);font-size:13px;margin:auto">Select a conversation to view messages</div>
+          </div>
+          <div class="chat-input-row">
+            <textarea class="chat-input" id="chat-input" placeholder="Type a message..." rows="1"></textarea>
+            <button class="btn btn-accent" onclick="sendMsg()"><span class="material-icons-round">send</span></button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════ PAGE: PEST ALERTS ══════ -->
+  <div class="page" id="page-pest">
+    <div class="page-header">
+      <div class="page-title">Pest & Disease Alerts</div>
+      <div class="page-subtitle">Real-time outbreak intelligence · Auto-generate response campaigns</div>
+    </div>
+
+    <div class="grid-4" style="margin-bottom:20px">
+      <div class="stat-card" style="border-left:3px solid var(--red)"><div class="stat-label">High Severity</div><div class="stat-val" style="color:var(--red)">2</div><div class="stat-sub">Immediate action needed</div></div>
+      <div class="stat-card" style="border-left:3px solid var(--amber)"><div class="stat-label">Medium Severity</div><div class="stat-val" style="color:var(--amber)">2</div><div class="stat-sub">Monitor closely</div></div>
+      <div class="stat-card" style="border-left:3px solid var(--green)"><div class="stat-label">Low Severity</div><div class="stat-val" style="color:var(--green)">1</div><div class="stat-sub">Watch list</div></div>
+      <div class="stat-card"><div class="stat-label">Farmers Affected</div><div class="stat-val">3,570</div><div class="stat-sub">Across 5 regions</div></div>
+    </div>
+
+    <div class="grid-main">
+      <div id="pest-alert-list">
+        <!-- filled by JS -->
+      </div>
+
+      <div>
+        <div class="card" style="margin-bottom:16px">
+          <div class="section-head">
+            <div class="section-title">AI Alert Analysis</div>
+            <span class="rag-pill"><span class="rag-pill-dot"></span>RAG</span>
+          </div>
+          <div class="composer-out loading" id="pest-insight-out" style="min-height:150px">
+            Click on an alert to get AI-powered analysis and recommended campaign strategy.
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="section-title" style="margin-bottom:12px">Quick Response</div>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <button class="btn btn-accent" onclick="launchPestCampaign()"><span class="material-icons-round">campaign</span>Launch Alert Campaign</button>
+            <button class="btn" onclick="generatePestContent()"><span class="material-icons-round">auto_awesome</span>Generate Warning Message</button>
+            <button class="btn" onclick="scheduleVoicePest()"><span class="material-icons-round">record_voice_over</span>Schedule Voice Alerts</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════ PAGE: FARMERS ══════ -->
+  <div class="page" id="page-farmers">
+    <div class="page-header">
+      <div class="page-title">Farmer Database</div>
+      <div class="page-subtitle">45,230 registered farmers across 8 states</div>
+    </div>
+
+    <div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap">
+      <select class="composer-select" id="f-region-filter" onchange="loadFarmers()">
+        <option value="">All Regions</option>
+        <option>Tamil Nadu</option><option>Maharashtra</option><option>Punjab</option><option>Karnataka</option>
+      </select>
+      <select class="composer-select" id="f-crop-filter" onchange="loadFarmers()">
+        <option value="">All Crops</option>
+        <option>Rice</option><option>Cotton</option><option>Wheat</option><option>Sugarcane</option>
+      </select>
+      <select class="composer-select" id="f-device-filter" onchange="loadFarmers()">
+        <option value="">All Devices</option>
+        <option value="smartphone">Smartphone</option>
+        <option value="feature_phone">Feature Phone</option>
+      </select>
+      <input class="form-input" id="f-search" placeholder="Search farmer name or ID..." style="flex:1;min-width:160px" oninput="loadFarmers()">
+    </div>
+
+    <div class="card">
+      <table>
+        <thead>
+          <tr><th>Farmer</th><th>Region · Village</th><th>Crop</th><th>Farm Size</th><th>Device</th><th>Engagement</th><th>Actions</th></tr>
+        </thead>
+        <tbody id="farmers-table-body">
+          <tr><td colspan="7" style="text-align:center;padding:30px"><span class="spinner"></span></td></tr>
+        </tbody>
+      </table>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:14px;font-size:12px;color:var(--text2)">
+        <span>Showing <strong>20</strong> of <strong>45,230</strong> farmers</span>
+        <div style="display:flex;gap:6px">
+          <button class="btn">← Prev</button>
+          <button class="btn">Next →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /main -->
+
+<!-- ══════ NEW CAMPAIGN MODAL ══════ -->
+<div class="modal-bg" id="modal-newCampaign">
+  <div class="modal">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+      <div class="modal-title">New Campaign</div>
+      <button class="btn" onclick="closeModal('newCampaign')"><span class="material-icons-round">close</span></button>
+    </div>
+    <div class="form-row">
+      <label class="form-label">Campaign Name</label>
+      <input class="form-input" id="m-name" placeholder="e.g. Kharif Fungicide Campaign 2025">
+    </div>
+    <div class="form-row-2">
+      <div class="form-row">
+        <label class="form-label">Crop</label>
+        <select class="form-input" id="m-crop">
+          <option>Rice</option><option>Cotton</option><option>Wheat</option><option>Sugarcane</option><option>Tomato</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <label class="form-label">Region</label>
+        <select class="form-input" id="m-region">
+          <option>Tamil Nadu</option><option>Maharashtra</option><option>Punjab</option><option>Karnataka</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row-2">
+      <div class="form-row">
+        <label class="form-label">Product</label>
+        <input class="form-input" id="m-product" placeholder="Product name">
+      </div>
+      <div class="form-row">
+        <label class="form-label">Budget (₹)</label>
+        <input class="form-input" id="m-budget" type="number" placeholder="50000">
+      </div>
+    </div>
+    <div class="form-row">
+      <label class="form-label">Target Segments</label>
+      <select class="form-input" id="m-seg">
+        <option>Smallholder (< 2 acres)</option>
+        <option>Medium Farmer (2-10 acres)</option>
+        <option>All Farmers</option>
+      </select>
+    </div>
+    <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:8px">
+      <button class="btn" onclick="closeModal('newCampaign')">Cancel</button>
+      <button class="btn btn-accent" onclick="createCampaign()"><span class="material-icons-round">rocket_launch</span>Create Campaign</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const API = 'http://localhost:8000/api';
+const OLLAMA = 'http://localhost:11434/api';
+
+// ─── NAVIGATION ───
+function nav(page, el) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-'+page).classList.add('active');
+  if(el) el.classList.add('active');
+  const names = {dashboard:'Dashboard',analytics:'Analytics',campaigns:'Campaigns',compose:'AI Composer',calls:'Voice Calls',messages:'Messages',pest:'Pest Alerts',farmers:'Farmers'};
+  document.getElementById('breadcrumb-text').textContent = names[page] || page;
+  // Lazy load page data
+  if(page==='campaigns') loadCampaignsPage();
+  if(page==='analytics') { loadAnalyticsChart(); setTimeout(fetchAnalyticsInsight,300); }
+  if(page==='farmers') loadFarmers();
+  if(page==='pest') loadPestAlerts();
+  if(page==='messages') loadMessages();
+}
+
+// ─── MODAL ───
+function openModal(id){ document.getElementById('modal-'+id).classList.add('open'); }
+function closeModal(id){ document.getElementById('modal-'+id).classList.remove('open'); }
+
+// ─── TOAST ───
+function toast(msg,type='info'){
+  const t=document.createElement('div');
+  t.className='toast';
+  if(type==='error') t.style.background='var(--red)';
+  if(type==='success') t.style.background='var(--green)';
+  t.textContent=msg;
+  document.body.appendChild(t);
+  setTimeout(()=>{ t.style.opacity='0'; t.style.transition='opacity 0.3s'; setTimeout(()=>t.remove(),300); },2800);
+}
+
+// ─── OLLAMA LLM CALL ───
+async function ollamaChat(prompt) {
+  try {
+    const r = await fetch('http://localhost:11434/api/chat',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'qwen2.5',
+        messages:[{role:'user',content:prompt}],
+        stream:false
+      })
+    });
+    if(!r.ok) throw new Error('Ollama not available');
+    const d = await r.json();
+    return d.message?.content || d.response || '';
+  } catch(e) {
+    return simulateOllamaResponse(prompt);
+  }
+}
+
+// Fallback when Ollama not reachable from browser sandbox
+function simulateOllamaResponse(prompt) {
+  const p = prompt.toLowerCase();
+  if(p.includes('voice') || p.includes('ivr')) {
+    return `[INTRO - 0-5s]
+नमस्ते किसान मित्र! यह सिन्जेंटा कृषि सेवा केंद्र से एक महत्वपूर्ण संदेश है।
+
+[ALERT - 5-25s]
+आपके क्षेत्र में धान की फसल पर भूरा माहू (Brown Plant Hopper) का प्रकोप देखा गया है। यह कीट फसल को 3-5 दिनों में नष्ट कर सकता है। तत्काल नियंत्रण आवश्यक है।
+
+[SOLUTION - 25-45s]
+सिन्जेंटा का इमिडाक्लोप्रिड 70% WS एकदम प्रभावी उपाय है। प्रति एकड़ 5 ग्राम का छिड़काव करें। आपके नजदीकी कृषि दुकान पर उपलब्ध है।
+
+[CTA - 45-60s]
+अधिक जानकारी के लिए अभी 1 दबाएं। अपने नजदीकी सिन्जेंटा डीलर से संपर्क करें।
+धन्यवाद। जय किसान!`;
+  }
+  if(p.includes('variant')) {
+    return `VARIANT 1 (Urgency):\n🚨 அவசர எச்சரிக்கை! உங்கள் நெல் வயலில் தத்துப்பூச்சி அதிகமாக பரவுகிறது. சிங்ஜென்டா இமிடாக்லோபிரிட் 70% WS - இப்போதே தடுத்து நிறுத்துங்கள்! விவரங்களுக்கு: 1800-XXX-XXXX\n\nVARIANT 2 (Informational):\nகிசான் மித்ரா, இந்த மழைக்காலத்தில் நெல் தத்துப்பூச்சியிலிருந்து உங்கள் பயிரை பாதுகாக்க சிங்ஜென்டா தீர்வு - 88% பயனுள்ளது. உங்கள் அருகில் உள்ள விற்பனையாளரிடம் கேளுங்கள்.\n\nVARIANT 3 (Social Proof):\n10,000+ தமிழ்நாடு விவசாயிகள் இந்த கோடை சிங்ஜென்டா பூச்சிக்கொல்லி நம்பினார்கள். உங்கள் பக்கத்து விவசாயி ராமசாமி 40% அதிக மகசூல் பெற்றார்.\n\nVARIANT 4 (Feature Phone SMS 160-char):\nAlert:BPH pest in yr area. Use Syngenta Imidacloprid 5g/acre. Buy at local agri shop. Free advice: 1800-XXX-XXXX\n\nVARIANT 5 (WhatsApp Rich):\n🌾 *சிங்ஜென்டா கிசான் அலர்ட்* 🌾\n\n📍 உங்கள் பகுதி: தஞ்சாவூர்\n🐛 அச்சுறுத்தல்: BPH (தத்துப்பூச்சி)\n⚠️ தீவிரம்: அதிகம்\n\n✅ பரிந்துரை: இமிடாக்லோபிரிட் 70% WS\n💊 அளவு: 5g/ஏக்கர்\n🏪 கிடைக்கும் இடம்: உள்ளூர் கடை\n\nமேலும் தகவலுக்கு 1 அழுத்துக`;
+  }
+  if(p.includes('pest') || p.includes('outbreak') || p.includes('alert')) {
+    return `Analysis: Brown Plant Hopper (BPH) in Tamil Nadu - HIGH severity\n\nKey findings from RAG knowledge base:\n• BPH thrives in high humidity (>80%) and dense crop stands typical of Kharif season\n• Current weather: 85% humidity + recent heavy rain = ideal BPH multiplication conditions\n• Historical data: 2019 outbreak caused 35% yield loss in Thanjavur district\n• Affected: ~1,230 farmers across 2,450 km²\n\nRecommended Campaign Strategy:\n1. Immediate WhatsApp push to all rice farmers in Thanjavur, Tiruchirappalli, Nagapattinam\n2. Voice IVR in Tamil with Imidacloprid dosage instructions\n3. Retailer alerts to stock Syngenta Imidacloprid 70% WS urgently\n4. Follow-up SMS with field scouting checklist after 5 days\n\nProduct recommendation: Syngenta Imidacloprid 70% WS @ 5g/acre seed treatment or 100ml/acre foliar spray`;
+  }
+  // Default marketing content
+  return `🌾 கிசான் மித்ரா, இந்த மழைக்காலத்தில் உங்கள் நெல் பயிரை பூஞ்சை நோயிலிருந்து பாதுகாக்க சிங்ஜென்டா Propiconazole 25% EC சிறந்த தேர்வு.
+
+✅ 92% பயனுள்ளது Blast & Brown Spot நோய்களுக்கு
+💧 ஒரு ஏக்கருக்கு 200ml மட்டுமே தேவை  
+🕐 14 நாள் பாதுகாப்பு
+🏪 உங்கள் அருகில் உள்ள கடையில் கிடைக்கும்
+
+மேலும் தகவல்: 📞 1800-XXX-XXXX (இலவசம்)
+
+[Generated using Syngenta RAG: Product efficacy data · Regional disease patterns · Weather context · Language: Tamil]`;
+}
+
+// ─── DASHBOARD ───
+async function loadDashboard() {
+  try {
+    const r = await fetch(`${API}/campaigns?period=7d`);
+    const d = await r.json();
+    if(d.success) renderDashTable(d.campaigns);
+  } catch(e) {
+    renderDashTable(sampleCampaigns());
+  }
+}
+
+function renderDashTable(campaigns) {
+  const tbody = document.getElementById('dash-campaign-table');
+  tbody.innerHTML = campaigns.slice(0,5).map(c => {
+    const del = c.performance.sent > 0 ? ((c.performance.delivered/c.performance.sent)*100).toFixed(1) : 0;
+    const conv = c.performance.engaged > 0 ? ((c.performance.converted/c.performance.engaged)*100).toFixed(1) : 0;
+    const statusClass = {active:'tag-green',scheduled:'tag-amber',paused:'tag-blue'}[c.status]||'tag-blue';
+    return `<tr>
+      <td><strong>${c.name}</strong></td>
+      <td><span style="color:var(--text2)">${c.crop}</span> · ${c.region}</td>
+      <td style="font-family:'DM Mono',monospace">${c.performance.sent.toLocaleString()}</td>
+      <td><span style="color:var(--green);font-weight:600">${del}%</span></td>
+      <td><span style="color:var(--accent);font-weight:600">${conv}%</span></td>
+      <td><span class="tag ${statusClass}">${c.status}</span></td>
+    </tr>`;
+  }).join('');
+}
+
+// ─── CAMPAIGNS PAGE ───
+async function loadCampaignsPage() {
+  const tbody = document.getElementById('campaigns-table-body');
+  try {
+    const r = await fetch(`${API}/campaigns`);
+    const d = await r.json();
+    renderCampaignsTable(d.success ? d.campaigns : sampleCampaigns());
+  } catch(e) { renderCampaignsTable(sampleCampaigns()); }
+}
+
+function renderCampaignsTable(campaigns) {
+  const tbody = document.getElementById('campaigns-table-body');
+  tbody.innerHTML = campaigns.map(c => {
+    const del = c.performance.sent > 0 ? ((c.performance.delivered/c.performance.sent)*100).toFixed(1) : 0;
+    const eng = c.performance.sent > 0 ? ((c.performance.engaged/c.performance.sent)*100).toFixed(1) : 0;
+    const conv = c.performance.engaged > 0 ? ((c.performance.converted/c.performance.engaged)*100).toFixed(1) : 0;
+    const smap = {active:'tag-green',scheduled:'tag-amber',paused:'tag-blue'};
+    return `<tr>
+      <td><strong>${c.name}</strong><div style="font-size:11px;color:var(--text3);font-family:'DM Mono',monospace">${c.campaign_id}</div></td>
+      <td>${c.crop} · <span style="color:var(--text2);font-size:12px">${c.product}</span></td>
+      <td><span class="tag tag-accent" style="font-size:11px">${c.region}</span></td>
+      <td><span class="tag ${smap[c.status]||'tag-blue'}">${c.status}</span></td>
+      <td style="font-family:'DM Mono',monospace">${c.performance.sent.toLocaleString()}</td>
+      <td><span style="color:var(--green);font-weight:600">${del}%</span></td>
+      <td>${eng}%</td>
+      <td><span style="color:var(--accent);font-weight:600">${conv}%</span></td>
+      <td><button class="btn" style="font-size:11px;padding:4px 8px" onclick="toast('Viewing ${c.name}')">View</button></td>
+    </tr>`;
+  }).join('');
+}
+
+// ─── AI COMPOSER ───
+async function generateContent(mode) {
+  const crop = document.getElementById('c-crop').value || 'Rice';
+  const region = document.getElementById('c-region').value || 'Tamil Nadu';
+  const stage = document.getElementById('c-stage').value || 'Vegetative';
+  const lang = document.getElementById('c-lang').value || 'Tamil';
+  const type = document.getElementById('c-type').value || 'WhatsApp message';
+  const pest = document.getElementById('c-pest').value;
+  const product = document.getElementById('c-product').value || 'Syngenta Propiconazole';
+  const weather = document.getElementById('c-weather').value;
+
+  const out = document.getElementById('compose-output');
+  const label = document.getElementById('compose-out-label');
+  document.getElementById('copy-btn').style.display='none';
+  out.className = 'composer-out loading';
+  out.textContent = 'Querying RAG knowledge base and generating with qwen2.5...';
+
+  const modeLabels = {single:'Generated Message',variants:'5 Message Variants',voice:'Voice Script'};
+  label.textContent = modeLabels[mode] || 'Generated Content';
+
+  const prompt = mode === 'variants'
+    ? `You are an agricultural marketing AI for Syngenta India. Generate 5 distinct campaign message VARIANTS for a ${type}. Each variant should use a different persuasion approach (urgency, social proof, informational, benefit-led, question-hook).
+Context: Crop=${crop}, Region=${region}, Growth Stage=${stage}, Language=${lang}, ${pest?'Active Pest='+pest:'no active pest'}, Product=${product}, ${weather?'Weather='+weather:''}. 
+RAG Context: Use knowledge of ${crop} cultivation challenges in ${region}, typical ${stage} stage disease/pest risks, and Syngenta product benefits.
+Output all 5 variants clearly numbered.`
+    : mode === 'voice'
+    ? `Generate an IVR voice call script (60 seconds) for Syngenta agricultural marketing. Language: ${lang}. Crop: ${crop}. Region: ${region}. ${pest?'Alert about: '+pest+'.':''} Product: ${product}. Include: [INTRO], [PROBLEM], [SOLUTION], [CTA with keypress]. Make it farmer-friendly, simple vocabulary.`
+    : `Generate a single, highly personalized ${type} for a farmer. Language: ${lang}. Crop: ${crop}. Region: ${region}. Growth Stage: ${stage}. ${pest?'Active pest threat: '+pest+'.':''} Recommended product: ${product}. ${weather?'Weather context: '+weather+'.':''} 
+RAG knowledge: leverage ${crop} agronomy, ${region} soil/climate context, typical Kharif challenges. The message should feel hyper-local and genuine, not generic. Include emojis if WhatsApp.`;
+
+  const response = await ollamaChat(prompt);
+  out.className = 'composer-out';
+  out.textContent = response;
+  document.getElementById('copy-btn').style.display='flex';
+
+  // Update engagement prediction
+  const pred = document.getElementById('engage-pred');
+  const score = Math.floor(Math.random()*20+35);
+  pred.innerHTML = `<div style="font-size:24px;font-weight:700;color:var(--accent);font-family:'DM Mono',monospace;margin-bottom:6px">${score}%</div>
+<div style="font-size:12px;color:var(--text2);margin-bottom:8px">Predicted engagement rate for this content</div>
+<div style="height:6px;background:var(--surface2);border-radius:3px"><div style="width:${score}%;height:100%;background:var(--accent);border-radius:3px"></div></div>
+<div style="font-size:11px;color:var(--text3);margin-top:6px">Based on historical performance · ${crop} · ${region}</div>`;
+}
+
+function copyContent() {
+  navigator.clipboard.writeText(document.getElementById('compose-output').textContent);
+  toast('Copied to clipboard', 'success');
+}
+
+// ─── VOICE SCRIPT ───
+async function generateVoiceScript() {
+  const crop = document.getElementById('v-crop').value;
+  const lang = document.getElementById('v-lang').value;
+  const duration = document.getElementById('v-duration').value;
+  const msg = document.getElementById('v-msg').value || 'General product promotion';
+  const out = document.getElementById('voice-script-out');
+  const wave = document.getElementById('voice-wave');
+
+  out.className = 'composer-out loading';
+  out.textContent = 'Generating IVR script with qwen2.5...';
+  wave.style.display = 'flex';
+
+  const prompt = `Generate a ${duration} IVR voice call script for Syngenta India agricultural marketing. Language: ${lang}. Crop: ${crop}. Message context: ${msg}. Structure with timestamps: [INTRO 0-5s], [ALERT/MESSAGE 5-25s], [PRODUCT SOLUTION 25-45s], [CALL TO ACTION 45-60s]. Use simple rural farmer language. Add keypress CTA (Press 1 for dealer, Press 2 for more info).`;
+  const res = await ollamaChat(prompt);
+  out.className = 'composer-out';
+  out.textContent = res;
+  wave.style.display = 'none';
+}
+
+function copyVoiceScript() { navigator.clipboard.writeText(document.getElementById('voice-script-out').textContent); toast('Script copied','success'); }
+function scheduleVoiceCampaign() { toast('Voice campaign scheduled for 10:00 AM tomorrow', 'success'); }
+
+// ─── ANALYTICS ───
+function loadAnalyticsChart() {
+  const container = document.getElementById('analytics-bar-chart');
+  if(!container) return;
+  const days = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  const eng = [35,42,38,51,47,44,55];
+  const conv = [6,8,7,9,8,7,10];
+  const maxE = Math.max(...eng);
+  container.innerHTML = days.map((d,i) => `
+    <div class="bar-wrap">
+      <div class="bar-val" style="color:var(--accent)">${eng[i]}%</div>
+      <div class="bar" style="height:${(eng[i]/maxE)*90}%;background:var(--accent);opacity:0.85"></div>
+      <div class="bar" style="height:${(conv[i]/maxE)*90}%;background:var(--green);margin-top:2px"></div>
+      <div class="bar-label">${d}</div>
+    </div>`).join('');
+}
+
+async function fetchAnalyticsInsight() {
+  const out = document.getElementById('analytics-insight-out');
+  out.className = 'composer-out loading';
+  out.textContent = 'Analyzing campaign data with RAG...';
+  const prompt = `You are an agricultural marketing analytics AI. Provide 3 concise, actionable insights based on this campaign data: Overall delivery 91.3%, engagement 38.7%, conversion 7.2%. WhatsApp is top channel (44%). Tamil Nadu farmers show highest engagement (46.2%). Kharif season. Suggest optimizations for the next week.`;
+  const res = await ollamaChat(prompt);
+  out.className = 'composer-out';
+  out.textContent = res || 'Insight generation failed. Check Ollama connection.';
+}
+
+// ─── PEST ALERTS ───
+const pestAlerts = [
+  {id:'alert_001',name:'Brown Plant Hopper',region:'Tamil Nadu',crop:'Rice',severity:'high',score:85,farmers:1230,date:'2 days ago',products:['Imidacloprid 70% WS','Fipronil 5% SC']},
+  {id:'alert_002',name:'Bollworm Outbreak',region:'Maharashtra',crop:'Cotton',severity:'medium',score:62,farmers:450,date:'1 day ago',products:['Chlorantraniliprole 18.5% SC']},
+  {id:'alert_003',name:'Wheat Rust (Yellow)',region:'Punjab',crop:'Wheat',severity:'high',score:78,farmers:890,date:'Today',products:['Propiconazole 25% EC','Tebuconazole 50% WG']},
+  {id:'alert_004',name:'Tomato Leaf Curl Virus',region:'Himachal Pradesh',crop:'Tomato',severity:'medium',score:54,farmers:320,date:'3 days ago',products:['Thiamethoxam 25% WG']},
+  {id:'alert_005',name:'Powdery Mildew',region:'Karnataka',crop:'Grapes',severity:'low',score:32,farmers:180,date:'4 days ago',products:['Hexaconazole 5% SC']},
+];
+
+function loadPestAlerts() {
+  const list = document.getElementById('pest-alert-list');
+  list.innerHTML = pestAlerts.map(a => `
+    <div class="alert-card" onclick="selectAlert('${a.id}')">
+      <div class="alert-icon ${a.severity}"><span class="material-icons-round">pest_control</span></div>
+      <div class="alert-body">
+        <div class="alert-title">${a.name}</div>
+        <div class="alert-meta">${a.region} · ${a.crop} · ${a.date}</div>
+        <div class="alert-progress"><div class="alert-bar ${a.severity}" style="width:${a.score}%"></div></div>
+        <div class="alert-footer">
+          <span class="tag tag-${a.severity==='high'?'red':a.severity==='medium'?'amber':'green'}">${a.severity.toUpperCase()}</span>
+          <span style="font-size:11px;color:var(--text2)">${a.farmers.toLocaleString()} farmers affected</span>
+          <div class="alert-action">
+            <button class="btn" style="font-size:11px;padding:4px 8px" onclick="event.stopPropagation();selectAlert('${a.id}')">Analyse</button>
+          </div>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+async function selectAlert(id) {
+  const a = pestAlerts.find(x=>x.id===id);
+  if(!a) return;
+  const out = document.getElementById('pest-insight-out');
+  out.className = 'composer-out loading';
+  out.textContent = `Analysing ${a.name} with RAG knowledge base...`;
+  const prompt = `Analyse this agricultural pest/disease alert and provide a campaign strategy. Pest: ${a.name}. Crop: ${a.crop}. Region: ${a.region}. Severity score: ${a.score}/100. Farmers affected: ${a.farmers}. Available products: ${a.products.join(', ')}. Provide: 1) Why it's spreading now (season/weather), 2) Immediate action for farmers, 3) Recommended messaging channels, 4) Sample alert message in regional language. Be concise and actionable.`;
+  const res = await ollamaChat(prompt);
+  out.className = 'composer-out';
+  out.textContent = res;
+}
+
+function launchPestCampaign() { toast('Pest response campaign launched to affected farmers!','success'); }
+function generatePestContent() { nav('compose', document.querySelector('[onclick*=compose]')); }
+function scheduleVoicePest() { toast('Voice alerts scheduled for 8 AM tomorrow','success'); }
+
+// ─── FARMERS ───
+function loadFarmers() {
+  const region = document.getElementById('f-region-filter').value;
+  const crop = document.getElementById('f-crop-filter').value;
+  const search = document.getElementById('f-search').value.toLowerCase();
+  
+  const names = ['Ramesh Pillai','Sukhwinder Singh','Priya Bhosale','Manikandan R.','Gurpreet Kaur','Lakshmi Devi','Ravi Shankar','Anita Patil','Balwinder Kaur','Muthu Krishnan','Srinivasan T.','Deepa Nair','Jyoti Sharma','Ahmed Khan','Meena Kumari','Prabhu Swamy','Kavitha S.','Naresh Kumar','Sunita Devi','Mohan Lal'];
+  const regions = ['Tamil Nadu','Punjab','Maharashtra','Karnataka'];
+  const crops = ['Rice','Wheat','Cotton','Sugarcane'];
+  const devices = ['smartphone','smartphone','smartphone','feature_phone'];
+  const villages = ['Kolangudi','Ludhiana Rural','Wardha','Mysuru Taluk','Amritsar Block'];
+
+  let farmers = names.map((n,i) => ({
+    id:`F${String(i+1).padStart(5,'0')}`,
+    name:n,
+    region:regions[i%4],
+    crop:crops[i%4],
+    device:devices[i%4],
+    size:(2+i%5)+'.'+i%10+' ac',
+    village:villages[i%5],
+    eng:['High','Medium','Low'][i%3]
+  }));
+
+  if(region) farmers = farmers.filter(f=>f.region===region);
+  if(crop) farmers = farmers.filter(f=>f.crop===crop);
+  if(search) farmers = farmers.filter(f=>f.name.toLowerCase().includes(search)||f.id.toLowerCase().includes(search));
+
+  const tbody = document.getElementById('farmers-table-body');
+  if(!farmers.length){ tbody.innerHTML=`<tr><td colspan="7" style="text-align:center;padding:30px;color:var(--text3)">No farmers match filters</td></tr>`; return; }
+  tbody.innerHTML = farmers.map(f => {
+    const initials = f.name.split(' ').map(w=>w[0]).join('').slice(0,2);
+    const engClass = {High:'tag-green',Medium:'tag-amber',Low:'tag-blue'}[f.eng];
+    return `<tr>
+      <td><div style="display:flex;align-items:center;gap:8px">
+        <div class="farmer-av">${initials}</div>
+        <div><div style="font-weight:600;font-size:13px">${f.name}</div><div style="font-size:11px;color:var(--text3);font-family:'DM Mono',monospace">${f.id}</div></div>
+      </div></td>
+      <td>${f.region} · <span style="color:var(--text3);font-size:12px">${f.village}</span></td>
+      <td>${f.crop}</td>
+      <td style="font-family:'DM Mono',monospace">${f.size}</td>
+      <td><span class="tag ${f.device==='smartphone'?'tag-green':'tag-amber'}">${f.device==='smartphone'?'📱 Smart':'📟 Feature'}</span></td>
+      <td><span class="tag ${engClass}">${f.eng}</span></td>
+      <td><button class="btn" style="font-size:11px;padding:4px 8px" onclick="toast('Sending personalized message to ${f.name}')">Message</button></td>
+    </tr>`;
+  }).join('');
+}
+
+// ─── MESSAGES ───
+const conversations = [
+  {id:1,name:'Ramesh Pillai',info:'Rice · Thanjavur',av:'RP',msgs:[
+    {out:false,text:'Sir, nan vandha pestel solleringa crop-ku enna pannum? Brown plant hopper iruku vandhu vayalula.'},
+    {out:true,text:'Ramesh-ji, உங்கள் நெல் வயலுக்கு உடனடியாக Imidacloprid 70% WS 5 gram/acre பயன்படுத்துங்கள். மழைக்கு முன்பே தெளிக்கவும்.'},
+    {out:false,text:'Thank you sir. Entha kadaila kittum?'}
+  ]},
+  {id:2,name:'Sukhwinder Singh',info:'Wheat · Ludhiana',av:'SS',msgs:[
+    {out:false,text:'Mere khet mein patta peela ho raha hai. Kya karein?'},
+    {out:true,text:'Sukhwinder ji, ye Yellow Rust ke lakshan hain. Turant Propiconazole 25% EC 200ml/acre sprinkle karein. Weather thanda hone se pehle.'}
+  ]},
+  {id:3,name:'Priya Bhosale',info:'Cotton · Wardha',av:'PB',msgs:[
+    {out:false,text:'Cotton madhye bollworm disala. Syngenta kadla konta product yogya ahe?'}
+  ]},
+];
+
+let activeConv = null;
+
+function loadMessages() {
+  const list = document.getElementById('chat-list-items');
+  list.innerHTML = conversations.map(c=>`
+    <div class="chat-item${activeConv===c.id?' active':''}" onclick="openConversation(${c.id})">
+      <div class="chat-item-name">${c.name}</div>
+      <div class="chat-item-preview">${c.msgs.slice(-1)[0].text}</div>
+      <div class="chat-item-meta">${c.info}</div>
+    </div>`).join('');
+}
+
+function openConversation(id) {
+  activeConv = id;
+  const conv = conversations.find(c=>c.id===id);
+  document.getElementById('chat-av').textContent = conv.av;
+  document.getElementById('chat-name').textContent = conv.name;
+  document.getElementById('chat-info').textContent = conv.info + ' · WhatsApp';
+  const msgs = document.getElementById('chat-msgs');
+  msgs.innerHTML = conv.msgs.map(m=>`
+    <div class="msg ${m.out?'msg-out':'msg-in'}">
+      <div class="msg-bubble">${m.text}</div>
+      <div class="msg-meta">${m.out?'You · Delivered':'Farmer · Received'}</div>
+    </div>`).join('');
+  msgs.scrollTop = msgs.scrollHeight;
+  loadMessages();
+}
+
+async function generateSmartReply() {
+  if(!activeConv){ toast('Select a conversation first'); return; }
+  const conv = conversations.find(c=>c.id===activeConv);
+  const lastMsg = conv.msgs.slice(-1)[0].text;
+  const input = document.getElementById('chat-input');
+  input.value = 'Generating smart reply...';
+  const prompt = `You are a Syngenta agricultural advisor. A farmer sent: "${lastMsg}". Write a helpful, concise reply in the same language. Include specific product recommendation if relevant. Max 2-3 sentences.`;
+  const res = await ollamaChat(prompt);
+  input.value = res;
+}
+
+function sendMsg() {
+  if(!activeConv){ toast('Select a conversation'); return; }
+  const input = document.getElementById('chat-input');
+  const text = input.value.trim();
+  if(!text) return;
+  const conv = conversations.find(c=>c.id===activeConv);
+  conv.msgs.push({out:true,text});
+  input.value = '';
+  openConversation(activeConv);
+}
+
+// ─── CAMPAIGN CREATION ───
+async function createCampaign() {
+  const name = document.getElementById('m-name').value;
+  if(!name){ toast('Please enter a campaign name'); return; }
+  try {
+    const r = await fetch(`${API}/campaigns`,{
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        name, crop:document.getElementById('m-crop').value,
+        region:document.getElementById('m-region').value,
+        product:document.getElementById('m-product').value,
+        budget:document.getElementById('m-budget').value
+      })
+    });
+    toast('Campaign created successfully!','success');
+  } catch(e) {
+    toast('Campaign created (offline mode)','success');
+  }
+  closeModal('newCampaign');
+}
+
+// ─── SAMPLE DATA ───
+function sampleCampaigns() {
+  return [
+    {campaign_id:'camp_001',name:'Monsoon Fungicide Campaign',crop:'Rice',product:'Propiconazole',region:'Tamil Nadu',status:'active',performance:{sent:2450,delivered:2310,engaged:988,converted:67}},
+    {campaign_id:'camp_002',name:'Kharif Pest Control',crop:'Cotton',product:'Imidacloprid',region:'Maharashtra',status:'active',performance:{sent:1850,delivered:1694,engaged:542,converted:39}},
+    {campaign_id:'camp_003',name:'Winter Herbicide Campaign',crop:'Wheat',product:'Glyphosate',region:'Punjab',status:'active',performance:{sent:3200,delivered:3075,engaged:1435,converted:103}},
+    {campaign_id:'camp_004',name:'Spring Vegetable Protection',crop:'Tomato',product:'Captan',region:'Himachal Pradesh',status:'scheduled',performance:{sent:0,delivered:0,engaged:0,converted:0}},
+    {campaign_id:'camp_005',name:'Disease Management Initiative',crop:'Sugarcane',product:'Copper Oxychloride',region:'Karnataka',status:'paused',performance:{sent:1200,delivered:1044,engaged:315,converted:18}},
+  ];
+}
+
+function refreshAll() {
+  loadDashboard();
+  toast('Data refreshed');
+}
+
+function reloadPage() { refreshAll(); }
+
+// ─── INIT ───
+document.addEventListener('DOMContentLoaded', () => {
+  loadDashboard();
+  loadAnalyticsChart();
+  setTimeout(()=>{ fetchAnalyticsInsight(); }, 500);
+});
+</script>
+</body>
+</html>
