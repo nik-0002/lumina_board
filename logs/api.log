@@ -121,3 +121,13 @@
 2026-05-20 13:05:30,525 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
 2026-05-20 13:05:50,689 - werkzeug - INFO - 192.168.43.206 - - [20/May/2026 13:05:50] "GET / HTTP/1.1" 200 -
 2026-05-20 13:05:52,530 - werkzeug - INFO - 192.168.43.206 - - [20/May/2026 13:05:52] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2026-05-20 14:22:51,790 - werkzeug - INFO - 127.0.0.1 - - [20/May/2026 14:22:51] "GET /api/health HTTP/1.1" 200 -
+2026-05-20 14:22:57,552 - werkzeug - INFO - 127.0.0.1 - - [20/May/2026 14:22:57] "GET /api/health HTTP/1.1" 200 -
+2026-05-20 14:23:18,146 - werkzeug - INFO - 127.0.0.1 - - [20/May/2026 14:23:18] "GET /api/data/insights HTTP/1.1" 200 -
+2026-05-20 14:23:18,153 - werkzeug - INFO - 127.0.0.1 - - [20/May/2026 14:23:18] "GET /api/data/insights HTTP/1.1" 200 -
+2026-05-20 14:27:23,108 - werkzeug - INFO - 127.0.0.1 - - [20/May/2026 14:27:23] "GET /api/data/insights HTTP/1.1" 200 -
+2026-05-20 14:31:11,579 - werkzeug - INFO - 127.0.0.1 - - [20/May/2026 14:31:11] "GET /api/growers?limit=100&state=Rajasthan HTTP/1.1" 200 -
+2026-05-20 14:32:14,263 - werkzeug - INFO - 127.0.0.1 - - [20/May/2026 14:32:14] "GET /api/health HTTP/1.1" 200 -
+2026-05-20 14:33:22,036 - werkzeug - INFO - 127.0.0.1 - - [20/May/2026 14:33:22] "GET /api/data/insights HTTP/1.1" 200 -
+2026-05-20 14:33:34,003 - werkzeug - INFO - 127.0.0.1 - - [20/May/2026 14:33:34] "GET /api/health HTTP/1.1" 200 -
+2026-05-20 14:34:04,472 - werkzeug - INFO - 127.0.0.1 - - [20/May/2026 14:34:04] "GET /api/data/insights HTTP/1.1" 200 -
