@@ -275,3 +275,239 @@
 2026-05-21 00:22:13,078 [INFO] lumina.api - Starting Lumina Board API on port 8000
 2026-05-21 00:22:13,108 [WARNING] werkzeug -  * Debugger is active!
 2026-05-21 00:22:13,119 [INFO] werkzeug -  * Debugger PIN: 143-466-584
+2026-05-21 00:27:23,639 [INFO] werkzeug - 192.168.43.206 - - [21/May/2026 00:27:23] "GET /api/csv/stats?file=reps_territory.csv HTTP/1.1" 200 -
+2026-05-21 00:27:39,319 [INFO] werkzeug - 192.168.43.206 - - [21/May/2026 00:27:39] "GET /api/csv/preview?file=retailers.csv&rows=50 HTTP/1.1" 200 -
+2026-05-21 00:27:40,150 [INFO] werkzeug - 192.168.43.206 - - [21/May/2026 00:27:40] "GET /api/csv/preview?file=digital_funnel_weekly.csv&rows=50 HTTP/1.1" 200 -
+2026-05-21 00:27:40,887 [INFO] werkzeug - 192.168.43.206 - - [21/May/2026 00:27:40] "GET /api/csv/preview?file=growers.csv&rows=50 HTTP/1.1" 200 -
+2026-05-21 00:27:41,831 [INFO] werkzeug - 192.168.43.206 - - [21/May/2026 00:27:41] "GET /api/csv/preview?file=retailer_pos.csv&rows=50 HTTP/1.1" 200 -
+2026-05-21 00:27:42,530 [INFO] werkzeug - 192.168.43.206 - - [21/May/2026 00:27:42] "GET /api/csv/preview?file=whatsapp_campaign.csv&rows=50 HTTP/1.1" 200 -
+2026-05-21 00:27:43,193 [INFO] werkzeug - 192.168.43.206 - - [21/May/2026 00:27:43] "GET /api/csv/preview?file=retailer_visit_log.csv&rows=50 HTTP/1.1" 200 -
+2026-05-21 00:27:43,979 [INFO] werkzeug - 192.168.43.206 - - [21/May/2026 00:27:43] "GET /api/csv/preview?file=retailer_inventory_weekly.csv&rows=50 HTTP/1.1" 200 -
+2026-05-21 00:27:45,004 [INFO] werkzeug - 192.168.43.206 - - [21/May/2026 00:27:45] "GET /api/metrics/growers HTTP/1.1" 200 -
+2026-05-21 00:27:45,015 [INFO] werkzeug - 192.168.43.206 - - [21/May/2026 00:27:45] "GET /api/metrics/campaigns HTTP/1.1" 200 -
+2026-05-21 00:27:47,038 [INFO] lumina.urgency - Training urgency detector...
+2026-05-21 00:27:47,157 [INFO] lumina.urgency - IsolationForest trained on 104 campaign feature vectors
+2026-05-21 00:27:47,162 [INFO] werkzeug - 192.168.43.206 - - [21/May/2026 00:27:47] "POST /api/urgency/detect HTTP/1.1" 200 -
+2026-05-21 00:27:48,146 [INFO] werkzeug - 192.168.43.206 - - [21/May/2026 00:27:48] "POST /api/urgency/detect HTTP/1.1" 200 -
+2026-05-21 00:27:48,540 [INFO] werkzeug - 192.168.43.206 - - [21/May/2026 00:27:48] "POST /api/urgency/detect HTTP/1.1" 200 -
+2026-05-21 00:27:48,826 [INFO] werkzeug - 192.168.43.206 - - [21/May/2026 00:27:48] "POST /api/urgency/detect HTTP/1.1" 200 -
+2026-05-21 00:27:49,057 [INFO] werkzeug - 192.168.43.206 - - [21/May/2026 00:27:49] "POST /api/urgency/detect HTTP/1.1" 200 -
+2026-05-21 00:27:49,224 [INFO] werkzeug - 192.168.43.206 - - [21/May/2026 00:27:49] "POST /api/urgency/detect HTTP/1.1" 200 -
+2026-05-21 00:27:49,402 [INFO] werkzeug - 192.168.43.206 - - [21/May/2026 00:27:49] "POST /api/urgency/detect HTTP/1.1" 200 -
+2026-05-21 00:27:49,568 [INFO] werkzeug - 192.168.43.206 - - [21/May/2026 00:27:49] "POST /api/urgency/detect HTTP/1.1" 200 -
+2026-05-21 00:27:49,737 [INFO] werkzeug - 192.168.43.206 - - [21/May/2026 00:27:49] "POST /api/urgency/detect HTTP/1.1" 200 -
+2026-05-21 00:36:42,946 [INFO] werkzeug -  * Detected change in '/Users/nikhilteja.m/lumina_board/api/app.py', reloading
+2026-05-21 00:36:43,073 [INFO] werkzeug -  * Restarting with stat
+2026-05-21 00:36:44,799 [INFO] lumina.api - Starting Lumina Board Enhanced API on port 8000
+2026-05-21 00:36:44,799 [INFO] lumina.api - Qwen2.5 API: http://localhost:11434/api/generate
+2026-05-21 00:36:44,799 [INFO] lumina.api - Model: qwen2.5:latest
+2026-05-21 00:36:44,828 [WARNING] werkzeug -  * Debugger is active!
+2026-05-21 00:36:44,840 [INFO] werkzeug -  * Debugger PIN: 143-466-584
+2026-05-21 00:37:45,632 [INFO] werkzeug -  * Detected change in '/Users/nikhilteja.m/lumina_board/api/app.py', reloading
+2026-05-21 00:37:45,763 [INFO] werkzeug -  * Restarting with stat
+2026-05-21 00:37:47,584 [INFO] lumina.api - Starting Lumina Board Enhanced API on port 8000
+2026-05-21 00:37:47,584 [INFO] lumina.api - Qwen2.5 API: http://localhost:11434/api/generate
+2026-05-21 00:37:47,584 [INFO] lumina.api - Model: qwen2.5:latest
+2026-05-21 00:37:47,615 [WARNING] werkzeug -  * Debugger is active!
+2026-05-21 00:37:47,629 [INFO] werkzeug -  * Debugger PIN: 143-466-584
+2026-05-21 00:38:02,702 [INFO] werkzeug - 192.168.43.206 - - [21/May/2026 00:38:02] "GET / HTTP/1.1" 200 -
+2026-05-21 00:38:04,801 [INFO] lumina.api - Loaded growers: 6000 rows, 15 columns
+2026-05-21 00:38:04,807 [INFO] lumina.api - Loaded retailers: 4000 rows, 5 columns
+2026-05-21 00:38:05,057 [INFO] lumina.api - Loaded retailer_pos: 235042 rows, 7 columns
+2026-05-21 00:38:05,228 [INFO] lumina.api - Loaded retailer_inventory: 310544 rows, 5 columns
+2026-05-21 00:38:05,254 [INFO] lumina.api - Loaded retailer_visits: 30000 rows, 6 columns
+2026-05-21 00:38:05,257 [INFO] lumina.api - Loaded reps_territory: 500 rows, 6 columns
+2026-05-21 00:38:05,258 [INFO] lumina.api - Loaded campaigns: 104 rows, 7 columns
+2026-05-21 00:38:05,266 [INFO] lumina.api - Loaded whatsapp: 4479 rows, 8 columns
+2026-05-21 00:38:05,266 [INFO] werkzeug - 192.168.43.206 - - [21/May/2026 00:38:05] "GET /api/health HTTP/1.1" 200 -
+2026-05-21 00:38:20,141 [INFO] lumina.rag - Building RAG index from ../data
+2026-05-21 00:38:20,155 [INFO] lumina.rag - Indexed 104 rows from digital_funnel_weekly
+2026-05-21 00:38:20,478 [INFO] lumina.rag - Indexed 6000 rows from growers
+2026-05-21 00:38:20,500 [INFO] lumina.rag - Indexed 500 rows from reps_territory
+2026-05-21 00:38:32,461 [INFO] lumina.rag - Indexed 310544 rows from retailer_inventory_weekly
+2026-05-21 00:38:42,925 [INFO] lumina.rag - Indexed 235042 rows from retailer_pos
+2026-05-21 00:38:44,160 [INFO] lumina.rag - Indexed 30000 rows from retailer_visit_log
+2026-05-21 00:38:44,320 [INFO] lumina.rag - Indexed 4000 rows from retailers
+2026-05-21 00:38:44,673 [INFO] lumina.rag - Indexed 4479 rows from whatsapp_campaign
+2026-05-21 00:38:44,716 [INFO] lumina.rag - Fitting TF-IDF on 590669 documents from 8 CSVs
+2026-05-21 00:39:03,126 [INFO] lumina.rag - RAG index built: 590669 docs, matrix shape (590669, 50000)
+2026-05-21 00:39:37,547 [INFO] werkzeug - 192.168.43.206 - - [21/May/2026 00:39:37] "POST /api/chat HTTP/1.1" 200 -
+2026-05-21 00:41:16,630 [INFO] werkzeug - 192.168.43.206 - - [21/May/2026 00:41:16] "GET /api/metrics/growers HTTP/1.1" 200 -
+2026-05-21 00:41:27,756 [INFO] lumina.urgency - Training urgency detector...
+2026-05-21 00:41:27,874 [INFO] lumina.urgency - IsolationForest trained on 104 campaign feature vectors
+2026-05-21 00:41:27,920 [INFO] werkzeug - 192.168.43.206 - - [21/May/2026 00:41:27] "GET /api/urgency/bulk HTTP/1.1" 200 -
+2026-05-21 00:41:40,402 [INFO] werkzeug - 192.168.43.206 - - [21/May/2026 00:41:40] "GET /api/metrics/overview HTTP/1.1" 200 -
+2026-05-21 00:43:16,381 [INFO] werkzeug - 192.168.43.206 - - [21/May/2026 00:43:16] "GET /api/csv/stats?file=retailer_pos.csv HTTP/1.1" 200 -
+2026-05-21 00:43:45,189 [INFO] werkzeug - 192.168.43.206 - - [21/May/2026 00:43:45] "GET /api/metrics/campaigns HTTP/1.1" 200 -
+2026-05-21 00:45:37,232 [ERROR] lumina.api - Qwen API error: HTTPConnectionPool(host='localhost', port=11434): Read timed out. (read timeout=60)
+2026-05-21 00:45:37,238 [INFO] werkzeug - 192.168.43.206 - - [21/May/2026 00:45:37] "POST /api/chat HTTP/1.1" 200 -
+2026-05-21 00:47:04,387 [ERROR] lumina.api - Qwen API error: HTTPConnectionPool(host='localhost', port=11434): Read timed out. (read timeout=60)
+2026-05-21 00:47:04,390 [INFO] werkzeug - 192.168.43.206 - - [21/May/2026 00:47:04] "POST /api/chat HTTP/1.1" 200 -
+2026-05-21 00:48:10,981 [ERROR] lumina.api - Qwen API error: HTTPConnectionPool(host='localhost', port=11434): Read timed out. (read timeout=60)
+2026-05-21 00:48:10,983 [INFO] werkzeug - 192.168.43.206 - - [21/May/2026 00:48:10] "POST /api/chat HTTP/1.1" 200 -
+2026-05-21 00:48:31,241 [INFO] werkzeug - 192.168.43.206 - - [21/May/2026 00:48:31] "POST /api/chat HTTP/1.1" 200 -
+2026-05-21 00:49:03,107 [INFO] werkzeug - 192.168.43.206 - - [21/May/2026 00:49:03] "GET /api/metrics/growers HTTP/1.1" 200 -
+2026-05-21 00:49:17,941 [INFO] werkzeug - 192.168.43.206 - - [21/May/2026 00:49:17] "GET /api/metrics/campaigns HTTP/1.1" 200 -
+2026-05-21 00:49:25,634 [INFO] werkzeug - 192.168.43.206 - - [21/May/2026 00:49:25] "GET /api/metrics/campaigns HTTP/1.1" 200 -
+2026-05-21 00:49:31,886 [INFO] werkzeug - 192.168.43.206 - - [21/May/2026 00:49:31] "GET /api/metrics/campaigns HTTP/1.1" 200 -
+2026-05-21 00:49:37,504 [INFO] werkzeug - 192.168.43.206 - - [21/May/2026 00:49:37] "GET /api/metrics/overview HTTP/1.1" 200 -
+2026-05-21 01:07:02,084 [INFO] werkzeug - 192.168.43.206 - - [21/May/2026 01:07:02] "GET / HTTP/1.1" 200 -
+2026-05-21 01:11:36,872 [INFO] werkzeug - 192.168.43.206 - - [21/May/2026 01:11:36] "GET / HTTP/1.1" 200 -
+2026-05-21 01:11:36,936 [INFO] werkzeug - 192.168.43.206 - - [21/May/2026 01:11:36] "GET /api/health HTTP/1.1" 200 -
+2026-05-21 01:11:56,360 [INFO] werkzeug - 192.168.43.206 - - [21/May/2026 01:11:56] "POST /api/chat HTTP/1.1" 200 -
+2026-05-21 01:12:59,062 [INFO] werkzeug - 192.168.43.206 - - [21/May/2026 01:12:59] "POST /api/chat HTTP/1.1" 200 -
+2026-05-21 01:13:06,255 [INFO] werkzeug - 192.168.43.206 - - [21/May/2026 01:13:06] "GET /api/metrics/overview HTTP/1.1" 200 -
+2026-05-21 01:13:13,764 [INFO] werkzeug - 192.168.43.206 - - [21/May/2026 01:13:13] "GET /api/urgency/bulk HTTP/1.1" 200 -
+2026-05-21 01:13:25,075 [INFO] werkzeug - 192.168.43.206 - - [21/May/2026 01:13:25] "GET /api/metrics/campaigns HTTP/1.1" 200 -
+2026-05-21 01:13:31,452 [INFO] werkzeug - 127.0.0.1 - - [21/May/2026 01:13:31] "[33mGET /dashboard HTTP/1.1[0m" 404 -
+2026-05-21 01:13:41,292 [INFO] werkzeug - 127.0.0.1 - - [21/May/2026 01:13:41] "GET / HTTP/1.1" 200 -
+2026-05-21 01:13:42,905 [INFO] werkzeug - 127.0.0.1 - - [21/May/2026 01:13:42] "GET /api/health HTTP/1.1" 200 -
+2026-05-21 01:14:09,174 [INFO] werkzeug - 127.0.0.1 - - [21/May/2026 01:14:09] "POST /api/chat HTTP/1.1" 200 -
+2026-05-21 01:16:11,707 [INFO] werkzeug - 127.0.0.1 - - [21/May/2026 01:16:11] "GET /api/urgency/bulk HTTP/1.1" 200 -
+2026-05-21 01:21:06,464 [INFO] werkzeug - 127.0.0.1 - - [21/May/2026 01:21:06] "GET / HTTP/1.1" 200 -
+2026-05-21 01:21:06,814 [INFO] werkzeug - 127.0.0.1 - - [21/May/2026 01:21:06] "GET /api/health HTTP/1.1" 200 -
+2026-05-21 01:21:13,611 [INFO] werkzeug - 127.0.0.1 - - [21/May/2026 01:21:13] "GET /api/csv/stats?file=retailer_pos.csv HTTP/1.1" 200 -
+2026-05-21 01:21:19,212 [INFO] werkzeug - 127.0.0.1 - - [21/May/2026 01:21:19] "[33mGET /api/csv/data?file=browsers.csv HTTP/1.1[0m" 404 -
+2026-05-21 01:21:22,571 [INFO] werkzeug - 127.0.0.1 - - [21/May/2026 01:21:22] "[33mGET /api/csv/data?file=browsers.csv HTTP/1.1[0m" 404 -
+2026-05-21 01:21:39,133 [INFO] werkzeug - 127.0.0.1 - - [21/May/2026 01:21:39] "GET /api/metrics/overview HTTP/1.1" 200 -
+2026-05-21 01:21:47,702 [INFO] werkzeug - 127.0.0.1 - - [21/May/2026 01:21:47] "GET /api/metrics/campaigns HTTP/1.1" 200 -
+2026-05-21 01:22:03,636 [INFO] werkzeug - 127.0.0.1 - - [21/May/2026 01:22:03] "GET /api/metrics/campaigns HTTP/1.1" 200 -
+2026-05-21 01:22:13,921 [INFO] werkzeug - 127.0.0.1 - - [21/May/2026 01:22:13] "GET /api/metrics/growers HTTP/1.1" 200 -
+2026-05-21 01:22:18,888 [INFO] werkzeug - 127.0.0.1 - - [21/May/2026 01:22:18] "GET /api/urgency/bulk HTTP/1.1" 200 -
+2026-05-21 01:22:52,323 [INFO] werkzeug - 127.0.0.1 - - [21/May/2026 01:22:52] "POST /api/chat HTTP/1.1" 200 -
+2026-05-21 01:23:24,092 [INFO] werkzeug - 127.0.0.1 - - [21/May/2026 01:23:24] "GET /api/metrics/growers HTTP/1.1" 200 -
+2026-05-21 01:23:44,757 [INFO] werkzeug - 127.0.0.1 - - [21/May/2026 01:23:44] "GET / HTTP/1.1" 200 -
+2026-05-21 01:23:44,848 [INFO] werkzeug - 127.0.0.1 - - [21/May/2026 01:23:44] "GET /api/health HTTP/1.1" 200 -
+2026-05-21 01:23:49,937 [INFO] werkzeug - 127.0.0.1 - - [21/May/2026 01:23:49] "GET /api/urgency/bulk HTTP/1.1" 200 -
+2026-05-21 01:23:58,799 [INFO] werkzeug - 127.0.0.1 - - [21/May/2026 01:23:58] "GET /api/metrics/campaigns HTTP/1.1" 200 -
+2026-05-21 01:24:04,970 [INFO] werkzeug - 127.0.0.1 - - [21/May/2026 01:24:04] "GET /api/metrics/growers HTTP/1.1" 200 -
+2026-05-21 01:25:07,895 [INFO] werkzeug - 127.0.0.1 - - [21/May/2026 01:25:07] "GET /api/metrics/overview HTTP/1.1" 200 -
+2026-05-21 01:28:28,221 [INFO] werkzeug - 127.0.0.1 - - [21/May/2026 01:28:28] "GET /api/urgency/bulk HTTP/1.1" 200 -
+2026-05-21 01:28:36,272 [INFO] werkzeug - 127.0.0.1 - - [21/May/2026 01:28:36] "GET / HTTP/1.1" 200 -
+2026-05-21 01:28:36,622 [INFO] werkzeug - 127.0.0.1 - - [21/May/2026 01:28:36] "GET /api/health HTTP/1.1" 200 -
+2026-05-21 01:28:39,607 [INFO] werkzeug - 127.0.0.1 - - [21/May/2026 01:28:39] "[33mGET /api/csv/data?file=browsers.csv HTTP/1.1[0m" 404 -
+2026-05-21 01:28:46,849 [INFO] werkzeug - 127.0.0.1 - - [21/May/2026 01:28:46] "GET /api/metrics/campaigns HTTP/1.1" 200 -
+2026-05-21 01:29:32,934 [INFO] werkzeug - 127.0.0.1 - - [21/May/2026 01:29:32] "POST /api/chat HTTP/1.1" 200 -
+2026-05-21 01:30:39,947 [ERROR] lumina.api - Qwen API error: HTTPConnectionPool(host='localhost', port=11434): Read timed out. (read timeout=60)
+2026-05-21 01:30:39,948 [INFO] werkzeug - 127.0.0.1 - - [21/May/2026 01:30:39] "POST /api/chat HTTP/1.1" 200 -
+2026-05-21 01:31:56,918 [INFO] werkzeug - 127.0.0.1 - - [21/May/2026 01:31:56] "POST /api/chat HTTP/1.1" 200 -
+2026-05-21 01:32:02,114 [INFO] werkzeug - 127.0.0.1 - - [21/May/2026 01:32:02] "GET /api/metrics/campaigns HTTP/1.1" 200 -
+2026-05-21 01:32:05,533 [INFO] werkzeug - 127.0.0.1 - - [21/May/2026 01:32:05] "GET /api/metrics/growers HTTP/1.1" 200 -
+2026-05-21 01:32:09,521 [INFO] werkzeug - 127.0.0.1 - - [21/May/2026 01:32:09] "GET /api/metrics/overview HTTP/1.1" 200 -
+2026-05-21 01:32:14,482 [INFO] werkzeug - 127.0.0.1 - - [21/May/2026 01:32:14] "GET /api/urgency/bulk HTTP/1.1" 200 -
+2026-05-21 01:32:38,901 [INFO] werkzeug - 127.0.0.1 - - [21/May/2026 01:32:38] "GET / HTTP/1.1" 200 -
+2026-05-21 01:32:39,235 [INFO] werkzeug - 127.0.0.1 - - [21/May/2026 01:32:39] "GET /api/health HTTP/1.1" 200 -
+2026-05-21 01:33:35,289 [INFO] werkzeug - 127.0.0.1 - - [21/May/2026 01:33:35] "GET /api/metrics/overview HTTP/1.1" 200 -
+2026-05-21 01:34:15,374 [INFO] werkzeug - 127.0.0.1 - - [21/May/2026 01:34:15] "GET /api/metrics/campaigns HTTP/1.1" 200 -
+2026-05-21 01:34:21,384 [INFO] werkzeug - 127.0.0.1 - - [21/May/2026 01:34:21] "GET /api/metrics/growers HTTP/1.1" 200 -
+2026-05-21 01:34:24,408 [INFO] werkzeug - 127.0.0.1 - - [21/May/2026 01:34:24] "GET /api/urgency/bulk HTTP/1.1" 200 -
+2026-05-21 01:35:57,730 [INFO] werkzeug - 127.0.0.1 - - [21/May/2026 01:35:57] "GET /api/urgency/bulk HTTP/1.1" 200 -
+2026-05-21 01:36:09,148 [INFO] werkzeug - 127.0.0.1 - - [21/May/2026 01:36:09] "GET /api/metrics/growers HTTP/1.1" 200 -
+2026-05-21 01:36:36,456 [INFO] werkzeug - 127.0.0.1 - - [21/May/2026 01:36:36] "GET /api/metrics/campaigns HTTP/1.1" 200 -
+2026-05-21 01:36:47,034 [INFO] werkzeug - 127.0.0.1 - - [21/May/2026 01:36:47] "GET /api/metrics/overview HTTP/1.1" 200 -
+2026-05-21 02:11:00,195 [INFO] werkzeug - 127.0.0.1 - - [21/May/2026 02:11:00] "GET /api/metrics/overview HTTP/1.1" 200 -
+2026-05-21 02:11:02,629 [INFO] werkzeug - 127.0.0.1 - - [21/May/2026 02:11:02] "GET /api/urgency/bulk HTTP/1.1" 200 -
+2026-05-21 17:54:39,673 [INFO] werkzeug - 127.0.0.1 - - [21/May/2026 17:54:39] "GET / HTTP/1.1" 200 -
+2026-05-21 17:54:39,705 [INFO] werkzeug - 127.0.0.1 - - [21/May/2026 17:54:39] "GET /api/health HTTP/1.1" 200 -
+2026-05-21 17:55:30,426 [INFO] werkzeug - 127.0.0.1 - - [21/May/2026 17:55:30] "GET / HTTP/1.1" 200 -
+2026-05-21 17:55:30,447 [INFO] werkzeug - 127.0.0.1 - - [21/May/2026 17:55:30] "GET /api/health HTTP/1.1" 200 -
+2026-05-21 17:55:52,181 [INFO] werkzeug - 127.0.0.1 - - [21/May/2026 17:55:52] "GET / HTTP/1.1" 200 -
+2026-05-21 17:55:52,203 [INFO] werkzeug - 127.0.0.1 - - [21/May/2026 17:55:52] "GET /api/health HTTP/1.1" 200 -
+2026-05-21 17:55:53,031 [INFO] werkzeug - 127.0.0.1 - - [21/May/2026 17:55:53] "GET / HTTP/1.1" 200 -
+2026-05-21 17:55:53,052 [INFO] werkzeug - 127.0.0.1 - - [21/May/2026 17:55:53] "GET /api/health HTTP/1.1" 200 -
+2026-05-21 17:55:53,603 [INFO] werkzeug - 127.0.0.1 - - [21/May/2026 17:55:53] "GET / HTTP/1.1" 200 -
+2026-05-21 17:55:53,628 [INFO] werkzeug - 127.0.0.1 - - [21/May/2026 17:55:53] "GET /api/health HTTP/1.1" 200 -
+2026-05-21 17:55:54,094 [INFO] werkzeug - 127.0.0.1 - - [21/May/2026 17:55:54] "GET / HTTP/1.1" 200 -
+2026-05-21 17:55:54,117 [INFO] werkzeug - 127.0.0.1 - - [21/May/2026 17:55:54] "GET /api/health HTTP/1.1" 200 -
+2026-05-21 18:30:19,907 [INFO] werkzeug - 127.0.0.1 - - [21/May/2026 18:30:19] "GET / HTTP/1.1" 200 -
+2026-05-21 18:30:21,909 [INFO] werkzeug - 127.0.0.1 - - [21/May/2026 18:30:21] "GET /api/health HTTP/1.1" 200 -
+2026-05-21 18:30:21,949 [INFO] werkzeug - 127.0.0.1 - - [21/May/2026 18:30:21] "GET /api/health HTTP/1.1" 200 -
+2026-05-21 18:30:21,973 [INFO] werkzeug - 127.0.0.1 - - [21/May/2026 18:30:21] "GET /api/metrics/overview HTTP/1.1" 200 -
+2026-05-21 18:30:21,975 [INFO] werkzeug - 127.0.0.1 - - [21/May/2026 18:30:21] "GET /api/metrics/growers HTTP/1.1" 200 -
+2026-05-21 18:30:43,346 [INFO] werkzeug - 127.0.0.1 - - [21/May/2026 18:30:43] "POST /api/chat HTTP/1.1" 200 -
+2026-05-21 18:31:48,614 [INFO] werkzeug - 127.0.0.1 - - [21/May/2026 18:31:48] "POST /api/chat HTTP/1.1" 200 -
+2026-05-21 18:32:43,698 [INFO] werkzeug - 127.0.0.1 - - [21/May/2026 18:32:43] "POST /api/urgency/detect HTTP/1.1" 200 -
+2026-05-21 18:33:44,028 [ERROR] lumina.api - Qwen API error: HTTPConnectionPool(host='localhost', port=11434): Read timed out. (read timeout=60)
+2026-05-21 18:33:44,033 [INFO] werkzeug - 127.0.0.1 - - [21/May/2026 18:33:44] "POST /api/chat HTTP/1.1" 200 -
+2026-05-21 18:33:53,777 [ERROR] lumina.api - Qwen API error: HTTPConnectionPool(host='localhost', port=11434): Read timed out. (read timeout=60)
+2026-05-21 18:33:54,988 [ERROR] lumina.api - Qwen API error: HTTPConnectionPool(host='localhost', port=11434): Read timed out. (read timeout=60)
+2026-05-21 18:33:54,989 [INFO] werkzeug - 127.0.0.1 - - [21/May/2026 18:33:54] "POST /api/chat HTTP/1.1" 200 -
+2026-05-21 18:34:36,345 [INFO] werkzeug - 127.0.0.1 - - [21/May/2026 18:34:36] "POST /api/campaign/generate HTTP/1.1" 200 -
+2026-05-21 18:58:08,975 [INFO] werkzeug -  * Detected change in '/Users/nikhilteja.m/lumina_board/models/urgency_detector.py', reloading
+2026-05-21 18:58:10,131 [INFO] werkzeug -  * Restarting with stat
+2026-05-21 18:58:12,281 [INFO] lumina.api - Starting Lumina Board Enhanced API on port 8000
+2026-05-21 18:58:12,282 [INFO] lumina.api - Qwen2.5 API: http://localhost:11434/api/generate
+2026-05-21 18:58:12,282 [INFO] lumina.api - Model: qwen2.5:latest
+2026-05-21 18:58:12,314 [WARNING] werkzeug -  * Debugger is active!
+2026-05-21 18:58:12,326 [INFO] werkzeug -  * Debugger PIN: 143-466-584
+2026-05-21 18:58:13,154 [INFO] werkzeug - 127.0.0.1 - - [21/May/2026 18:58:13] "GET / HTTP/1.1" 200 -
+2026-05-21 18:58:13,589 [INFO] lumina.api - Loaded growers: 6000 rows, 15 columns
+2026-05-21 18:58:13,594 [INFO] lumina.api - Loaded retailers: 4000 rows, 5 columns
+2026-05-21 18:58:13,842 [INFO] lumina.api - Loaded retailer_pos: 235042 rows, 7 columns
+2026-05-21 18:58:14,014 [INFO] lumina.api - Loaded retailer_inventory: 310544 rows, 5 columns
+2026-05-21 18:58:14,041 [INFO] lumina.api - Loaded retailer_visits: 30000 rows, 6 columns
+2026-05-21 18:58:14,044 [INFO] lumina.api - Loaded reps_territory: 500 rows, 6 columns
+2026-05-21 18:58:14,046 [INFO] lumina.api - Loaded campaigns: 104 rows, 7 columns
+2026-05-21 18:58:14,054 [INFO] lumina.api - Loaded whatsapp: 4479 rows, 8 columns
+2026-05-21 18:58:14,054 [INFO] werkzeug - 127.0.0.1 - - [21/May/2026 18:58:14] "GET /api/health HTTP/1.1" 200 -
+2026-05-21 18:58:14,063 [INFO] werkzeug - 127.0.0.1 - - [21/May/2026 18:58:14] "GET /api/health HTTP/1.1" 200 -
+2026-05-21 18:58:14,074 [INFO] werkzeug - 127.0.0.1 - - [21/May/2026 18:58:14] "GET /api/metrics/growers HTTP/1.1" 200 -
+2026-05-21 18:58:14,082 [INFO] werkzeug - 127.0.0.1 - - [21/May/2026 18:58:14] "GET /api/metrics/overview HTTP/1.1" 200 -
+2026-05-21 18:58:17,000 [INFO] lumina.rag - Building RAG index from ../data
+2026-05-21 18:58:17,011 [INFO] lumina.rag - Indexed 104 rows from digital_funnel_weekly
+2026-05-21 18:58:17,333 [INFO] lumina.rag - Indexed 6000 rows from growers
+2026-05-21 18:58:17,356 [INFO] lumina.rag - Indexed 500 rows from reps_territory
+2026-05-21 18:58:29,773 [INFO] lumina.rag - Indexed 310544 rows from retailer_inventory_weekly
+2026-05-21 18:58:40,245 [INFO] lumina.rag - Indexed 235042 rows from retailer_pos
+2026-05-21 18:58:41,625 [INFO] lumina.rag - Indexed 30000 rows from retailer_visit_log
+2026-05-21 18:58:41,785 [INFO] lumina.rag - Indexed 4000 rows from retailers
+2026-05-21 18:58:41,984 [INFO] lumina.rag - Indexed 4479 rows from whatsapp_campaign
+2026-05-21 18:58:42,034 [INFO] lumina.rag - Fitting TF-IDF on 590669 documents from 8 CSVs
+2026-05-21 18:59:00,232 [INFO] lumina.rag - RAG index built: 590669 docs, matrix shape (590669, 50000)
+2026-05-21 18:59:12,212 [INFO] werkzeug - 127.0.0.1 - - [21/May/2026 18:59:12] "POST /api/chat HTTP/1.1" 200 -
+2026-05-21 18:59:16,702 [INFO] werkzeug - 127.0.0.1 - - [21/May/2026 18:59:16] "GET / HTTP/1.1" 200 -
+2026-05-21 18:59:16,784 [INFO] werkzeug - 127.0.0.1 - - [21/May/2026 18:59:16] "GET /api/health HTTP/1.1" 200 -
+2026-05-21 18:59:16,794 [INFO] werkzeug - 127.0.0.1 - - [21/May/2026 18:59:16] "GET /api/health HTTP/1.1" 200 -
+2026-05-21 18:59:16,832 [INFO] werkzeug - 127.0.0.1 - - [21/May/2026 18:59:16] "GET /api/metrics/growers HTTP/1.1" 200 -
+2026-05-21 18:59:16,834 [INFO] werkzeug - 127.0.0.1 - - [21/May/2026 18:59:16] "GET /api/metrics/overview HTTP/1.1" 200 -
+2026-05-21 18:59:23,599 [INFO] werkzeug - 127.0.0.1 - - [21/May/2026 18:59:23] "GET /api/metrics/growers HTTP/1.1" 200 -
+2026-05-21 18:59:23,628 [INFO] werkzeug - 127.0.0.1 - - [21/May/2026 18:59:23] "GET /api/metrics/campaigns HTTP/1.1" 200 -
+2026-05-21 18:59:28,658 [INFO] werkzeug - 127.0.0.1 - - [21/May/2026 18:59:28] "GET /api/metrics/growers HTTP/1.1" 200 -
+2026-05-21 18:59:28,672 [INFO] werkzeug - 127.0.0.1 - - [21/May/2026 18:59:28] "GET /api/metrics/campaigns HTTP/1.1" 200 -
+2026-05-21 18:59:30,100 [INFO] werkzeug - 127.0.0.1 - - [21/May/2026 18:59:30] "GET /api/csv/list HTTP/1.1" 200 -
+2026-05-21 18:59:31,388 [INFO] werkzeug - 127.0.0.1 - - [21/May/2026 18:59:31] "GET /api/csv/preview?file=retailers.csv&rows=100 HTTP/1.1" 200 -
+2026-05-21 18:59:34,783 [INFO] werkzeug - 127.0.0.1 - - [21/May/2026 18:59:34] "GET /api/csv/preview?file=digital_funnel_weekly.csv&rows=100 HTTP/1.1" 200 -
+2026-05-21 18:59:37,308 [INFO] werkzeug - 127.0.0.1 - - [21/May/2026 18:59:37] "GET /api/csv/preview?file=retailer_pos.csv&rows=100 HTTP/1.1" 200 -
+2026-05-21 18:59:39,258 [INFO] werkzeug - 127.0.0.1 - - [21/May/2026 18:59:39] "GET /api/csv/preview?file=whatsapp_campaign.csv&rows=100 HTTP/1.1" 200 -
+2026-05-21 18:59:41,394 [INFO] werkzeug - 127.0.0.1 - - [21/May/2026 18:59:41] "GET /api/csv/preview?file=retailer_inventory_weekly.csv&rows=100 HTTP/1.1" 200 -
+2026-05-21 18:59:43,224 [INFO] werkzeug - 127.0.0.1 - - [21/May/2026 18:59:43] "GET /api/csv/preview?file=reps_territory.csv&rows=100 HTTP/1.1" 200 -
+2026-05-21 18:59:45,730 [INFO] werkzeug - 127.0.0.1 - - [21/May/2026 18:59:45] "GET /api/csv/preview?file=retailer_visit_log.csv&rows=100 HTTP/1.1" 200 -
+2026-05-21 18:59:47,693 [INFO] werkzeug - 127.0.0.1 - - [21/May/2026 18:59:47] "GET /api/csv/preview?file=growers.csv&rows=100 HTTP/1.1" 200 -
+2026-05-21 19:00:00,443 [INFO] werkzeug - 127.0.0.1 - - [21/May/2026 19:00:00] "GET /api/metrics/growers HTTP/1.1" 200 -
+2026-05-21 19:00:00,460 [INFO] werkzeug - 127.0.0.1 - - [21/May/2026 19:00:00] "GET /api/metrics/campaigns HTTP/1.1" 200 -
+2026-05-21 19:00:02,844 [INFO] lumina.urgency - [Urgency] Training detector...
+2026-05-21 19:00:02,998 [INFO] lumina.urgency - [Urgency] IsolationForest trained on 104 vectors
+2026-05-21 19:00:03,631 [INFO] werkzeug - 127.0.0.1 - - [21/May/2026 19:00:03] "POST /api/urgency/detect HTTP/1.1" 200 -
+2026-05-21 19:00:21,261 [INFO] werkzeug - 127.0.0.1 - - [21/May/2026 19:00:21] "GET /api/urgency/bulk HTTP/1.1" 200 -
+2026-05-21 19:00:37,728 [INFO] werkzeug - 127.0.0.1 - - [21/May/2026 19:00:37] "GET /api/urgency/bulk HTTP/1.1" 200 -
+2026-05-21 19:01:42,159 [INFO] werkzeug - 127.0.0.1 - - [21/May/2026 19:01:42] "GET /api/metrics/growers HTTP/1.1" 200 -
+2026-05-21 19:01:42,180 [INFO] werkzeug - 127.0.0.1 - - [21/May/2026 19:01:42] "GET /api/metrics/campaigns HTTP/1.1" 200 -
+2026-05-21 19:01:44,833 [INFO] werkzeug - 127.0.0.1 - - [21/May/2026 19:01:44] "GET /api/csv/list HTTP/1.1" 200 -
+2026-05-21 19:01:45,618 [INFO] werkzeug - 127.0.0.1 - - [21/May/2026 19:01:45] "GET /api/csv/preview?file=retailer_inventory_weekly.csv&rows=100 HTTP/1.1" 200 -
+2026-05-21 19:01:46,967 [INFO] werkzeug - 127.0.0.1 - - [21/May/2026 19:01:46] "GET /api/metrics/campaigns HTTP/1.1" 200 -
+2026-05-21 19:01:46,984 [INFO] werkzeug - 127.0.0.1 - - [21/May/2026 19:01:46] "GET /api/metrics/growers HTTP/1.1" 200 -
+2026-05-21 19:01:46,985 [INFO] werkzeug - 127.0.0.1 - - [21/May/2026 19:01:46] "GET /api/metrics/overview HTTP/1.1" 200 -
+2026-05-21 19:02:18,086 [INFO] werkzeug - 127.0.0.1 - - [21/May/2026 19:02:18] "POST /api/urgency/detect HTTP/1.1" 200 -
+2026-05-21 19:02:38,119 [ERROR] lumina.api - Qwen API error: HTTPConnectionPool(host='localhost', port=11434): Read timed out. (read timeout=60)
+2026-05-21 19:02:39,240 [ERROR] lumina.api - Qwen API error: HTTPConnectionPool(host='localhost', port=11434): Read timed out. (read timeout=60)
+2026-05-21 19:02:56,085 [INFO] werkzeug - 127.0.0.1 - - [21/May/2026 19:02:56] "POST /api/campaign/generate HTTP/1.1" 200 -
+2026-05-21 19:03:17,989 [ERROR] lumina.api - Qwen API error: HTTPConnectionPool(host='localhost', port=11434): Read timed out. (read timeout=60)
+2026-05-21 19:03:17,991 [INFO] werkzeug - 127.0.0.1 - - [21/May/2026 19:03:17] "POST /api/chat HTTP/1.1" 200 -
+2026-05-21 19:03:38,167 [ERROR] lumina.api - Qwen API error: HTTPConnectionPool(host='localhost', port=11434): Read timed out. (read timeout=60)
+2026-05-21 19:03:39,283 [ERROR] lumina.api - Qwen API error: HTTPConnectionPool(host='localhost', port=11434): Read timed out. (read timeout=60)
+2026-05-21 19:03:54,315 [INFO] werkzeug - 127.0.0.1 - - [21/May/2026 19:03:54] "POST /api/campaign/generate HTTP/1.1" 200 -
+2026-05-21 19:04:09,577 [INFO] werkzeug - 127.0.0.1 - - [21/May/2026 19:04:09] "POST /api/campaign/generate HTTP/1.1" 200 -
+2026-05-21 19:05:57,674 [INFO] werkzeug - 127.0.0.1 - - [21/May/2026 19:05:57] "GET /api/metrics/campaigns HTTP/1.1" 200 -
+2026-05-21 19:05:57,687 [INFO] werkzeug - 127.0.0.1 - - [21/May/2026 19:05:57] "GET /api/metrics/overview HTTP/1.1" 200 -
+2026-05-21 19:05:57,691 [INFO] werkzeug - 127.0.0.1 - - [21/May/2026 19:05:57] "GET /api/metrics/growers HTTP/1.1" 200 -
+2026-05-21 19:05:59,477 [INFO] werkzeug - 127.0.0.1 - - [21/May/2026 19:05:59] "GET /api/csv/list HTTP/1.1" 200 -

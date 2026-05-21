@@ -3,1253 +3,1528 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Lumina Board — Agri Intelligence</title>
+<title>LUMINA BOARD — Agentic marketing tool</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500&family=Noto+Sans:wght@400;500&family=Noto+Sans+Devanagari:wght@400;500&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&family=Exo+2:wght@300;400;600;700;800&family=Noto+Sans:wght@400;500&family=Noto+Sans+Devanagari:wght@400;500&display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com"></script>
 <style>
-/* ══ TOKENS ══════════════════════════════════════════════════════════════════ */
+/* ══ ANDURIL TACTICAL COMMAND TOKENS ══════════════════════════════════════ */
 :root {
-  --bg:        #0b0f14;
-  --bg1:       #111820;
-  --bg2:       #18222d;
-  --bg3:       #1f2d3a;
-  --border:    #263344;
+  --bg:        #080c10;
+  --bg1:       #0c1218;
+  --bg2:       #101820;
+  --bg3:       #152030;
+  --border:    #1e3044;
+  --border2:   #2a4060;
   --accent:    #00e5c3;
+  --accent-dim:#00a88f;
   --accent2:   #ff6b35;
   --accent3:   #7c5cfc;
-  --text:      #e4eaf2;
-  --text-dim:  #6b8198;
-  --text-med:  #9db5cc;
+  --warn:      #f59e0b;
+  --danger:    #ef4444;
   --green:     #22c55e;
-  --yellow:    #f59e0b;
-  --red:       #ef4444;
-  --font-head: 'Syne', sans-serif;
-  --font-mono: 'JetBrains Mono', monospace;
-  --font-body: 'Noto Sans', sans-serif;
-  --r:         10px;
-  --r-lg:      16px;
-  --shadow:    0 4px 24px rgba(0,0,0,.45);
+  --text:      #d4e4f2;
+  --text-dim:  #4a6880;
+  --text-med:  #7a9ab8;
+  --font-head: 'Rajdhani', sans-serif;
+  --font-mono: 'Share Tech Mono', monospace;
+  --font-body: 'Exo 2', sans-serif;
+  --r:         6px;
+  --r-lg:      10px;
+  --shadow:    0 4px 32px rgba(0,0,0,.7);
+  --glow:      0 0 20px rgba(0,229,195,.15);
 }
 
-/* ══ RESET ══════════════════════════════════════════════════════════════════ */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%;overflow:hidden}
-body{
-  background:var(--bg);color:var(--text);
-  font-family:var(--font-body);font-size:14px;line-height:1.6;
-  display:flex;flex-direction:column;
-}
+body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-size:13px;line-height:1.5;display:flex;flex-direction:column}
 button{cursor:pointer;font-family:inherit}
 input,textarea,select{font-family:inherit;color:var(--text)}
-::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar{width:4px;height:4px}
 ::-webkit-scrollbar-track{background:var(--bg1)}
-::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
-::-webkit-scrollbar-thumb:hover{background:#3a5068}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
 
-/* ══ TOPBAR ═════════════════════════════════════════════════════════════════ */
+/* ══ SCAN LINE OVERLAY ══════════════════════════════════════════════════ */
+body::before{
+  content:'';position:fixed;inset:0;
+  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,229,195,.012) 2px,rgba(0,229,195,.012) 4px);
+  pointer-events:none;z-index:9999;
+}
+
+/* ══ TOPBAR ══════════════════════════════════════════════════════════════ */
 #topbar{
-  display:flex;align-items:center;gap:16px;
-  padding:0 20px;height:52px;
+  display:flex;align-items:center;gap:12px;
+  padding:0 16px;height:48px;flex-shrink:0;
   background:var(--bg1);border-bottom:1px solid var(--border);
-  flex-shrink:0;z-index:100;
+  position:relative;z-index:200;
+}
+#topbar::after{
+  content:'';position:absolute;bottom:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,var(--accent),transparent);
+  opacity:.4;
 }
 .logo{
-  font-family:var(--font-head);font-size:18px;font-weight:800;
-  color:var(--accent);letter-spacing:-.5px;white-space:nowrap;
+  font-family:var(--font-head);font-size:20px;font-weight:700;
+  color:var(--accent);letter-spacing:3px;text-transform:uppercase;white-space:nowrap;
+  text-shadow:0 0 20px rgba(0,229,195,.5);
 }
-.logo span{color:var(--text-dim);font-weight:400;font-size:13px;margin-left:6px}
-.top-tabs{display:flex;gap:4px;margin-left:8px;flex:1}
+.logo-sub{font-size:10px;color:var(--text-dim);font-family:var(--font-mono);letter-spacing:2px;margin-left:2px}
+.top-tabs{display:flex;gap:2px;margin-left:8px}
 .tab{
-  padding:5px 14px;border-radius:6px;border:none;
-  background:transparent;color:var(--text-dim);font-size:13px;font-weight:500;
-  transition:.15s;cursor:pointer;
-}
-.tab.active,.tab:hover{background:var(--bg3);color:var(--text)}
-.tab.active{color:var(--accent)}
-.top-right{display:flex;align-items:center;gap:10px;margin-left:auto}
-.status-dot{
-  display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-dim);
-}
-.dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 6px var(--green)}
-.dot.err{background:var(--red);box-shadow:0 0 6px var(--red)}
-.dot.warn{background:var(--yellow);box-shadow:0 0 6px var(--yellow)}
-
-/* ══ MAIN LAYOUT ════════════════════════════════════════════════════════════ */
-#app{
-  display:flex;flex:1;overflow:hidden;
-}
-
-/* ══ SIDEBAR ════════════════════════════════════════════════════════════════ */
-#sidebar{
-  width:220px;flex-shrink:0;
-  background:var(--bg1);border-right:1px solid var(--border);
-  display:flex;flex-direction:column;padding:12px 0;overflow-y:auto;
-}
-.sidebar-section{padding:0 12px 8px;margin-top:4px}
-.sidebar-label{
-  font-size:10px;font-weight:700;letter-spacing:1px;
-  color:var(--text-dim);text-transform:uppercase;padding:4px 6px 6px;
-}
-.sidebar-btn{
-  display:flex;align-items:center;gap:9px;
-  width:100%;padding:8px 10px;border-radius:8px;border:none;
-  background:transparent;color:var(--text-med);font-size:13px;text-align:left;
+  padding:4px 14px;border:1px solid transparent;border-radius:var(--r);
+  background:transparent;color:var(--text-dim);font-size:12px;font-weight:600;
+  font-family:var(--font-head);letter-spacing:1px;text-transform:uppercase;
   transition:.15s;
 }
-.sidebar-btn:hover{background:var(--bg3);color:var(--text)}
-.sidebar-btn.active{background:rgba(0,229,195,.1);color:var(--accent);border:1px solid rgba(0,229,195,.2)}
-.sidebar-icon{font-size:16px;width:20px;text-align:center}
-.badge{
-  margin-left:auto;background:var(--accent2);color:#fff;
-  font-size:10px;padding:2px 6px;border-radius:20px;font-weight:700;
-}
+.tab:hover{background:var(--bg3);color:var(--text);border-color:var(--border)}
+.tab.active{background:rgba(0,229,195,.1);color:var(--accent);border-color:rgba(0,229,195,.3)}
+.top-right{display:flex;align-items:center;gap:14px;margin-left:auto}
+.sys-stat{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text-dim);font-family:var(--font-mono)}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green);animation:blink 2s infinite}
+.dot.err{background:var(--danger);box-shadow:0 0 8px var(--danger);animation:none}
+.dot.warn{background:var(--warn);box-shadow:0 0 8px var(--warn)}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.4}}
+.ts{font-size:10px;color:var(--text-dim);font-family:var(--font-mono)}
 
-/* ══ CONTENT AREA ═══════════════════════════════════════════════════════════ */
-#content{flex:1;overflow:hidden;display:flex;flex-direction:column}
-.panel{display:none;flex:1;overflow:hidden}
-.panel.active{display:flex;flex-direction:column}
+/* ══ MAIN SPLIT LAYOUT ═══════════════════════════════════════════════════ */
+#app{display:flex;flex:1;overflow:hidden;position:relative}
 
-/* ══ CHAT PANEL ═════════════════════════════════════════════════════════════ */
-#chat-panel{flex-direction:row}
-#chat-sidebar{
-  width:220px;flex-shrink:0;border-right:1px solid var(--border);
-  display:flex;flex-direction:column;background:var(--bg1);
+/* ══ LEFT PANEL (Intelligence Display) ══════════════════════════════════ */
+#left-panel{
+  width:420px;min-width:320px;max-width:600px;
+  flex-shrink:0;background:var(--bg1);
+  border-right:1px solid var(--border);
+  display:flex;flex-direction:column;overflow:hidden;
+  position:relative;resize:horizontal;
 }
-.chat-sidebar-head{
-  padding:12px 14px;border-bottom:1px solid var(--border);
+#left-panel::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,transparent,var(--accent),transparent);
+  opacity:.6;
+}
+#lp-header{
+  padding:10px 14px;border-bottom:1px solid var(--border);
+  background:var(--bg2);display:flex;align-items:center;gap:8px;flex-shrink:0;
+}
+#lp-title{
   font-family:var(--font-head);font-size:13px;font-weight:700;
+  color:var(--accent);letter-spacing:2px;text-transform:uppercase;flex:1;
 }
-.csv-filter-list{flex:1;overflow-y:auto;padding:8px}
-.csv-chip{
-  display:flex;align-items:center;gap:7px;padding:6px 8px;
-  border-radius:6px;cursor:pointer;font-size:12px;color:var(--text-med);
-  transition:.12s;user-select:none;
+.lp-close-btn{
+  width:22px;height:22px;border-radius:3px;border:1px solid var(--border2);
+  background:transparent;color:var(--text-dim);font-size:11px;
+  display:flex;align-items:center;justify-content:center;
 }
-.csv-chip:hover{background:var(--bg3);color:var(--text)}
-.csv-chip.selected{background:rgba(0,229,195,.12);color:var(--accent)}
-.csv-chip-icon{font-size:14px}
-.chat-main{flex:1;display:flex;flex-direction:column;overflow:hidden}
-#messages{
-  flex:1;overflow-y:auto;padding:20px 24px;
-  display:flex;flex-direction:column;gap:16px;
+.lp-close-btn:hover{background:var(--bg3);color:var(--danger)}
+#lp-stack{flex:1;overflow-y:auto;padding:10px;display:flex;flex-direction:column;gap:10px}
+
+/* ══ FLOATING BOX SYSTEM ════════════════════════════════════════════════ */
+.intel-box{
+  background:var(--bg2);border:1px solid var(--border);border-radius:var(--r-lg);
+  overflow:hidden;position:relative;transition:.2s;
+  animation:boxSlideIn .3s ease;
 }
-.msg{display:flex;gap:12px;max-width:820px}
+@keyframes boxSlideIn{from{opacity:0;transform:translateX(-12px)}to{opacity:1;transform:translateX(0)}}
+.intel-box:hover{border-color:var(--border2);box-shadow:0 2px 16px rgba(0,0,0,.4)}
+.intel-box.expanded{border-color:rgba(0,229,195,.3);box-shadow:var(--glow)}
+.intel-box-header{
+  padding:8px 12px;background:var(--bg3);border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:8px;cursor:pointer;
+}
+.intel-box-icon{font-size:14px;flex-shrink:0}
+.intel-box-title{
+  font-family:var(--font-head);font-size:12px;font-weight:700;
+  color:var(--text-med);letter-spacing:1px;text-transform:uppercase;flex:1;
+}
+.intel-box.expanded .intel-box-title{color:var(--accent)}
+.intel-box-badge{
+  font-size:10px;font-family:var(--font-mono);
+  background:rgba(0,229,195,.12);color:var(--accent);
+  padding:1px 6px;border-radius:3px;border:1px solid rgba(0,229,195,.25);
+}
+.intel-box-badge.warn{background:rgba(245,158,11,.12);color:var(--warn);border-color:rgba(245,158,11,.25)}
+.intel-box-badge.danger{background:rgba(239,68,68,.12);color:var(--danger);border-color:rgba(239,68,68,.25)}
+.intel-box-controls{display:flex;gap:4px}
+.box-ctrl{
+  width:20px;height:20px;border-radius:3px;border:1px solid var(--border);
+  background:transparent;color:var(--text-dim);font-size:10px;
+  display:flex;align-items:center;justify-content:center;
+}
+.box-ctrl:hover{background:var(--bg1);color:var(--text)}
+.intel-box-body{padding:12px;display:none}
+.intel-box.expanded .intel-box-body{display:block}
+.intel-box-footer{
+  padding:6px 12px;border-top:1px solid var(--border);
+  background:var(--bg1);font-size:10px;color:var(--text-dim);
+  font-family:var(--font-mono);display:flex;justify-content:space-between;
+  display:none;
+}
+.intel-box.expanded .intel-box-footer{display:flex}
+
+/* ══ RIGHT PANEL (Command Chat) ══════════════════════════════════════════ */
+#right-panel{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
+#rp-header{
+  padding:10px 16px;border-bottom:1px solid var(--border);
+  background:var(--bg1);display:flex;align-items:center;gap:10px;flex-shrink:0;
+}
+.rp-title{font-family:var(--font-head);font-size:13px;font-weight:700;color:var(--text-med);letter-spacing:2px;text-transform:uppercase}
+.agent-cycle-indicator{
+  display:flex;align-items:center;gap:6px;margin-left:auto;
+  font-size:11px;font-family:var(--font-mono);color:var(--text-dim);
+}
+.cycle-node{
+  width:24px;height:24px;border-radius:50%;border:1px solid var(--border);
+  background:var(--bg3);display:flex;align-items:center;justify-content:center;
+  font-size:9px;color:var(--text-dim);transition:.3s;
+}
+.cycle-node.active{border-color:var(--accent);background:rgba(0,229,195,.1);color:var(--accent);box-shadow:0 0 8px rgba(0,229,195,.3)}
+.cycle-node.done{border-color:var(--green);background:rgba(34,197,94,.1);color:var(--green)}
+.cycle-arrow{font-size:10px;color:var(--border2)}
+
+/* ══ CHAT MODE TABS ══════════════════════════════════════════════════════ */
+#chat-mode-bar{
+  padding:6px 12px;border-bottom:1px solid var(--border);
+  background:var(--bg2);display:flex;gap:4px;flex-wrap:wrap;flex-shrink:0;
+}
+.mode-btn{
+  padding:4px 12px;border-radius:var(--r);border:1px solid var(--border);
+  background:var(--bg3);color:var(--text-dim);font-size:11px;font-weight:600;
+  font-family:var(--font-head);letter-spacing:.5px;text-transform:uppercase;transition:.15s;
+}
+.mode-btn:hover{border-color:var(--border2);color:var(--text)}
+.mode-btn.active{background:rgba(124,92,252,.12);border-color:rgba(124,92,252,.4);color:#a78bfa}
+.mode-btn.active.teal{background:rgba(0,229,195,.1);border-color:rgba(0,229,195,.3);color:var(--accent)}
+.mode-btn.active.orange{background:rgba(255,107,53,.1);border-color:rgba(255,107,53,.3);color:var(--accent2)}
+
+/* ══ QUICK AGENT COMMANDS ════════════════════════════════════════════════ */
+#quick-cmds{padding:8px 12px;border-bottom:1px solid var(--border);background:var(--bg1);display:flex;gap:6px;flex-wrap:wrap;flex-shrink:0}
+.qcmd{
+  padding:3px 10px;border-radius:20px;border:1px solid var(--border);
+  background:var(--bg2);color:var(--text-dim);font-size:11px;font-family:var(--font-mono);
+  transition:.12s;white-space:nowrap;
+}
+.qcmd:hover{border-color:var(--accent);color:var(--accent);background:rgba(0,229,195,.06)}
+
+/* ══ MESSAGES ════════════════════════════════════════════════════════════ */
+#messages{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:14px}
+.msg{display:flex;gap:10px;max-width:900px}
 .msg.user{flex-direction:row-reverse;align-self:flex-end}
 .msg-avatar{
-  width:32px;height:32px;border-radius:8px;flex-shrink:0;
+  width:30px;height:30px;border-radius:var(--r);flex-shrink:0;
   display:flex;align-items:center;justify-content:center;
-  font-size:16px;background:var(--bg3);
+  font-size:14px;background:var(--bg3);border:1px solid var(--border);
 }
-.msg.user .msg-avatar{background:rgba(0,229,195,.15)}
+.msg.user .msg-avatar{background:rgba(0,229,195,.08);border-color:rgba(0,229,195,.2)}
 .msg-bubble{
   background:var(--bg2);border:1px solid var(--border);
-  border-radius:12px;padding:12px 16px;font-size:13.5px;line-height:1.65;
-  max-width:680px;
+  border-radius:var(--r-lg);padding:10px 14px;font-size:13px;line-height:1.65;
+  max-width:680px;position:relative;
 }
-.msg.user .msg-bubble{
-  background:rgba(0,229,195,.08);border-color:rgba(0,229,195,.25);
+.msg.user .msg-bubble{background:rgba(0,229,195,.06);border-color:rgba(0,229,195,.2)}
+.msg-bubble.agent{border-color:rgba(124,92,252,.3);background:rgba(124,92,252,.05)}
+.msg-bubble.system{border-color:rgba(245,158,11,.3);background:rgba(245,158,11,.05);border-left:3px solid var(--warn)}
+.msg-label{
+  font-size:10px;font-family:var(--font-mono);color:var(--text-dim);
+  margin-bottom:6px;text-transform:uppercase;letter-spacing:1px;display:flex;align-items:center;gap:6px;
 }
-.msg-sources{
-  margin-top:8px;display:flex;gap:6px;flex-wrap:wrap;
+.agent-tag{
+  font-size:9px;font-family:var(--font-mono);padding:1px 5px;
+  border-radius:2px;background:rgba(124,92,252,.2);color:#a78bfa;border:1px solid rgba(124,92,252,.3);
 }
-.source-tag{
-  font-size:11px;padding:2px 8px;border-radius:20px;
-  background:var(--bg3);color:var(--text-dim);border:1px solid var(--border);
-  font-family:var(--font-mono);
-}
-.msg-meta{font-size:11px;color:var(--text-dim);margin-top:4px;text-align:right}
-.msg.user .msg-meta{text-align:left}
-#chat-input-area{
-  padding:14px 20px;border-top:1px solid var(--border);
-  background:var(--bg1);display:flex;gap:10px;align-items:flex-end;
+.msg-sources{margin-top:8px;display:flex;gap:5px;flex-wrap:wrap}
+.src-tag{font-size:10px;padding:1px 7px;border-radius:3px;background:var(--bg3);color:var(--text-dim);border:1px solid var(--border);font-family:var(--font-mono)}
+.msg-meta{font-size:10px;color:var(--text-dim);margin-top:4px;font-family:var(--font-mono)}
+.msg.user .msg-meta{text-align:right}
+
+/* ══ INPUT AREA ══════════════════════════════════════════════════════════ */
+#input-area{
+  padding:12px 16px;border-top:1px solid var(--border);
+  background:var(--bg1);display:flex;gap:8px;align-items:flex-end;flex-shrink:0;
 }
 #chat-input{
   flex:1;background:var(--bg2);border:1px solid var(--border);
-  border-radius:10px;padding:10px 14px;font-size:14px;
-  resize:none;min-height:44px;max-height:120px;color:var(--text);
-  outline:none;transition:.15s;
+  border-radius:var(--r-lg);padding:9px 14px;font-size:13px;
+  resize:none;min-height:42px;max-height:120px;color:var(--text);
+  outline:none;transition:.15s;font-family:var(--font-body);
 }
-#chat-input:focus{border-color:var(--accent);box-shadow:0 0 0 2px rgba(0,229,195,.12)}
+#chat-input:focus{border-color:var(--accent);box-shadow:0 0 0 2px rgba(0,229,195,.08)}
+#chat-input::placeholder{color:var(--text-dim)}
 .send-btn{
-  padding:10px 18px;border-radius:10px;border:none;
-  background:var(--accent);color:#0b0f14;font-weight:700;font-size:14px;
-  transition:.15s;white-space:nowrap;
+  padding:9px 20px;border-radius:var(--r-lg);border:1px solid rgba(0,229,195,.4);
+  background:rgba(0,229,195,.1);color:var(--accent);font-weight:700;font-size:13px;
+  font-family:var(--font-head);letter-spacing:1px;transition:.15s;white-space:nowrap;
 }
-.send-btn:hover{background:#00ccaf}
-.send-btn:disabled{opacity:.45;cursor:not-allowed}
-.typing-indicator{
-  display:flex;gap:5px;align-items:center;padding:10px 14px;
-  background:var(--bg2);border:1px solid var(--border);border-radius:12px;
-  width:fit-content;
-}
-.typing-dot{
-  width:7px;height:7px;border-radius:50%;background:var(--accent);
-  animation:pulse 1.2s infinite;
-}
+.send-btn:hover{background:rgba(0,229,195,.2);box-shadow:var(--glow)}
+.send-btn:disabled{opacity:.35;cursor:not-allowed}
+.typing-indicator{display:flex;gap:4px;align-items:center;padding:10px 14px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r-lg);width:fit-content}
+.typing-dot{width:6px;height:6px;border-radius:50%;background:var(--accent);animation:pulse 1.2s infinite}
 .typing-dot:nth-child(2){animation-delay:.2s}
 .typing-dot:nth-child(3){animation-delay:.4s}
-@keyframes pulse{0%,80%,100%{transform:scale(.6);opacity:.4}40%{transform:scale(1);opacity:1}}
+@keyframes pulse{0%,80%,100%{transform:scale(.6);opacity:.3}40%{transform:scale(1);opacity:1}}
 
-/* ══ QUICK ACTIONS (chat) ═══════════════════════════════════════════════════ */
-.quick-actions{
-  display:flex;gap:8px;flex-wrap:wrap;padding:12px 20px 0;
+/* ══ DISPLAY COMMAND BUTTONS ═════════════════════════════════════════════ */
+.display-btns{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.disp-btn{
+  padding:4px 10px;border-radius:var(--r);border:1px solid var(--border);
+  background:var(--bg3);color:var(--text-dim);font-size:11px;font-family:var(--font-mono);
+  transition:.15s;cursor:pointer;
 }
-.quick-btn{
-  padding:5px 12px;border-radius:20px;border:1px solid var(--border);
-  background:var(--bg2);color:var(--text-med);font-size:12px;
-  transition:.12s;
-}
-.quick-btn:hover{background:var(--bg3);color:var(--accent);border-color:var(--accent)}
+.disp-btn:hover{border-color:var(--accent);color:var(--accent);background:rgba(0,229,195,.08)}
 
-/* ══ METRICS PANEL ══════════════════════════════════════════════════════════ */
-#metrics-panel{overflow-y:auto;padding:20px}
-.metrics-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-bottom:20px}
-.metric-card{
-  background:var(--bg2);border:1px solid var(--border);border-radius:var(--r-lg);
-  padding:16px;transition:.15s;
-}
-.metric-card:hover{border-color:#3a5068}
-.metric-label{font-size:12px;color:var(--text-dim);font-weight:600;letter-spacing:.5px;text-transform:uppercase;margin-bottom:6px}
-.metric-value{font-family:var(--font-head);font-size:28px;font-weight:800;color:var(--text)}
-.metric-sub{font-size:12px;color:var(--text-dim);margin-top:2px}
-.metric-accent{color:var(--accent)}
-.section-title{
-  font-family:var(--font-head);font-size:16px;font-weight:700;
-  margin-bottom:14px;color:var(--text);
-}
-.charts-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px}
-.chart-card{
-  background:var(--bg2);border:1px solid var(--border);border-radius:var(--r-lg);padding:16px;
-}
-.bar-chart{display:flex;flex-direction:column;gap:8px;margin-top:10px}
-.bar-row{display:flex;align-items:center;gap:10px}
-.bar-label{font-size:12px;color:var(--text-med);width:100px;text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.bar-track{flex:1;background:var(--bg3);border-radius:4px;height:18px;position:relative;overflow:hidden}
-.bar-fill{height:100%;border-radius:4px;background:var(--accent);transition:width 1s ease}
-.bar-val{font-size:11px;font-family:var(--font-mono);color:var(--text-dim);width:60px}
-
-/* ══ CSV VIEWER PANEL ══════════════════════════════════════════════════════ */
-#csv-panel{flex-direction:row}
-#csv-file-list{
-  width:220px;flex-shrink:0;border-right:1px solid var(--border);
-  background:var(--bg1);display:flex;flex-direction:column;
-}
-.csv-list-head{
-  padding:14px;border-bottom:1px solid var(--border);
-  font-family:var(--font-head);font-size:13px;font-weight:700;
-}
-.csv-files{flex:1;overflow-y:auto;padding:8px}
-.csv-file-item{
-  padding:8px 10px;border-radius:8px;cursor:pointer;
-  font-size:12.5px;color:var(--text-med);transition:.12s;
-}
-.csv-file-item:hover{background:var(--bg3);color:var(--text)}
-.csv-file-item.active{background:rgba(124,92,252,.15);color:#a78bfa;border:1px solid rgba(124,92,252,.25)}
-.csv-file-name{font-weight:600;font-family:var(--font-mono)}
-.csv-file-meta{font-size:11px;color:var(--text-dim);margin-top:2px}
-#csv-content{flex:1;display:flex;flex-direction:column;overflow:hidden}
-#csv-toolbar{
-  padding:12px 16px;border-bottom:1px solid var(--border);
-  background:var(--bg1);display:flex;gap:10px;align-items:center;
-}
-.csv-name-badge{
-  font-family:var(--font-mono);font-size:13px;color:var(--accent);font-weight:600;
-}
-.csv-stat{font-size:12px;color:var(--text-dim)}
-.btn-sm{
-  padding:5px 12px;border-radius:6px;border:1px solid var(--border);
-  background:var(--bg2);color:var(--text-med);font-size:12px;
-  transition:.12s;margin-left:auto;
-}
-.btn-sm:hover{background:var(--bg3);color:var(--text)}
-#csv-table-wrap{flex:1;overflow:auto;padding:0}
-table{
-  width:100%;border-collapse:collapse;font-size:12.5px;
-}
-thead th{
-  background:var(--bg1);color:var(--text-dim);
-  padding:10px 14px;text-align:left;border-bottom:1px solid var(--border);
-  font-weight:600;letter-spacing:.4px;position:sticky;top:0;z-index:10;
-  font-size:11px;text-transform:uppercase;white-space:nowrap;
-}
-tbody tr:hover{background:var(--bg2)}
-tbody td{
-  padding:8px 14px;border-bottom:1px solid rgba(38,51,68,.5);
-  color:var(--text-med);white-space:nowrap;max-width:200px;
-  overflow:hidden;text-overflow:ellipsis;
-}
-.null-val{color:var(--border);font-style:italic;font-size:11px}
-
-/* ══ URGENCY PANEL ══════════════════════════════════════════════════════════ */
-#urgency-panel{overflow-y:auto;padding:20px;flex-direction:column}
-.urgency-hero{
-  background:var(--bg2);border:1px solid var(--border);border-radius:var(--r-lg);
-  padding:24px;margin-bottom:20px;display:flex;gap:20px;align-items:center;
-}
-.urgency-score-ring{
-  width:100px;height:100px;flex-shrink:0;position:relative;
-}
-.urgency-score-ring svg{transform:rotate(-90deg)}
-.ring-bg{fill:none;stroke:var(--bg3);stroke-width:10}
-.ring-fill{
-  fill:none;stroke-width:10;stroke-linecap:round;
-  transition:stroke-dasharray 1s ease;
-}
-.score-text{
-  position:absolute;inset:0;display:flex;flex-direction:column;
-  align-items:center;justify-content:center;
-}
-.score-num{font-family:var(--font-head);font-size:24px;font-weight:800}
-.score-lbl{font-size:10px;color:var(--text-dim);text-transform:uppercase}
-.urgency-info{flex:1}
-.urgency-level{
-  font-family:var(--font-head);font-size:22px;font-weight:800;margin-bottom:4px;
-}
-.urgency-msg{color:var(--text-med);font-size:14px}
-.urgency-filters{
-  display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;
-}
-.filter-select{
-  padding:7px 12px;border-radius:8px;border:1px solid var(--border);
-  background:var(--bg2);color:var(--text);font-size:13px;outline:none;
-}
-.filter-select:focus{border-color:var(--accent)}
-.urgency-btn{
-  padding:7px 18px;border-radius:8px;border:none;
-  background:var(--accent2);color:#fff;font-weight:700;font-size:13px;
-}
-.urgency-btn:hover{background:#e55a25}
-.signals-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px}
-.signal-card{
-  background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);
-  padding:14px;
-}
-.signal-type{
-  font-size:11px;text-transform:uppercase;letter-spacing:.6px;color:var(--text-dim);margin-bottom:6px;
-}
-.signal-msg{font-size:13px;color:var(--text);line-height:1.5}
-.signal-sev{
-  display:inline-block;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:700;
-  margin-top:6px;
-}
-.sev-low{background:rgba(34,197,94,.15);color:var(--green)}
-.sev-med{background:rgba(245,158,11,.15);color:var(--yellow)}
-.sev-high{background:rgba(255,107,53,.15);color:var(--accent2)}
-.sev-crit{background:rgba(239,68,68,.15);color:var(--red)}
-.recs-list{display:flex;flex-direction:column;gap:8px}
-.rec-item{
-  padding:10px 14px;background:var(--bg2);border:1px solid var(--border);
-  border-radius:var(--r);font-size:13px;color:var(--text-med);
-  border-left:3px solid var(--accent);
-}
-.hotspot-table{width:100%;border-collapse:collapse;font-size:13px}
-.hotspot-table th{
-  text-align:left;padding:8px 12px;color:var(--text-dim);
-  border-bottom:1px solid var(--border);font-size:11px;text-transform:uppercase;
-}
-.hotspot-table td{padding:10px 12px;border-bottom:1px solid rgba(38,51,68,.4)}
-
-/* ══ CAMPAIGN PANEL ═════════════════════════════════════════════════════════ */
-#campaign-panel{overflow-y:auto;padding:20px}
-.campaign-form{
-  background:var(--bg2);border:1px solid var(--border);border-radius:var(--r-lg);
-  padding:20px;margin-bottom:20px;
-}
-.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
-.form-group{display:flex;flex-direction:column;gap:6px}
-.form-label{font-size:12px;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:.5px}
-.form-input{
-  padding:9px 12px;border-radius:8px;border:1px solid var(--border);
-  background:var(--bg3);color:var(--text);font-size:13px;outline:none;
-  transition:.15s;
-}
-.form-input:focus{border-color:var(--accent)}
-.lang-checkboxes{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
-.lang-cb{display:flex;align-items:center;gap:5px;cursor:pointer}
-.lang-cb input{accent-color:var(--accent)}
-.lang-cb span{font-size:12px;color:var(--text-med)}
-.gen-btn{
-  padding:10px 24px;border-radius:10px;border:none;
-  background:var(--accent3);color:#fff;font-weight:700;font-size:14px;
-  transition:.15s;margin-top:4px;
-}
-.gen-btn:hover{background:#6a4fe0}
-.gen-btn:disabled{opacity:.45;cursor:not-allowed}
-.campaign-results{display:flex;flex-direction:column;gap:14px}
-.lang-result-card{
-  background:var(--bg2);border:1px solid var(--border);border-radius:var(--r-lg);
-  overflow:hidden;
-}
-.lang-result-header{
-  padding:12px 16px;background:var(--bg3);
-  display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border);
-}
-.lang-flag{font-size:20px}
-.lang-name{font-family:var(--font-head);font-weight:700;font-size:15px}
-.lang-script{font-size:11px;color:var(--text-dim);background:var(--bg2);padding:2px 8px;border-radius:20px;margin-left:auto}
-.msg-tabs{display:flex;border-bottom:1px solid var(--border)}
-.msg-tab{
-  padding:8px 16px;font-size:12px;color:var(--text-dim);cursor:pointer;
-  border-bottom:2px solid transparent;transition:.15s;border-radius:0;border:none;background:transparent;
-}
-.msg-tab.active{color:var(--accent);border-bottom-color:var(--accent)}
-.msg-content{padding:14px 16px;font-size:14px;line-height:1.8;color:var(--text)}
-.sms-content{font-family:var(--font-body)}
-.audio-content{
-  font-family:var(--font-mono);font-size:12.5px;white-space:pre-wrap;
-  background:var(--bg3);padding:12px;border-radius:8px;color:var(--text-med);
-}
-.stage-dir{color:var(--text-dim);font-style:italic}
-.copy-btn{
-  padding:5px 12px;border-radius:6px;border:1px solid var(--border);
-  background:var(--bg3);color:var(--text-dim);font-size:11px;
-  margin-top:10px;transition:.12s;
-}
-.copy-btn:hover{background:var(--bg1);color:var(--accent)}
-.msg-stats{
-  padding:8px 16px;background:var(--bg1);border-top:1px solid var(--border);
-  display:flex;gap:16px;font-size:12px;color:var(--text-dim);
-}
-
-/* ══ LOADING / EMPTY ════════════════════════════════════════════════════════ */
-.spinner{
-  width:28px;height:28px;border:3px solid var(--border);
-  border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;
-  margin:40px auto;
-}
+/* ══ SPINNER ═════════════════════════════════════════════════════════════ */
+.spinner{width:22px;height:22px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;margin:20px auto}
 @keyframes spin{to{transform:rotate(360deg)}}
-.empty-state{
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  padding:60px 20px;color:var(--text-dim);gap:10px;
-}
-.empty-icon{font-size:40px;opacity:.4}
-.empty-text{font-size:14px;opacity:.7}
-.toast{
-  position:fixed;bottom:20px;right:20px;
-  background:var(--bg3);border:1px solid var(--border);
-  border-radius:10px;padding:10px 16px;font-size:13px;
-  color:var(--text);z-index:999;opacity:0;transform:translateY(10px);
-  transition:.25s;pointer-events:none;
-}
+.empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;color:var(--text-dim);gap:8px;text-align:center}
+.empty-icon{font-size:32px;opacity:.3}
+
+/* ══ TOAST ══════════════════════════════════════════════════════════════ */
+.toast{position:fixed;bottom:16px;right:16px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r-lg);padding:8px 14px;font-size:12px;color:var(--text);z-index:9990;opacity:0;transform:translateY(8px);transition:.25s;pointer-events:none;font-family:var(--font-mono)}
 .toast.show{opacity:1;transform:translateY(0)}
 
-/* ══ RESPONSIVE ═════════════════════════════════════════════════════════════ */
-@media(max-width:700px){
-  #sidebar{display:none}
-  .charts-row{grid-template-columns:1fr}
-  .signals-grid{grid-template-columns:1fr}
-  .form-row{grid-template-columns:1fr}
+/* ══ INNER TABLE ════════════════════════════════════════════════════════ */
+.data-table{width:100%;border-collapse:collapse;font-size:11px}
+.data-table th{background:var(--bg3);color:var(--text-dim);padding:6px 10px;text-align:left;border-bottom:1px solid var(--border);font-family:var(--font-head);letter-spacing:.5px;text-transform:uppercase;position:sticky;top:0;white-space:nowrap;font-size:10px}
+.data-table td{padding:5px 10px;border-bottom:1px solid rgba(30,48,68,.5);color:var(--text-med);white-space:nowrap;max-width:180px;overflow:hidden;text-overflow:ellipsis}
+.data-table tr:hover td{background:var(--bg3);color:var(--text)}
+
+/* ══ BAR CHART ══════════════════════════════════════════════════════════ */
+.bar-row{display:flex;align-items:center;gap:8px;margin-bottom:5px}
+.bar-label{font-size:11px;color:var(--text-med);width:90px;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex-shrink:0}
+.bar-track{flex:1;background:var(--bg3);border-radius:3px;height:14px;overflow:hidden}
+.bar-fill{height:100%;border-radius:3px;transition:width 1s ease}
+.bar-val{font-size:10px;font-family:var(--font-mono);color:var(--text-dim);width:48px;flex-shrink:0}
+
+/* ══ CAMPAIGN CARD ══════════════════════════════════════════════════════ */
+.camp-card{
+  background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);
+  margin-bottom:8px;overflow:hidden;
 }
+.camp-card-head{
+  padding:8px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;
+  cursor:pointer;background:var(--bg2);
+}
+.camp-lang{font-family:var(--font-head);font-size:13px;font-weight:700;flex:1}
+.camp-body{padding:10px 12px;display:none}
+.camp-card.open .camp-body{display:block}
+.sms-box{background:var(--bg1);border:1px solid var(--border);border-radius:var(--r);padding:10px;font-size:12px;line-height:1.7;color:var(--text);margin-bottom:8px;white-space:pre-wrap}
+.script-box{background:var(--bg1);border:1px solid var(--border);border-radius:var(--r);padding:10px;font-size:11px;font-family:var(--font-mono);line-height:1.6;color:var(--text-med);white-space:pre-wrap}
+.stage-dir{color:var(--text-dim);font-style:italic}
+
+/* ══ SIGNAL PILL ════════════════════════════════════════════════════════ */
+.sig-pill{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:3px;font-size:10px;font-family:var(--font-mono)}
+.sig-low{background:rgba(34,197,94,.12);color:var(--green);border:1px solid rgba(34,197,94,.25)}
+.sig-med{background:rgba(245,158,11,.12);color:var(--warn);border:1px solid rgba(245,158,11,.25)}
+.sig-high{background:rgba(255,107,53,.12);color:var(--accent2);border:1px solid rgba(255,107,53,.25)}
+.sig-crit{background:rgba(239,68,68,.12);color:var(--danger);border:1px solid rgba(239,68,68,.25)}
+
+/* ══ ANALYSIS OUTPUT BLOCK ══════════════════════════════════════════════ */
+.analysis-block{
+  background:var(--bg1);border:1px solid var(--border);border-left:3px solid var(--accent3);
+  border-radius:var(--r);padding:10px;margin-bottom:8px;font-size:12px;line-height:1.6;
+}
+.analysis-block.warn{border-left-color:var(--warn)}
+.analysis-block.danger{border-left-color:var(--danger)}
+
+/* ══ PINNED BOX ═════════════════════════════════════════════════════════ */
+.pinned-item{
+  display:flex;align-items:flex-start;gap:8px;
+  padding:8px;background:var(--bg3);border-radius:var(--r);margin-bottom:6px;
+  border-left:2px solid var(--accent);
+}
+.pin-icon{font-size:14px;flex-shrink:0;margin-top:1px}
+.pin-text{font-size:12px;color:var(--text);line-height:1.5}
+.pin-src{font-size:10px;color:var(--text-dim);font-family:var(--font-mono);margin-top:3px}
+
+/* ══ ACTION BUTTONS ═════════════════════════════════════════════════════ */
+.action-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.act-btn{
+  padding:6px 14px;border-radius:var(--r);border:1px solid var(--border);
+  background:var(--bg3);color:var(--text-med);font-size:12px;font-family:var(--font-head);
+  letter-spacing:.5px;font-weight:600;text-transform:uppercase;transition:.15s;
+}
+.act-btn:hover{border-color:var(--accent);color:var(--accent);background:rgba(0,229,195,.08)}
+.act-btn.primary{background:rgba(0,229,195,.1);border-color:rgba(0,229,195,.35);color:var(--accent)}
+.act-btn.primary:hover{background:rgba(0,229,195,.2)}
+.act-btn.danger{background:rgba(255,107,53,.08);border-color:rgba(255,107,53,.3);color:var(--accent2)}
+.act-btn.purple{background:rgba(124,92,252,.08);border-color:rgba(124,92,252,.3);color:#a78bfa}
+
+/* ══ FORM ELEMENTS ══════════════════════════════════════════════════════ */
+.form-group{margin-bottom:10px}
+.form-label{display:block;font-size:10px;font-family:var(--font-head);font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px}
+.form-inp{width:100%;padding:7px 10px;border-radius:var(--r);border:1px solid var(--border);background:var(--bg3);color:var(--text);font-size:12px;outline:none;transition:.15s}
+.form-inp:focus{border-color:var(--accent);box-shadow:0 0 0 2px rgba(0,229,195,.07)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.lang-checks{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+.lang-check{display:flex;align-items:center;gap:4px;cursor:pointer}
+.lang-check input{accent-color:var(--accent)}
+.lang-check span{font-size:11px;color:var(--text-med)}
+
+/* ══ METRIC PILL ════════════════════════════════════════════════════════ */
+.metric-row{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:10px}
+.m-pill{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:8px 10px}
+.m-pill-label{font-size:10px;color:var(--text-dim);text-transform:uppercase;letter-spacing:.5px;font-family:var(--font-head)}
+.m-pill-val{font-family:var(--font-head);font-size:20px;font-weight:700;color:var(--text);margin-top:2px}
+.m-pill-val.accent{color:var(--accent)}
+.m-pill-val.warn{color:var(--warn)}
+
+/* ══ RESIZE HANDLE ══════════════════════════════════════════════════════ */
+#resize-handle{
+  width:4px;background:var(--border);cursor:col-resize;flex-shrink:0;
+  transition:.15s;
+}
+#resize-handle:hover{background:var(--accent)}
+
+/* ══ OVERVIEW PANEL ══════════════════════════════════════════════════════ */
+.overview-panel{position:absolute;inset:0;background:var(--bg1);z-index:50;overflow-y:auto;padding:20px;display:none;flex-direction:column}
+.overview-panel.show{display:flex}
+
+/* ══ RIGHT SIDE PANEL (CONTENT TABS) ═════════════════════════════════════ */
+#content-area{flex:1;overflow:hidden;display:flex;flex-direction:column}
+.content-panel{display:none;flex:1;overflow:hidden}
+.content-panel.active{display:flex;flex-direction:column}
 </style>
 </head>
 <body>
 
-<!-- ══ TOPBAR ══════════════════════════════════════════════════════════════ -->
+<!-- ══ TOPBAR ════════════════════════════════════════════════════════════ -->
 <div id="topbar">
-  <div class="logo">LUMINA <span>agri intelligence</span></div>
+  <div>
+    <div class="logo">LUMINA<span style="color:var(--text-dim);font-weight:400;font-size:13px;letter-spacing:1px;margin-left:8px">BOARD</span></div>
+  </div>
   <div class="top-tabs">
-    <button class="tab active" onclick="showPanel('metrics')">📊 Overview</button>
-    <button class="tab" onclick="showPanel('chat')">💬 AI Chat</button>
-    <button class="tab" onclick="showPanel('csv')">🗂 CSV Data</button>
-    <button class="tab" onclick="showPanel('urgency')">🚨 Urgency</button>
-    <button class="tab" onclick="showPanel('campaign')">📢 Campaigns</button>
+    <button class="tab active" onclick="showMain('chat')">⬡ COMMAND</button>
+    <button class="tab" onclick="showMain('metrics')">◈ OVERVIEW</button>
+    <button class="tab" onclick="showMain('csv')">▦ DATA</button>
+    <button class="tab" onclick="showMain('urgency')">△ THREAT</button>
+    <button class="tab" onclick="showMain('campaign')">◉ CAMPAIGN</button>
   </div>
   <div class="top-right">
-    <div class="status-dot">
-      <div class="dot" id="api-dot"></div>
-      <span id="api-status">Connecting…</span>
-    </div>
+    <div class="sys-stat"><div class="dot" id="api-dot"></div><span id="api-status" style="font-size:11px">INIT</span></div>
+    <div class="ts" id="clock">--:--:--</div>
+    <div class="sys-stat" style="font-size:10px;color:var(--text-dim)">FIELD INTEL v2.4</div>
   </div>
 </div>
 
-<!-- ══ APP ════════════════════════════════════════════════════════════════ -->
+<!-- ══ APP ═══════════════════════════════════════════════════════════════ -->
 <div id="app">
 
-<!-- SIDEBAR -->
-<div id="sidebar">
-  <div class="sidebar-section">
-    <div class="sidebar-label">Navigation</div>
-    <button class="sidebar-btn active" onclick="showPanel('metrics')">
-      <span class="sidebar-icon">📊</span> Overview
-    </button>
-    <button class="sidebar-btn" onclick="showPanel('chat')">
-      <span class="sidebar-icon">💬</span> AI Chat
-    </button>
-    <button class="sidebar-btn" onclick="showPanel('csv')">
-      <span class="sidebar-icon">🗂</span> CSV Viewer
-    </button>
-    <button class="sidebar-btn" onclick="showPanel('urgency')">
-      <span class="sidebar-icon">🚨</span> Urgency
-      <span class="badge" id="sidebar-urgency-badge" style="display:none">!</span>
-    </button>
-    <button class="sidebar-btn" onclick="showPanel('campaign')">
-      <span class="sidebar-icon">📢</span> Campaigns
-    </button>
+<!-- ════ LEFT INTEL PANEL ════════════════════════════════════════════════ -->
+<div id="left-panel">
+  <div id="lp-header">
+    <span style="font-size:14px">⬡</span>
+    <span id="lp-title">INTEL DISPLAY</span>
+    <button class="lp-close-btn" onclick="clearAllBoxes()" title="Clear all">✕</button>
+    <button class="lp-close-btn" style="margin-left:2px" onclick="addPinnedBox()" title="Add pin">📌</button>
   </div>
-  <div class="sidebar-section">
-    <div class="sidebar-label">Quick Stats</div>
-    <div style="padding:8px 6px;font-size:12px;color:var(--text-dim)">
-      <div style="display:flex;justify-content:space-between;padding:4px 0">
-        <span>Growers</span><span id="sb-growers" style="color:var(--text)">—</span>
-      </div>
-      <div style="display:flex;justify-content:space-between;padding:4px 0">
-        <span>Campaigns</span><span id="sb-campaigns" style="color:var(--text)">—</span>
-      </div>
-      <div style="display:flex;justify-content:space-between;padding:4px 0">
-        <span>Retailers</span><span id="sb-retailers" style="color:var(--text)">—</span>
-      </div>
-      <div style="display:flex;justify-content:space-between;padding:4px 0">
-        <span>CSVs Loaded</span><span id="sb-csvs" style="color:var(--accent)">—</span>
-      </div>
+  <div id="lp-stack">
+    <!-- Boxes injected here dynamically -->
+    <div class="empty-state" id="lp-empty">
+      <div class="empty-icon">⬡</div>
+      <div style="font-family:var(--font-mono);font-size:11px;color:var(--text-dim)">AWAITING INTEL STREAM</div>
+      <div style="font-size:11px;color:var(--text-dim);margin-top:4px">Use right panel commands to populate<br>intelligence modules here</div>
     </div>
   </div>
 </div>
 
-<!-- ══ CONTENT ══════════════════════════════════════════════════════════ -->
-<div id="content">
+<!-- ════ RESIZE HANDLE ════════════════════════════════════════════════════ -->
+<div id="resize-handle" id="resize-handle"></div>
 
-<!-- METRICS PANEL -->
-<div class="panel active" id="metrics-panel">
-  <div class="metrics-grid" id="metrics-grid">
-    <div class="metric-card"><div class="metric-label">Total Growers</div><div class="metric-value metric-accent" id="m-growers">—</div><div class="metric-sub">across all states</div></div>
-    <div class="metric-card"><div class="metric-label">Campaigns</div><div class="metric-value" id="m-campaigns">—</div><div class="metric-sub">unique campaign IDs</div></div>
-    <div class="metric-card"><div class="metric-label">Impressions</div><div class="metric-value" id="m-impressions">—</div><div class="metric-sub">total social impressions</div></div>
-    <div class="metric-card"><div class="metric-label">CTR</div><div class="metric-value" id="m-ctr">—</div><div class="metric-sub">impression → visit rate</div></div>
-    <div class="metric-card"><div class="metric-label">Conversion</div><div class="metric-value" id="m-conv">—</div><div class="metric-sub">visit → lead submission</div></div>
-    <div class="metric-card"><div class="metric-label">Retailers</div><div class="metric-value" id="m-retailers">—</div><div class="metric-sub">active in network</div></div>
-  </div>
+<!-- ════ RIGHT COMMAND PANEL ════════════════════════════════════════════ -->
+<div id="right-panel">
 
-  <div class="charts-row" id="charts-row">
-    <div class="chart-card">
-      <div class="section-title">Top States by Growers</div>
-      <div class="bar-chart" id="states-chart"><div class="spinner"></div></div>
-    </div>
-    <div class="chart-card">
-      <div class="section-title">Leads by Crop</div>
-      <div class="bar-chart" id="crop-chart"><div class="spinner"></div></div>
-    </div>
-    <div class="chart-card">
-      <div class="section-title">Device Distribution</div>
-      <div class="bar-chart" id="device-chart"><div class="spinner"></div></div>
-    </div>
-    <div class="chart-card">
-      <div class="section-title">Language Reach</div>
-      <div class="bar-chart" id="lang-chart"><div class="spinner"></div></div>
-    </div>
-  </div>
-</div>
-
-<!-- CHAT PANEL -->
-<div class="panel" id="chat-panel">
-  <div id="chat-sidebar">
-    <div class="chat-sidebar-head">🗂 Filter by CSV</div>
-    <div class="csv-filter-list" id="csv-filter-list">
-      <div class="csv-chip selected" data-csv="" onclick="selectCsvFilter(this)">
-        <span class="csv-chip-icon">🌐</span> All CSVs
+  <!-- CHAT PANEL (default) -->
+  <div class="content-panel active" id="chat-panel-main">
+    <div id="rp-header">
+      <div class="rp-title">AI COMMAND</div>
+      <div class="agent-cycle-indicator" id="agent-cycle" style="display:none">
+        <span style="font-size:10px;color:var(--text-dim)">CYCLE</span>
+        <div class="cycle-node" id="cn1">1</div><div class="cycle-arrow">→</div>
+        <div class="cycle-node" id="cn2">2</div><div class="cycle-arrow">→</div>
+        <div class="cycle-node" id="cn3">3</div><div class="cycle-arrow">→</div>
+        <div class="cycle-node" id="cn4">4</div>
       </div>
     </div>
-    <div style="padding:10px;border-top:1px solid var(--border)">
-      <button class="sidebar-btn" onclick="rebuildRag()" style="font-size:12px;width:100%">
-        🔄 Rebuild RAG Index
-      </button>
+    <div id="chat-mode-bar">
+      <button class="mode-btn active teal" onclick="setMode('rag')" id="mode-rag">◈ RAG QUERY</button>
+      <button class="mode-btn" onclick="setMode('agent')" id="mode-agent">⬡ 4-AGENT CYCLE</button>
+      <button class="mode-btn" onclick="setMode('marketing')" id="mode-marketing">📢 MARKETING GEN</button>
+      <button class="mode-btn" onclick="setMode('biourgency')" id="mode-biourgency">△ BIO-URGENCY</button>
+      <button class="mode-btn" onclick="setMode('analysis')" id="mode-analysis">◉ ANALYSIS</button>
     </div>
-  </div>
-  <div class="chat-main">
-    <div class="quick-actions">
-      <button class="quick-btn" onclick="sendQuick('What are the top performing campaigns?')">Top campaigns</button>
-      <button class="quick-btn" onclick="sendQuick('Which states have the highest grower count?')">State breakdown</button>
-      <button class="quick-btn" onclick="sendQuick('What is the average CTR across all campaigns?')">Avg CTR</button>
-      <button class="quick-btn" onclick="sendQuick('What crops have the lowest conversion rate?')">Crop conversion</button>
-      <button class="quick-btn" onclick="sendQuick('Which languages should we prioritize for SMS campaigns?')">Language targeting</button>
+    <div id="quick-cmds">
+      <button class="qcmd" onclick="sendQuick('Summarize all datasets and key metrics')">▶ DATASET OVERVIEW</button>
+      <button class="qcmd" onclick="sendQuick('Run 4-agent bio-urgency analysis for Andhra Pradesh')">△ AP BIO-URGENCY</button>
+      <button class="qcmd" onclick="sendQuick('Generate marketing SMS for top products in Telugu and Hindi')">📢 CAMPAIGN GEN</button>
+      <button class="qcmd" onclick="sendQuick('Show grower segmentation and regional trend analysis')">◈ GROWER ANALYSIS</button>
+      <button class="qcmd" onclick="sendQuick('Analyze retailer inventory trends and identify stockout risk')">▦ INVENTORY RISK</button>
     </div>
     <div id="messages">
       <div class="msg">
-        <div class="msg-avatar">🌾</div>
+        <div class="msg-avatar">⬡</div>
         <div>
           <div class="msg-bubble">
-            <strong>Lumina AI</strong> — CSV-grounded agricultural intelligence<br><br>
-            Ask me anything about your grower data, campaign performance, or regional trends. All answers come directly from your CSV files — no hallucination.<br><br>
-            Try: <em>"Which state has the lowest conversion rate?"</em> or <em>"What's the device split in Punjab?"</em>
+            <div class="msg-label">LUMINA COMMAND AI <span class="agent-tag">SYSTEM</span></div>
+            <strong>Field Intelligence System Online.</strong><br><br>
+            Multi-modal agricultural intelligence ready. All responses grounded in CSV data via RAG.<br><br>
+            <span style="color:var(--accent);font-family:var(--font-mono);font-size:12px">MODES:</span>
+            <div class="display-btns" style="margin-top:8px">
+              <button class="disp-btn" onclick="setMode('rag');document.getElementById('chat-input').focus()">◈ RAG Query</button>
+              <button class="disp-btn" onclick="setMode('agent');sendQuick('Run 4-agent bio-urgency analysis')">⬡ 4-Agent Cycle</button>
+              <button class="disp-btn" onclick="displayBox('marketing')">📢 Marketing Gen</button>
+              <button class="disp-btn" onclick="displayBox('data_summary')">▦ Data Summary</button>
+            </div>
           </div>
-          <div class="msg-meta">RAG engine ready · Qwen2.5 powered</div>
+          <div class="msg-meta">SYSTEM · RAG ENGINE READY · QWEN2.5</div>
         </div>
       </div>
     </div>
-    <div id="chat-input-area">
-      <textarea id="chat-input" placeholder="Ask about growers, campaigns, regions, products…" rows="1"
+    <div id="input-area">
+      <textarea id="chat-input" placeholder="Enter command query… [RAG / Agent / Bio-Urgency / Campaign / Analysis]" rows="1"
         onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChat()}"></textarea>
-      <button class="send-btn" id="send-btn" onclick="sendChat()">Send ↗</button>
+      <button class="send-btn" id="send-btn" onclick="sendChat()">SEND ↗</button>
     </div>
   </div>
-</div>
 
-<!-- CSV PANEL -->
-<div class="panel" id="csv-panel">
-  <div id="csv-file-list">
-    <div class="csv-list-head">📂 CSV Files</div>
-    <div class="csv-files" id="csv-files-list">
+  <!-- OVERVIEW PANEL -->
+  <div class="content-panel" id="metrics-panel-main">
+    <div style="flex:1;overflow-y:auto;padding:20px" id="metrics-content">
       <div class="spinner"></div>
     </div>
   </div>
-  <div id="csv-content">
-    <div id="csv-toolbar" style="display:none">
-      <span class="csv-name-badge" id="csv-active-name">—</span>
-      <span class="csv-stat" id="csv-active-stat"></span>
-      <button class="btn-sm" onclick="loadCsvStats()">📈 Stats</button>
-    </div>
-    <div id="csv-table-wrap" style="flex:1;overflow:auto">
-      <div class="empty-state">
-        <div class="empty-icon">📂</div>
-        <div class="empty-text">Select a CSV file from the left to preview its data</div>
+
+  <!-- CSV DATA PANEL -->
+  <div class="content-panel" id="csv-panel-main">
+    <div style="display:flex;flex:1;overflow:hidden">
+      <div style="width:200px;flex-shrink:0;border-right:1px solid var(--border);background:var(--bg1);overflow-y:auto;padding:8px">
+        <div style="font-family:var(--font-head);font-size:11px;font-weight:700;color:var(--text-dim);letter-spacing:1px;text-transform:uppercase;padding:6px 8px 10px">DATA FILES</div>
+        <div id="csv-file-list2"><div class="spinner"></div></div>
+      </div>
+      <div style="flex:1;overflow:auto" id="csv-view-area">
+        <div class="empty-state"><div class="empty-icon">▦</div><div style="font-family:var(--font-mono);font-size:11px">SELECT A DATA FILE</div></div>
       </div>
     </div>
   </div>
-</div>
 
-<!-- URGENCY PANEL -->
-<div class="panel" id="urgency-panel">
-  <div class="urgency-filters">
-    <select class="filter-select" id="urg-state"><option value="">All States</option></select>
-    <select class="filter-select" id="urg-crop"><option value="">All Crops</option></select>
-    <select class="filter-select" id="urg-product"><option value="">All Products</option></select>
-    <button class="urgency-btn" onclick="runUrgencyDetection()">🔍 Analyze Urgency</button>
-    <button class="btn-sm" onclick="runBulkScan()">📍 Bulk State Scan</button>
-  </div>
-
-  <div class="urgency-hero" id="urgency-hero">
-    <div class="urgency-score-ring">
-      <svg viewBox="0 0 100 100" width="100" height="100">
-        <circle class="ring-bg" cx="50" cy="50" r="42"/>
-        <circle class="ring-fill" id="ring-fill" cx="50" cy="50" r="42"
-          stroke="var(--accent)" stroke-dasharray="0 264"/>
-      </svg>
-      <div class="score-text">
-        <span class="score-num" id="urg-score">—</span>
-        <span class="score-lbl">score</span>
+  <!-- URGENCY PANEL -->
+  <div class="content-panel" id="urgency-panel-main">
+    <div style="flex:1;overflow-y:auto;padding:16px" id="urgency-content">
+      <div class="action-row">
+        <select class="form-inp" id="urg2-state" style="width:auto"><option value="">All States</option></select>
+        <select class="form-inp" id="urg2-crop" style="width:auto"><option value="">All Crops</option></select>
+        <button class="act-btn danger" onclick="runUrgency2()">△ ANALYZE</button>
+        <button class="act-btn" onclick="runBulkScan2()">⬡ BULK SCAN</button>
       </div>
-    </div>
-    <div class="urgency-info">
-      <div class="urgency-level" id="urg-level">Run analysis to detect urgency signals</div>
-      <div class="urgency-msg" id="urg-msg">Select filters above and click Analyze Urgency</div>
+      <div id="urgency-output2"><div class="empty-state"><div class="empty-icon">△</div><div style="font-family:var(--font-mono);font-size:11px">AWAITING ANALYSIS</div></div></div>
     </div>
   </div>
 
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
-    <div>
-      <div class="section-title">📡 Detected Signals</div>
-      <div class="signals-grid" id="signals-grid">
-        <div class="empty-state" style="grid-column:1/-1;padding:30px">
-          <div class="empty-icon">📡</div>
-          <div class="empty-text">No analysis run yet</div>
+  <!-- CAMPAIGN PANEL -->
+  <div class="content-panel" id="campaign-panel-main">
+    <div style="flex:1;overflow-y:auto;padding:16px">
+      <div style="font-family:var(--font-head);font-size:15px;font-weight:700;color:var(--accent);letter-spacing:2px;text-transform:uppercase;margin-bottom:14px">◉ MULTILINGUAL CAMPAIGN GENERATOR</div>
+      <div class="form-row" style="margin-bottom:10px">
+        <div class="form-group">
+          <label class="form-label">Campaign Type</label>
+          <select class="form-inp" id="camp2-type">
+            <option value="product_launch">Product Launch</option>
+            <option value="urgency_offer">Urgency Offer</option>
+            <option value="season_reminder">Season Reminder</option>
+            <option value="bio_emergency">Bio Emergency Alert</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">State</label>
+          <input type="text" class="form-inp" id="camp2-state" placeholder="e.g. Andhra Pradesh"/>
         </div>
       </div>
-    </div>
-    <div>
-      <div class="section-title">💡 Recommendations</div>
-      <div class="recs-list" id="recs-list">
-        <div class="empty-state" style="padding:30px">
-          <div class="empty-text">Recommendations will appear after analysis</div>
+      <div class="form-row" style="margin-bottom:10px">
+        <div class="form-group">
+          <label class="form-label">Product</label>
+          <input type="text" class="form-inp" id="camp2-product" placeholder="e.g. Amistar Top"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Crop</label>
+          <input type="text" class="form-inp" id="camp2-crop" placeholder="e.g. Rice, Cotton"/>
         </div>
       </div>
+      <div class="form-group" style="margin-bottom:10px">
+        <label class="form-label">Languages</label>
+        <div class="lang-checks" id="camp2-langs">
+          <label class="lang-check"><input type="checkbox" value="Hindi" checked/><span>हिंदी</span></label>
+          <label class="lang-check"><input type="checkbox" value="Telugu" checked/><span>తెలుగు</span></label>
+          <label class="lang-check"><input type="checkbox" value="Marathi"/><span>मराठी</span></label>
+          <label class="lang-check"><input type="checkbox" value="Punjabi"/><span>ਪੰਜਾਬੀ</span></label>
+          <label class="lang-check"><input type="checkbox" value="Tamil"/><span>தமிழ்</span></label>
+          <label class="lang-check"><input type="checkbox" value="Kannada"/><span>ಕನ್ನಡ</span></label>
+          <label class="lang-check"><input type="checkbox" value="Bengali"/><span>বাংলা</span></label>
+          <label class="lang-check"><input type="checkbox" value="Gujarati"/><span>ગુજરાતી</span></label>
+          <label class="lang-check"><input type="checkbox" value="Odia"/><span>ଓଡ଼ିଆ</span></label>
+          <label class="lang-check"><input type="checkbox" value="English" checked/><span>English</span></label>
+        </div>
+      </div>
+      <div class="form-group" style="margin-bottom:14px">
+        <label class="form-label">Context / Bio-Emergency Notes</label>
+        <textarea class="form-inp" id="camp2-context" rows="2" placeholder="e.g. Heavy pest infestation detected in Krishna district, focus on preventive fungicide messaging…"></textarea>
+      </div>
+      <div class="action-row">
+        <button class="act-btn primary" id="camp2-gen-btn" onclick="generateCampaign2()">✦ GENERATE MESSAGES</button>
+        <button class="act-btn purple" onclick="displayCampaignsOnLeft()">⬡ PUSH TO LEFT PANEL</button>
+      </div>
+      <div id="camp2-results" style="margin-top:16px"></div>
     </div>
   </div>
 
-  <div style="margin-top:20px">
-    <div class="section-title">🗺 State Urgency Hotspots</div>
-    <div id="hotspot-table-wrap">
-      <div class="empty-state" style="padding:30px">
-        <div class="empty-text">Run bulk scan to see all state urgency levels</div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- CAMPAIGN PANEL -->
-<div class="panel" id="campaign-panel">
-  <div class="section-title">📢 Multilingual Campaign Generator</div>
-  <div class="campaign-form">
-    <div class="form-row">
-      <div class="form-group">
-        <label class="form-label">Campaign Type</label>
-        <select class="form-input" id="camp-type">
-          <option value="product_launch">Product Launch</option>
-          <option value="urgency_offer">Urgency Offer</option>
-          <option value="season_reminder">Season Reminder</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label class="form-label">State (optional)</label>
-        <input type="text" class="form-input" id="camp-state" placeholder="e.g. Punjab, Maharashtra"/>
-      </div>
-    </div>
-    <div class="form-row">
-      <div class="form-group">
-        <label class="form-label">Product Name</label>
-        <input type="text" class="form-input" id="camp-product" placeholder="e.g. Amistar Top"/>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Crop</label>
-        <input type="text" class="form-input" id="camp-crop" placeholder="e.g. Rice, Cotton, Wheat"/>
-      </div>
-    </div>
-    <div class="form-group" style="margin-bottom:14px">
-      <label class="form-label">Languages (leave blank to auto-detect from grower data)</label>
-      <div class="lang-checkboxes" id="lang-checkboxes">
-        <label class="lang-cb"><input type="checkbox" value="Hindi" checked/><span>हिंदी Hindi</span></label>
-        <label class="lang-cb"><input type="checkbox" value="Marathi" checked/><span>मराठी Marathi</span></label>
-        <label class="lang-cb"><input type="checkbox" value="Punjabi"/><span>ਪੰਜਾਬੀ Punjabi</span></label>
-        <label class="lang-cb"><input type="checkbox" value="Telugu"/><span>తెలుగు Telugu</span></label>
-        <label class="lang-cb"><input type="checkbox" value="Tamil"/><span>தமிழ் Tamil</span></label>
-        <label class="lang-cb"><input type="checkbox" value="Kannada"/><span>ಕನ್ನಡ Kannada</span></label>
-        <label class="lang-cb"><input type="checkbox" value="Bengali"/><span>বাংলা Bengali</span></label>
-        <label class="lang-cb"><input type="checkbox" value="Gujarati"/><span>ગુજરાતી Gujarati</span></label>
-        <label class="lang-cb"><input type="checkbox" value="English" checked/><span>English</span></label>
-      </div>
-    </div>
-    <div class="form-group" style="margin-bottom:14px">
-      <label class="form-label">Additional Context (optional)</label>
-      <textarea class="form-input" id="camp-context" rows="2" placeholder="e.g. Focus on high-value growers, mention 20% early bird discount…"></textarea>
-    </div>
-    <button class="gen-btn" id="gen-btn" onclick="generateCampaign()">✨ Generate Multilingual Messages</button>
-  </div>
-
-  <div id="campaign-results" class="campaign-results"></div>
-</div>
-
-</div><!-- /content -->
+</div><!-- /right-panel -->
 </div><!-- /app -->
 
 <div class="toast" id="toast"></div>
 
 <script>
-/* ══ CONFIG ══════════════════════════════════════════════════════════════════ */
-const API_BASE = window.location.origin + '/api';
+/* ════════════════════════════════════════════════════════════════════════
+   LUMINA BOARD — COMMAND CENTER JS
+   Full intelligence system: RAG chat, 4-agent cycles, bio-urgency,
+   multilingual campaign generation, dynamic left panel box system
+════════════════════════════════════════════════════════════════════════ */
 
-/* ══ STATE ══════════════════════════════════════════════════════════════════ */
+const API = window.location.origin + '/api';
 let chatHistory = [];
-let selectedCsvFilter = '';
-let currentCsvFile = null;
-let activeTab = 'metrics';
+let currentMode = 'rag';
+let agentCycleActive = false;
+let lastCampaignData = null;
+let leftBoxes = {};
+let boxCounter = 0;
 
-/* ══ PANEL SWITCHING ════════════════════════════════════════════════════════ */
-function showPanel(name) {
-  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.tab, .sidebar-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById(name + '-panel').classList.add('active');
-  document.querySelectorAll('.tab, .sidebar-btn').forEach(b => {
-    if (b.textContent.toLowerCase().includes(name) || b.getAttribute('onclick')?.includes(name)) {
-      b.classList.add('active');
-    }
-  });
-  activeTab = name;
-  if (name === 'csv' && document.getElementById('csv-files-list').childElementCount <= 1) loadCsvList();
-  if (name === 'urgency') populateUrgencyFilters();
+// ── Clock ──────────────────────────────────────────────────────────────
+function updateClock() {
+  const now = new Date();
+  document.getElementById('clock').textContent =
+    now.toLocaleTimeString('en-IN', {hour12:false}) + ' IST';
 }
+setInterval(updateClock, 1000);
+updateClock();
 
-/* ══ TOAST ══════════════════════════════════════════════════════════════════ */
-function toast(msg, dur = 2500) {
+// ── Toast ──────────────────────────────────────────────────────────────
+function toast(msg, dur=2500) {
   const t = document.getElementById('toast');
   t.textContent = msg;
   t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), dur);
 }
 
-/* ══ API HELPERS ════════════════════════════════════════════════════════════ */
-async function apiFetch(path, opts = {}) {
-  const resp = await fetch(API_BASE + path, {
-    headers: { 'Content-Type': 'application/json' },
-    ...opts
+// ── API Helper ─────────────────────────────────────────────────────────
+async function api(path, opts={}) {
+  const r = await fetch(API + path, { headers:{'Content-Type':'application/json'}, ...opts });
+  if (!r.ok) throw new Error(`${path} → ${r.status}`);
+  return r.json();
+}
+
+// ── Main Panel Switch ──────────────────────────────────────────────────
+function showMain(name) {
+  document.querySelectorAll('.content-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
+  const panel = document.getElementById(name + '-panel-main') || document.getElementById('chat-panel-main');
+  if (panel) panel.classList.add('active');
+  document.querySelectorAll('.tab').forEach(b => {
+    if (b.getAttribute('onclick')?.includes(name)) b.classList.add('active');
   });
-  if (!resp.ok) throw new Error(`API ${path} → ${resp.status}`);
-  return resp.json();
+  if (name === 'metrics') loadMetrics();
+  if (name === 'csv') loadCsvFiles2();
+  if (name === 'urgency') populateUrgencyFilters2();
 }
 
-/* ══ INIT ════════════════════════════════════════════════════════════════════ */
-async function init() {
-  // Check health
-  try {
-    const health = await apiFetch('/health');
-    document.getElementById('api-dot').className = 'dot';
-    document.getElementById('api-status').textContent = `${health.datasets_loaded.length} datasets`;
-    document.getElementById('sb-csvs').textContent = health.datasets_loaded.length;
-  } catch {
-    document.getElementById('api-dot').className = 'dot err';
-    document.getElementById('api-status').textContent = 'API offline';
-    toast('⚠️ API server not reachable. Start with: python api/app.py');
+// ── Mode Selector ──────────────────────────────────────────────────────
+function setMode(mode) {
+  currentMode = mode;
+  document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active','teal','orange'));
+  const el = document.getElementById('mode-' + mode);
+  if (el) {
+    el.classList.add('active');
+    if (['rag','agent'].includes(mode)) el.classList.add('teal');
+    else if (['biourgency','marketing'].includes(mode)) el.classList.add('orange');
   }
+  const agentCycle = document.getElementById('agent-cycle');
+  agentCycle.style.display = mode === 'agent' ? 'flex' : 'none';
 
-  // Load metrics
-  loadMetrics();
-  loadCsvFilterList();
+  const hints = {
+    rag: 'Ask any data question — grounded in CSV via RAG…',
+    agent: '4-agent deep analysis: [task] e.g. "Bio-urgency in Andhra Pradesh"…',
+    marketing: 'Generate campaign: "SMS for [product] targeting [state] growers"…',
+    biourgency: 'Detect bio-emergency: "Analyze [state/district] for pest/weather risk"…',
+    analysis: 'Run ML analysis: "Trend analysis for retailer POS data"…',
+  };
+  document.getElementById('chat-input').placeholder = hints[mode] || 'Enter command…';
 }
 
-/* ══ METRICS ════════════════════════════════════════════════════════════════ */
-async function loadMetrics() {
-  try {
-    const [overview, campaigns, growers] = await Promise.all([
-      apiFetch('/metrics/overview'),
-      apiFetch('/metrics/campaigns'),
-      apiFetch('/metrics/growers')
-    ]);
+// ═══════════════════════════════════════════════════════════════════════
+// LEFT PANEL BOX SYSTEM
+// ═══════════════════════════════════════════════════════════════════════
 
-    // Top cards
-    if (overview.growers) {
-      document.getElementById('m-growers').textContent = fmt(overview.growers.total);
-      document.getElementById('sb-growers').textContent = fmt(overview.growers.total);
-    }
-    if (overview.campaigns) {
-      document.getElementById('m-campaigns').textContent = overview.campaigns.total_campaigns;
-      document.getElementById('m-impressions').textContent = fmtK(overview.campaigns.total_impressions);
-      document.getElementById('m-ctr').textContent = overview.campaigns.ctr_pct + '%';
-      document.getElementById('m-conv').textContent = overview.campaigns.conversion_pct + '%';
-      document.getElementById('sb-campaigns').textContent = overview.campaigns.total_campaigns;
-    }
-    if (overview.retailers) {
-      document.getElementById('m-retailers').textContent = fmt(overview.retailers.total);
-      document.getElementById('sb-retailers').textContent = fmt(overview.retailers.total);
-    }
-
-    // Charts
-    if (overview.growers?.states) renderBarChart('states-chart', overview.growers.states, 8, 'var(--accent)');
-    if (campaigns.by_crop) renderBarChart('crop-chart', campaigns.by_crop, 8, 'var(--accent2)');
-    if (overview.growers?.devices) renderBarChart('device-chart', overview.growers.devices, 5, 'var(--accent3)');
-    if (overview.growers?.languages) renderBarChart('lang-chart', overview.growers.languages, 8, '#22c55e');
-
-  } catch (e) {
-    console.error('Metrics load error:', e);
-  }
+function clearAllBoxes() {
+  document.getElementById('lp-stack').innerHTML =
+    `<div class="empty-state" id="lp-empty">
+      <div class="empty-icon">⬡</div>
+      <div style="font-family:var(--font-mono);font-size:11px;color:var(--text-dim)">AWAITING INTEL STREAM</div>
+      <div style="font-size:11px;color:var(--text-dim);margin-top:4px">Use right panel commands to populate<br>intelligence modules here</div>
+    </div>`;
+  leftBoxes = {};
+  boxCounter = 0;
 }
 
-function fmt(n) { return Number(n).toLocaleString('en-IN'); }
-function fmtK(n) {
-  if (n >= 1e7) return (n/1e7).toFixed(1) + 'Cr';
-  if (n >= 1e5) return (n/1e5).toFixed(1) + 'L';
-  if (n >= 1000) return (n/1000).toFixed(1) + 'K';
-  return n;
+function hideLpEmpty() {
+  const e = document.getElementById('lp-empty');
+  if (e) e.remove();
 }
 
-function renderBarChart(id, data, limit, color) {
-  const el = document.getElementById(id);
-  if (!el) return;
-  const entries = Object.entries(data).sort((a, b) => b[1] - a[1]).slice(0, limit);
-  const max = entries[0]?.[1] || 1;
-  el.innerHTML = entries.map(([k, v]) =>
-    `<div class="bar-row">
-      <div class="bar-label" title="${k}">${k}</div>
-      <div class="bar-track">
-        <div class="bar-fill" style="width:${(v/max*100).toFixed(1)}%;background:${color}"></div>
+function createBox(id, icon, title, badgeText, badgeClass, bodyHTML, footerLeft, footerRight, autoExpand=true) {
+  hideLpEmpty();
+  // Remove existing box with same id if present
+  const existing = document.getElementById('lbox-' + id);
+  if (existing) existing.remove();
+
+  const box = document.createElement('div');
+  box.className = 'intel-box' + (autoExpand ? ' expanded' : '');
+  box.id = 'lbox-' + id;
+
+  const badge = badgeText ? `<span class="intel-box-badge ${badgeClass||''}">${badgeText}</span>` : '';
+
+  box.innerHTML = `
+    <div class="intel-box-header" onclick="toggleBox('${id}')">
+      <span class="intel-box-icon">${icon}</span>
+      <span class="intel-box-title">${title}</span>
+      ${badge}
+      <div class="intel-box-controls">
+        <button class="box-ctrl" onclick="event.stopPropagation();removeBox('${id}')" title="Close">✕</button>
       </div>
-      <div class="bar-val">${fmtK(v)}</div>
-    </div>`
-  ).join('');
+    </div>
+    <div class="intel-box-body">${bodyHTML}</div>
+    <div class="intel-box-footer">
+      <span>${footerLeft||''}</span>
+      <span>${footerRight||''}</span>
+    </div>`;
+
+  document.getElementById('lp-stack').prepend(box);
+  leftBoxes[id] = true;
 }
 
-/* ══ CHAT ════════════════════════════════════════════════════════════════════ */
-function selectCsvFilter(el) {
-  document.querySelectorAll('.csv-chip').forEach(c => c.classList.remove('selected'));
-  el.classList.add('selected');
-  selectedCsvFilter = el.dataset.csv || '';
+function toggleBox(id) {
+  const box = document.getElementById('lbox-' + id);
+  if (box) box.classList.toggle('expanded');
 }
 
-async function loadCsvFilterList() {
+function removeBox(id) {
+  const box = document.getElementById('lbox-' + id);
+  if (box) box.remove();
+  delete leftBoxes[id];
+  if (Object.keys(leftBoxes).length === 0) {
+    document.getElementById('lp-stack').innerHTML =
+      `<div class="empty-state" id="lp-empty"><div class="empty-icon">⬡</div><div style="font-family:var(--font-mono);font-size:11px;color:var(--text-dim)">AWAITING INTEL STREAM</div></div>`;
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// PREDEFINED BOX DISPLAYS
+// ═══════════════════════════════════════════════════════════════════════
+
+async function displayBox(type) {
+  switch(type) {
+    case 'data_summary': await displayDataSummaryBox(); break;
+    case 'marketing': displayMarketingBox(); break;
+    case 'analysis': displayAnalysisBox(); break;
+    case 'pinned': addPinnedBox(); break;
+    case 'biourgency_result': break; // triggered from agent
+  }
+}
+
+// BOX 1: REST API Action Button Window (Marketing Message Generator)
+function displayMarketingBox() {
+  const html = `
+    <div class="action-row">
+      <button class="act-btn primary" onclick="triggerMarketingGen()">✦ GENERATE MESSAGE</button>
+      <button class="act-btn" onclick="triggerRegenerateLast()">↺ REGENERATE</button>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Product</label>
+      <input type="text" class="form-inp" id="lp-mkt-product" placeholder="e.g. Amistar Top" style="font-size:12px"/>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Target Region</label>
+      <input type="text" class="form-inp" id="lp-mkt-state" placeholder="e.g. Andhra Pradesh" style="font-size:12px"/>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Crop</label>
+      <input type="text" class="form-inp" id="lp-mkt-crop" placeholder="e.g. Rice" style="font-size:12px"/>
+    </div>
+    <div style="font-size:10px;color:var(--text-dim);font-family:var(--font-mono);margin-top:4px">→ Sends to localhost Qwen2.5 API</div>
+    <div id="lp-mkt-output" style="margin-top:10px"></div>`;
+  createBox('marketing', '📢', 'MARKETING MESSAGE API', 'QWEN2.5', '', html, 'Qwen2.5 · Local API', new Date().toLocaleTimeString());
+}
+
+async function triggerMarketingGen() {
+  const product = document.getElementById('lp-mkt-product')?.value || '';
+  const state = document.getElementById('lp-mkt-state')?.value || '';
+  const crop = document.getElementById('lp-mkt-crop')?.value || '';
+  const out = document.getElementById('lp-mkt-output');
+  if (out) out.innerHTML = '<div class="spinner"></div>';
   try {
-    const data = await apiFetch('/csv/list');
-    const list = document.getElementById('csv-filter-list');
-    const existing = list.querySelector('[data-csv=""]');
-    data.files.forEach(f => {
-      const chip = document.createElement('div');
-      chip.className = 'csv-chip';
-      chip.dataset.csv = f.name.replace('.csv', '');
-      chip.onclick = () => selectCsvFilter(chip);
-      chip.innerHTML = `<span class="csv-chip-icon">📄</span>${f.name.replace('.csv', '')} <span style="margin-left:auto;font-size:10px;color:var(--text-dim)">${f.row_count || '?'}r</span>`;
-      list.appendChild(chip);
+    const data = await api('/campaign/generate', {
+      method:'POST',
+      body: JSON.stringify({
+        campaign_type:'product_launch', product, crop, state,
+        languages:['Hindi','English','Telugu']
+      })
     });
-  } catch {}
+    if (out) {
+      const msgs = data.messages || {};
+      out.innerHTML = Object.entries(msgs).slice(0,3).map(([lang,c]) =>
+        `<div style="margin-bottom:8px;background:var(--bg1);border:1px solid var(--border);border-radius:4px;padding:8px">
+          <div style="font-size:10px;color:var(--accent);font-family:var(--font-mono);margin-bottom:4px">${lang.toUpperCase()}</div>
+          <div style="font-size:12px;line-height:1.6;color:var(--text)">${(c.sms||'').substring(0,200)}${c.sms?.length>200?'…':''}</div>
+        </div>`
+      ).join('') || '<div style="color:var(--text-dim);font-size:12px">No messages generated</div>';
+    }
+    toast('✦ Messages generated');
+    lastCampaignData = data;
+  } catch(e) { if(out) out.innerHTML = `<div style="color:var(--danger);font-size:12px">Error: ${e.message}</div>`; }
 }
+
+async function triggerRegenerateLast() {
+  if (!lastCampaignData) { toast('No previous generation to regenerate'); return; }
+  await triggerMarketingGen();
+}
+
+// BOX 2: Data Information Window (CSV Summary + ML Analysis)
+async function displayDataSummaryBox() {
+  const body = `<div id="lp-ds-content"><div class="spinner"></div></div>
+    <div class="action-row" style="margin-top:10px">
+      <button class="act-btn" onclick="loadDataSummary()">↺ REFRESH</button>
+      <button class="act-btn purple" onclick="runMLAnalysis()">⬡ ML ANALYSIS</button>
+    </div>`;
+  createBox('data_summary', '▦', 'DATA INTELLIGENCE', null, '', body, 'All CSVs', 'SUMMARY');
+  await loadDataSummary();
+}
+
+async function loadDataSummary() {
+  const el = document.getElementById('lp-ds-content');
+  if (!el) return;
+  el.innerHTML = '<div class="spinner"></div>';
+  try {
+    const [health, metrics, growers] = await Promise.all([
+      api('/health'), api('/metrics/overview'), api('/metrics/growers')
+    ]);
+    const g = metrics.growers || {};
+    const c = metrics.campaigns || {};
+    el.innerHTML = `
+      <div class="metric-row">
+        <div class="m-pill"><div class="m-pill-label">GROWERS</div><div class="m-pill-val accent">${fmt(g.total||0)}</div></div>
+        <div class="m-pill"><div class="m-pill-label">CAMPAIGNS</div><div class="m-pill-val">${c.total_campaigns||0}</div></div>
+        <div class="m-pill"><div class="m-pill-label">CTR</div><div class="m-pill-val warn">${c.ctr_pct||0}%</div></div>
+        <div class="m-pill"><div class="m-pill-label">CONV RATE</div><div class="m-pill-val">${c.conversion_pct||0}%</div></div>
+      </div>
+      <div style="font-size:10px;color:var(--text-dim);font-family:var(--font-mono);margin-bottom:6px">TOP STATES BY GROWERS</div>
+      ${Object.entries(g.states||{}).slice(0,5).map(([s,v])=>
+        `<div class="bar-row"><div class="bar-label">${s}</div><div class="bar-track"><div class="bar-fill" style="width:${Math.min(100,v/((g.total||1)/3)*100)}%;background:var(--accent)"></div></div><div class="bar-val">${fmt(v)}</div></div>`
+      ).join('')}
+      <div style="font-size:10px;color:var(--text-dim);font-family:var(--font-mono);margin:8px 0 4px">DATASETS LOADED</div>
+      ${(health.datasets_loaded||[]).map(d =>
+        `<div style="display:flex;justify-content:space-between;font-size:11px;padding:3px 0;border-bottom:1px solid rgba(30,48,68,.4)">
+          <span style="color:var(--text-med);font-family:var(--font-mono)">${d}</span>
+          <span style="color:var(--text-dim)">${fmt(health.record_counts?.[d]||0)}r</span>
+        </div>`
+      ).join('')}`;
+  } catch(e) { el.innerHTML = `<div style="color:var(--danger);font-size:12px">Error: ${e.message}</div>`; }
+}
+
+async function runMLAnalysis() {
+  const el = document.getElementById('lp-ds-content');
+  if (!el) return;
+  el.innerHTML = '<div class="spinner"></div>';
+  // Trigger analysis via RAG chat
+  try {
+    const resp = await api('/chat', {
+      method:'POST',
+      body: JSON.stringify({
+        query:'Perform a comprehensive ML-style analysis: identify top performing products by sales velocity, detect anomalies in campaign CTR, segment growers by engagement score, and identify regional inventory gaps. Use all CSV datasets.',
+        history: []
+      })
+    });
+    el.innerHTML = `
+      <div class="analysis-block">
+        <div style="font-size:10px;color:var(--accent);font-family:var(--font-mono);margin-bottom:6px">ML ANALYSIS OUTPUT</div>
+        <div style="font-size:12px;line-height:1.6">${resp.response.replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')}</div>
+      </div>
+      ${(resp.sources||[]).map(s=>`<span class="src-tag">${s}</span>`).join(' ')}`;
+  } catch(e) { el.innerHTML = `<div style="color:var(--danger);font-size:12px">Error: ${e.message}</div>`; }
+}
+
+// BOX 3: Pinned Information Highlights
+function addPinnedBox() {
+  const body = `
+    <div id="lp-pins-list">
+      <div style="color:var(--text-dim);font-size:11px;font-family:var(--font-mono)">No pinned items. Chat will auto-pin key insights.</div>
+    </div>
+    <div style="margin-top:8px;display:flex;gap:6px">
+      <input type="text" class="form-inp" id="lp-pin-input" placeholder="Pin a note…" style="font-size:11px;flex:1"/>
+      <button class="act-btn" style="padding:5px 10px" onclick="addPinItem()">+ PIN</button>
+    </div>`;
+  createBox('pinned', '📌', 'PINNED INTEL', null, '', body, 'KEY INSIGHTS', '');
+}
+
+function addPinItem(text) {
+  const inp = document.getElementById('lp-pin-input');
+  const txt = text || (inp ? inp.value.trim() : '');
+  if (!txt) return;
+  const list = document.getElementById('lp-pins-list');
+  if (!list) return;
+  const empty = list.querySelector('div');
+  if (empty && empty.style.color.includes('dim') || list.textContent.includes('No pinned')) list.innerHTML = '';
+  const item = document.createElement('div');
+  item.className = 'pinned-item';
+  item.innerHTML = `<span class="pin-icon">📌</span><div><div class="pin-text">${txt}</div><div class="pin-src">${new Date().toLocaleTimeString()}</div></div>`;
+  list.appendChild(item);
+  if (inp) inp.value = '';
+}
+
+// BOX 4: Analysis Output Window
+function displayAnalysisBox(content='') {
+  const body = `
+    <div id="lp-analysis-output">
+      ${content || '<div class="empty-state" style="padding:20px"><div class="empty-icon" style="font-size:20px">◉</div><div style="font-size:11px">Trigger analysis from right panel</div></div>'}
+    </div>`;
+  createBox('analysis', '◉', 'ANALYSIS OUTPUT', 'LIVE', '', body, 'ML ENGINE', 'PYTHON TRIGGERED');
+}
+
+function updateAnalysisBox(content) {
+  const el = document.getElementById('lp-analysis-output');
+  if (el) { el.innerHTML = content; return; }
+  displayAnalysisBox(content);
+}
+
+// BOX 5: Campaign Message Display (SMS + Voice Script)
+function displayCampaignMessagesBox(data) {
+  if (!data || !data.messages) { toast('No campaign data to display'); return; }
+  const msgs = data.messages;
+  const cards = Object.entries(msgs).map(([lang, c]) => {
+    if (c.error) return `<div class="camp-card"><div class="camp-card-head"><span>${lang}</span><span style="color:var(--danger);font-size:11px">ERR</span></div></div>`;
+    const id = 'cc-' + lang.replace(/\s/g,'');
+    return `<div class="camp-card" id="${id}">
+      <div class="camp-card-head" onclick="document.getElementById('${id}').classList.toggle('open')">
+        <span class="camp-lang">${lang}</span>
+        <span style="font-size:10px;color:var(--text-dim);font-family:var(--font-mono)">${c.char_count||0}chr · ${c.sms_parts||1}SMS</span>
+        <span style="margin-left:8px;font-size:12px">▾</span>
+      </div>
+      <div class="camp-body">
+        <div style="font-size:10px;color:var(--accent);font-family:var(--font-mono);margin-bottom:6px">📱 SMS MESSAGE</div>
+        <div class="sms-box">${(c.sms||'').replace(/\n/g,'<br>')}</div>
+        <div style="font-size:10px;color:var(--warn);font-family:var(--font-mono);margin-bottom:6px">🎙 VOICE SCRIPT</div>
+        <div class="script-box">${(c.audio_script||'').replace(/\[([^\]]+)\]/g,'<span class="stage-dir">[$1]</span>').replace(/\n/g,'<br>')}</div>
+        <button class="act-btn" style="margin-top:6px;font-size:10px" onclick="copyToClipboard('${escJ(c.sms||'')}')">📋 COPY SMS</button>
+      </div>
+    </div>`;
+  });
+
+  const body = `
+    <div style="font-size:10px;color:var(--text-dim);font-family:var(--font-mono);margin-bottom:8px">
+      ${data.product||'—'} · ${data.state||'ALL'} · ${data.crop||'—'}
+    </div>
+    <div>${cards.join('')}</div>`;
+
+  createBox('campaigns_msgs', '📢', 'CAMPAIGN MESSAGES', `${Object.keys(msgs).length} LANG`, '', body, data.state||'ALL REGIONS', data.product||'');
+}
+
+async function displayCampaignsOnLeft() {
+  if (lastCampaignData) { displayCampaignMessagesBox(lastCampaignData); return; }
+  // Try to generate with whatever is in campaign form
+  await generateCampaign2();
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// CHAT / AGENT SYSTEM
+// ═══════════════════════════════════════════════════════════════════════
 
 async function sendChat() {
   const input = document.getElementById('chat-input');
   const query = input.value.trim();
   if (!query) return;
-
   input.value = '';
   document.getElementById('send-btn').disabled = true;
   appendMsg('user', query);
 
-  // Show typing indicator
-  const typingId = appendTyping();
-
-  try {
-    const resp = await apiFetch('/chat', {
-      method: 'POST',
-      body: JSON.stringify({
-        query,
-        history: chatHistory,
-        csv_filter: selectedCsvFilter || undefined
-      })
-    });
-
-    removeTyping(typingId);
-    chatHistory.push({ role: 'user', content: query });
-    chatHistory.push({ role: 'assistant', content: resp.response });
-    appendMsg('assistant', resp.response, resp.sources || []);
-  } catch (e) {
-    removeTyping(typingId);
-    appendMsg('assistant', '⚠️ Error: ' + e.message + '\n\nMake sure the API server is running: `python api/app.py`');
+  if (currentMode === 'agent') {
+    await runAgentCycle(query);
+  } else if (currentMode === 'biourgency') {
+    await runBioUrgencyAnalysis(query);
+  } else if (currentMode === 'marketing') {
+    await runMarketingGenFromChat(query);
+  } else if (currentMode === 'analysis') {
+    await runAnalysisFromChat(query);
+  } else {
+    await runRagChat(query);
   }
 
   document.getElementById('send-btn').disabled = false;
   input.focus();
 }
 
+async function runRagChat(query) {
+  const typingId = showTyping();
+  try {
+    const resp = await api('/chat', {
+      method:'POST',
+      body: JSON.stringify({ query, history: chatHistory, csv_filter: undefined })
+    });
+    removeTyping(typingId);
+    chatHistory.push({role:'user',content:query});
+    chatHistory.push({role:'assistant',content:resp.response});
+    appendMsg('assistant', resp.response, resp.sources||[]);
+
+    // Auto-pin key insights if they look important
+    if (resp.response.includes('%') || resp.response.includes('critical') || resp.response.includes('CRITICAL')) {
+      const key = resp.response.split('\n').find(l => l.includes('%') || l.includes('critical')) || '';
+      if (key && document.getElementById('lbox-pinned')) addPinItem(key.substring(0,100));
+    }
+  } catch(e) {
+    removeTyping(typingId);
+    appendMsg('assistant', `⚠ Error: ${e.message}`, [], 'system');
+  }
+}
+
+// ── 4-AGENT CYCLE ─────────────────────────────────────────────────────
+async function runAgentCycle(task) {
+  document.getElementById('agent-cycle').style.display = 'flex';
+  agentCycleActive = true;
+  const nodes = [1,2,3,4].map(i => document.getElementById('cn'+i));
+  nodes.forEach(n => { if(n) n.className = 'cycle-node'; });
+
+  appendMsg('system',
+    `⬡ INITIATING 4-AGENT CYCLE\nTask: "${task}"\n\nAgent 1 → Agent 2 → Agent 3 → Agent 4\nEach agent builds on prior context.`,
+    [], 'agent'
+  );
+
+  const agentResults = [];
+
+  // AGENT 1: Data Retrieval + Context Building
+  if(nodes[0]) nodes[0].className = 'cycle-node active';
+  const t1 = showTyping('AGENT-1: DATA RETRIEVAL');
+  let a1 = '';
+  try {
+    const r1 = await api('/chat', {
+      method:'POST',
+      body: JSON.stringify({
+        query: `[AGENT-1 DATA RETRIEVAL] For the task: "${task}" — retrieve all relevant data points from all CSV files. Identify: affected regions, relevant products, grower segments, current campaign status. Be data-specific.`,
+        history: []
+      })
+    });
+    a1 = r1.response;
+    agentResults.push({agent:1, role:'DATA RETRIEVAL', content:a1, sources:r1.sources||[]});
+    removeTyping(t1);
+    nodes[0].className = 'cycle-node done';
+    appendMsg('assistant', `**[AGENT 1 — DATA RETRIEVAL]**\n\n${a1}`, r1.sources||[], 'agent');
+  } catch(e) { removeTyping(t1); a1 = 'Data retrieval failed: '+e.message; }
+
+  // AGENT 2: Analysis + Pattern Detection
+  if(nodes[1]) nodes[1].className = 'cycle-node active';
+  const t2 = showTyping('AGENT-2: ANALYSIS');
+  let a2 = '';
+  try {
+    const r2 = await api('/chat', {
+      method:'POST',
+      body: JSON.stringify({
+        query: `[AGENT-2 ANALYSIS] Based on this retrieved data:\n${a1.substring(0,800)}\n\nFor task: "${task}" — perform deep analysis: identify patterns, anomalies, risk factors, opportunity zones. Apply statistical reasoning to the data patterns.`,
+        history: []
+      })
+    });
+    a2 = r2.response;
+    agentResults.push({agent:2, role:'ANALYSIS', content:a2, sources:r2.sources||[]});
+    removeTyping(t2);
+    nodes[1].className = 'cycle-node done';
+    appendMsg('assistant', `**[AGENT 2 — ANALYSIS ENGINE]**\n\n${a2}`, r2.sources||[], 'agent');
+    updateAnalysisBox(`<div class="analysis-block"><div style="font-size:10px;color:var(--accent);font-family:var(--font-mono);margin-bottom:6px">AGENT-2 ANALYSIS</div><div style="font-size:12px;line-height:1.6">${a2.replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').substring(0,1000)}</div></div>`);
+  } catch(e) { removeTyping(t2); a2 = 'Analysis failed: '+e.message; }
+
+  // AGENT 3: Recommendation + Action Plan
+  if(nodes[2]) nodes[2].className = 'cycle-node active';
+  const t3 = showTyping('AGENT-3: RECOMMENDATION');
+  let a3 = '';
+  try {
+    const r3 = await api('/chat', {
+      method:'POST',
+      body: JSON.stringify({
+        query: `[AGENT-3 RECOMMENDATION] Given analysis:\n${a2.substring(0,600)}\n\nFor: "${task}" — Generate specific actionable recommendations: which growers to target, which products to promote, which regions need immediate attention, what campaign messaging approach to take. Be specific with data-backed reasoning.`,
+        history: []
+      })
+    });
+    a3 = r3.response;
+    agentResults.push({agent:3, role:'RECOMMENDATION', content:a3, sources:r3.sources||[]});
+    removeTyping(t3);
+    nodes[2].className = 'cycle-node done';
+    appendMsg('assistant', `**[AGENT 3 — RECOMMENDATION ENGINE]**\n\n${a3}`, r3.sources||[], 'agent');
+    // Auto-pin key recommendations
+    if (document.getElementById('lbox-pinned')) {
+      const keyRec = a3.split('\n').find(l => l.trim().startsWith('-') || l.trim().startsWith('•')) || '';
+      if (keyRec) addPinItem('A3: ' + keyRec.replace(/^[-•]\s*/,'').substring(0,90));
+    }
+  } catch(e) { removeTyping(t3); a3 = 'Recommendation failed: '+e.message; }
+
+  // AGENT 4: Output Synthesis + Left Panel Rendering
+  if(nodes[3]) nodes[3].className = 'cycle-node active';
+  const t4 = showTyping('AGENT-4: SYNTHESIS + RENDER');
+  try {
+    const r4 = await api('/chat', {
+      method:'POST',
+      body: JSON.stringify({
+        query: `[AGENT-4 SYNTHESIS] Synthesize all prior agents for: "${task}". \n\nData: ${a1.substring(0,300)}\nAnalysis: ${a2.substring(0,300)}\nRecommendations: ${a3.substring(0,300)}\n\nProvide: 1) Executive summary 2) Top 3 immediate actions 3) Suggested marketing message direction. Format clearly.`,
+        history: []
+      })
+    });
+    removeTyping(t4);
+    nodes[3].className = 'cycle-node done';
+    appendMsg('assistant', `**[AGENT 4 — SYNTHESIS COMPLETE]**\n\n${r4.response}\n\n---\n✓ 4-Agent cycle complete. Results pushed to Intel Display.`, r4.sources||[], 'agent');
+
+    // Push synthesis to left panel analysis box
+    const synthHTML = `
+      <div class="analysis-block">
+        <div style="font-size:10px;color:var(--accent);font-family:var(--font-mono);margin-bottom:6px">AGENT-4 SYNTHESIS — ${task.substring(0,40)}</div>
+        <div style="font-size:12px;line-height:1.6">${r4.response.replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').substring(0,1500)}</div>
+      </div>`;
+    updateAnalysisBox(synthHTML);
+    toast('✓ 4-Agent cycle complete');
+  } catch(e) { removeTyping(t4); appendMsg('assistant', `Agent 4 error: ${e.message}`, [], 'system'); }
+
+  agentCycleActive = false;
+}
+
+// ── BIO-URGENCY ANALYSIS ───────────────────────────────────────────────
+async function runBioUrgencyAnalysis(query) {
+  // Extract state from query
+  const stateMatch = query.match(/(?:in|for|of)\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+)?)/);
+  const state = stateMatch ? stateMatch[1] : null;
+
+  appendMsg('system', `△ BIO-URGENCY SCAN INITIATED\nRegion: ${state||'ALL INDIA'}\nRunning multi-factor agricultural risk analysis…`, [], 'agent');
+
+  const t = showTyping('RUNNING BIO-URGENCY SCAN');
+  try {
+    // Parallel: urgency detection API + RAG climate query
+    const [urgencyData, ragResp] = await Promise.all([
+      api('/urgency/detect', {
+        method:'POST',
+        body: JSON.stringify({ state: state||null, crop: null, product: null })
+      }),
+      api('/chat', {
+        method:'POST',
+        body: JSON.stringify({
+          query: `Bio-emergency analysis for ${state||'all regions'}: Analyze weather patterns, pest infestation signals, crop stress indicators, inventory levels of protective pesticides, grower engagement drops. Identify which crops are at highest risk and why. Consider seasonal patterns from the CSV data.`,
+          history: []
+        })
+      })
+    ]);
+
+    removeTyping(t);
+
+    const score = urgencyData.urgency_score || 0;
+    const scoreColor = score>=75?'var(--danger)':score>=50?'var(--accent2)':score>=25?'var(--warn)':'var(--green)';
+    const sevClass = score>=75?'sig-crit':score>=50?'sig-high':score>=25?'sig-med':'sig-low';
+
+    // Display on left panel
+    const bioHTML = `
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
+        <div style="font-family:var(--font-head);font-size:36px;font-weight:800;color:${scoreColor}">${score}</div>
+        <div>
+          <div style="font-family:var(--font-head);font-size:14px;font-weight:700">${urgencyData.urgency_icon||''} ${urgencyData.urgency_level||'UNKNOWN'}</div>
+          <div style="font-size:11px;color:var(--text-dim)">${state||'ALL INDIA'} · ${new Date().toLocaleDateString()}</div>
+        </div>
+        <span class="sig-pill ${sevClass}" style="margin-left:auto">RISK ${score}/100</span>
+      </div>
+      ${(urgencyData.signals||[]).slice(0,4).map(s => `
+        <div class="analysis-block ${s.severity>=75?'danger':s.severity>=50?'warn':''}">
+          <div style="font-size:10px;color:var(--text-dim);font-family:var(--font-mono);margin-bottom:3px">${(s.type||'').replace(/_/g,' ')}</div>
+          <div style="font-size:12px">${s.message||''}</div>
+        </div>`).join('')}
+      <div style="font-size:10px;color:var(--text-dim);font-family:var(--font-mono);margin:8px 0 4px">AI ANALYSIS</div>
+      <div style="font-size:12px;line-height:1.6;color:var(--text-med)">${ragResp.response.substring(0,600).replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')}…</div>
+      ${(urgencyData.recommendations||[]).slice(0,3).map(r=>`<div class="pinned-item"><span class="pin-icon">▶</span><div class="pin-text" style="font-size:11px">${r}</div></div>`).join('')}`;
+
+    createBox('biourgency', '△', 'BIO-URGENCY SCAN', `${score}/100`, score>=50?'danger':score>=25?'warn':'', bioHTML, state||'ALL INDIA', urgencyData.urgency_level||'');
+
+    appendMsg('assistant',
+      `**△ BIO-URGENCY SCAN COMPLETE**\n\nRegion: **${state||'All India'}**\nRisk Score: **${score}/100** — ${urgencyData.urgency_level||''}\n\n${ragResp.response}`,
+      ragResp.sources||[], 'agent');
+
+    toast(`△ Bio-urgency: ${score}/100 — ${urgencyData.urgency_level}`);
+  } catch(e) {
+    removeTyping(t);
+    appendMsg('assistant', `Bio-urgency scan error: ${e.message}`, [], 'system');
+  }
+}
+
+// ── MARKETING GEN FROM CHAT ────────────────────────────────────────────
+async function runMarketingGenFromChat(query) {
+  const t = showTyping('GENERATING CAMPAIGN MESSAGES');
+  appendMsg('system', `📢 CAMPAIGN GENERATION INITIATED\nAnalyzing query and generating multilingual messages…`, [], 'agent');
+  try {
+    // Extract intent from query via RAG, then generate
+    const intent = await api('/chat', {
+      method:'POST',
+      body: JSON.stringify({
+        query: `Extract from this request: product name, crop, target state, campaign type. Return as: PRODUCT: X | CROP: Y | STATE: Z | TYPE: T\nRequest: "${query}"`,
+        history: []
+      })
+    });
+    const txt = intent.response;
+    const product = (txt.match(/PRODUCT:\s*([^|]+)/)||[])[1]?.trim()||'';
+    const crop = (txt.match(/CROP:\s*([^|]+)/)||[])[1]?.trim()||'';
+    const state = (txt.match(/STATE:\s*([^|]+)/)||[])[1]?.trim()||'';
+
+    const campData = await api('/campaign/generate', {
+      method:'POST',
+      body: JSON.stringify({
+        campaign_type:'product_launch', product, crop, state,
+        languages:['Hindi','Telugu','English','Marathi']
+      })
+    });
+    lastCampaignData = campData;
+    removeTyping(t);
+    displayCampaignMessagesBox(campData);
+    appendMsg('assistant',
+      `**📢 CAMPAIGN GENERATED**\nProduct: ${product||'—'} | Crop: ${crop||'—'} | Region: ${state||'All'}\n${Object.keys(campData.messages||{}).length} language variants created. → Pushed to Intel Display`,
+      [], 'agent');
+  } catch(e) { removeTyping(t); appendMsg('assistant', `Campaign gen error: ${e.message}`, [], 'system'); }
+}
+
+// ── ANALYSIS FROM CHAT ─────────────────────────────────────────────────
+async function runAnalysisFromChat(query) {
+  const t = showTyping('RUNNING DATA ANALYSIS');
+  try {
+    const resp = await api('/chat', {
+      method:'POST',
+      body: JSON.stringify({
+        query: `[DATA ANALYSIS MODE] ${query}\n\nProvide: statistical summary, trend direction, anomalies detected, actionable insights. Reference specific CSV columns and values.`,
+        history: chatHistory.slice(-4)
+      })
+    });
+    removeTyping(t);
+    chatHistory.push({role:'user',content:query});
+    chatHistory.push({role:'assistant',content:resp.response});
+    appendMsg('assistant', resp.response, resp.sources||[]);
+    updateAnalysisBox(`
+      <div class="analysis-block">
+        <div style="font-size:10px;color:var(--accent3);font-family:var(--font-mono);margin-bottom:6px">ANALYSIS: ${query.substring(0,50)}</div>
+        <div style="font-size:12px;line-height:1.6">${resp.response.replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').substring(0,1000)}</div>
+      </div>`);
+  } catch(e) { removeTyping(t); appendMsg('assistant', `Analysis error: ${e.message}`, [], 'system'); }
+}
+
 function sendQuick(q) {
   document.getElementById('chat-input').value = q;
-  showPanel('chat');
+  showMain('chat');
   sendChat();
 }
 
-let typingCounter = 0;
-function appendTyping() {
-  const id = 'typing-' + (++typingCounter);
+// ── Message Helpers ────────────────────────────────────────────────────
+let typingCount = 0;
+function showTyping(label='') {
+  const id = 'tp-' + (++typingCount);
   const msgs = document.getElementById('messages');
   const div = document.createElement('div');
-  div.className = 'msg';
-  div.id = id;
-  div.innerHTML = `
-    <div class="msg-avatar">🌾</div>
-    <div class="typing-indicator">
-      <div class="typing-dot"></div>
-      <div class="typing-dot"></div>
-      <div class="typing-dot"></div>
+  div.className = 'msg'; div.id = id;
+  div.innerHTML = `<div class="msg-avatar">⬡</div>
+    <div>
+      ${label ? `<div class="msg-label"><span class="agent-tag">${label}</span></div>` : ''}
+      <div class="typing-indicator">
+        <div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>
+      </div>
     </div>`;
   msgs.appendChild(div);
   msgs.scrollTop = msgs.scrollHeight;
   return id;
 }
+function removeTyping(id) { document.getElementById(id)?.remove(); }
 
-function removeTyping(id) {
-  document.getElementById(id)?.remove();
-}
-
-function appendMsg(role, content, sources = []) {
+function appendMsg(role, content, sources=[], type='') {
   const msgs = document.getElementById('messages');
   const div = document.createElement('div');
-  div.className = 'msg' + (role === 'user' ? ' user' : '');
-  const avatar = role === 'user' ? '👤' : '🌾';
-  const time = new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+  div.className = 'msg' + (role==='user' ? ' user' : '');
+  const avatar = role==='user' ? '◈' : role==='system' ? '△' : '⬡';
+  const time = new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+  const bubbleClass = type==='agent' ? ' agent' : type==='system' ? ' system' : '';
+  const label = role==='user' ? '' : `<div class="msg-label">${type==='agent'?'<span class="agent-tag">AI AGENT</span> ':''}<span style="font-size:10px">${time}</span></div>`;
 
-  // Render basic markdown-ish formatting
   const rendered = content
-    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-    .replace(/\*(.*?)\*/g, '<em>$1</em>')
-    .replace(/`(.*?)`/g, `<code style="background:var(--bg3);padding:1px 5px;border-radius:3px;font-family:var(--font-mono);font-size:12px">$1</code>`)
-    .replace(/\n/g, '<br>');
+    .replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')
+    .replace(/\*(.*?)\*/g,'<em>$1</em>')
+    .replace(/`(.*?)`/g,`<code style="background:var(--bg3);padding:1px 4px;border-radius:3px;font-family:var(--font-mono);font-size:11px">$1</code>`)
+    .replace(/\n/g,'<br>');
 
-  const srcHTML = sources.length
-    ? `<div class="msg-sources">${sources.map(s => `<span class="source-tag">${s}</span>`).join('')}</div>`
-    : '';
+  const srcHTML = sources.length ? `<div class="msg-sources">${sources.map(s=>`<span class="src-tag">${s}</span>`).join('')}</div>` : '';
 
-  div.innerHTML = `
-    <div class="msg-avatar">${avatar}</div>
-    <div>
-      <div class="msg-bubble">${rendered}${srcHTML}</div>
-      <div class="msg-meta">${time}${role === 'assistant' && sources.length ? ` · ${sources.length} source(s)` : ''}</div>
-    </div>`;
+  div.innerHTML = `<div class="msg-avatar">${avatar}</div><div><div class="msg-bubble${bubbleClass}">${label}${rendered}${srcHTML}</div></div>`;
   msgs.appendChild(div);
   msgs.scrollTop = msgs.scrollHeight;
 }
 
-async function rebuildRag() {
-  toast('🔄 Rebuilding RAG index…');
+// ═══════════════════════════════════════════════════════════════════════
+// OVERVIEW METRICS
+// ═══════════════════════════════════════════════════════════════════════
+async function loadMetrics() {
+  const c = document.getElementById('metrics-content');
+  c.innerHTML = '<div class="spinner"></div>';
   try {
-    const r = await apiFetch('/rag/rebuild', { method: 'POST' });
-    toast(`✅ RAG rebuilt — ${r.total_documents} docs`);
-  } catch (e) { toast('❌ ' + e.message); }
+    const [overview, campaigns, growers] = await Promise.all([
+      api('/metrics/overview'), api('/metrics/campaigns'), api('/metrics/growers')
+    ]);
+    const g = overview.growers||{};
+    const camp = overview.campaigns||{};
+    const ret = overview.retailers||{};
+
+    c.innerHTML = `
+      <div style="font-family:var(--font-head);font-size:16px;font-weight:700;color:var(--accent);letter-spacing:3px;text-transform:uppercase;margin-bottom:16px">◈ FIELD INTELLIGENCE OVERVIEW</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin-bottom:20px">
+        ${metricCard('GROWERS', fmt(g.total||0), 'across all states', 'accent')}
+        ${metricCard('CAMPAIGNS', camp.total_campaigns||0, 'unique IDs', '')}
+        ${metricCard('IMPRESSIONS', fmtK(camp.total_impressions||0), 'total social reach', '')}
+        ${metricCard('CTR', (camp.ctr_pct||0)+'%', 'impression→visit', 'warn')}
+        ${metricCard('CONVERSION', (camp.conversion_pct||0)+'%', 'visit→lead', '')}
+        ${metricCard('RETAILERS', fmt(ret.total||0), 'in network', '')}
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--r-lg);padding:14px">
+          <div style="font-family:var(--font-head);font-size:13px;font-weight:700;margin-bottom:12px;color:var(--text-med);letter-spacing:1px;text-transform:uppercase">TOP STATES — GROWERS</div>
+          ${barChart(g.states||{}, 8, 'var(--accent)')}
+        </div>
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--r-lg);padding:14px">
+          <div style="font-family:var(--font-head);font-size:13px;font-weight:700;margin-bottom:12px;color:var(--text-med);letter-spacing:1px;text-transform:uppercase">LEADS BY CROP</div>
+          ${barChart(campaigns.by_crop||{}, 8, 'var(--accent2)')}
+        </div>
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--r-lg);padding:14px">
+          <div style="font-family:var(--font-head);font-size:13px;font-weight:700;margin-bottom:12px;color:var(--text-med);letter-spacing:1px;text-transform:uppercase">DEVICE DISTRIBUTION</div>
+          ${barChart(g.devices||{}, 5, 'var(--accent3)')}
+        </div>
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--r-lg);padding:14px">
+          <div style="font-family:var(--font-head);font-size:13px;font-weight:700;margin-bottom:12px;color:var(--text-med);letter-spacing:1px;text-transform:uppercase">LANGUAGE REACH</div>
+          ${barChart(g.languages||{}, 8, 'var(--green)')}
+        </div>
+      </div>`;
+  } catch(e) { c.innerHTML = `<div class="empty-state"><div class="empty-icon">⚠</div><div>${e.message}</div></div>`; }
 }
 
-/* ══ CSV VIEWER ═════════════════════════════════════════════════════════════ */
-async function loadCsvList() {
-  try {
-    const data = await apiFetch('/csv/list');
-    const el = document.getElementById('csv-files-list');
-    el.innerHTML = '';
-    data.files.forEach(f => {
-      const item = document.createElement('div');
-      item.className = 'csv-file-item';
-      item.onclick = () => openCsvFile(f.name, item);
-      item.innerHTML = `
-        <div class="csv-file-name">${f.name}</div>
-        <div class="csv-file-meta">${f.row_count || '?'} rows · ${f.size_kb || '?'} KB · ${(f.columns || []).length} cols</div>`;
-      el.appendChild(item);
-    });
-    document.getElementById('sb-csvs').textContent = data.files.length;
-  } catch (e) {
-    document.getElementById('csv-files-list').innerHTML = `<div style="padding:12px;color:var(--red);font-size:12px">Error: ${e.message}</div>`;
-  }
+function metricCard(label, val, sub, accent) {
+  return `<div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--r-lg);padding:14px">
+    <div style="font-size:10px;color:var(--text-dim);font-family:var(--font-head);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">${label}</div>
+    <div style="font-family:var(--font-head);font-size:26px;font-weight:800;color:${accent?'var(--'+accent+')':'var(--text)'}">${val}</div>
+    <div style="font-size:11px;color:var(--text-dim);margin-top:2px">${sub}</div>
+  </div>`;
 }
 
-async function openCsvFile(filename, el) {
-  document.querySelectorAll('.csv-file-item').forEach(i => i.classList.remove('active'));
-  el.classList.add('active');
-  currentCsvFile = filename;
-
-  document.getElementById('csv-active-name').textContent = filename;
-  document.getElementById('csv-toolbar').style.display = 'flex';
-  document.getElementById('csv-table-wrap').innerHTML = '<div class="spinner"></div>';
-
-  try {
-    const data = await apiFetch('/csv/preview?file=' + encodeURIComponent(filename) + '&rows=50');
-    document.getElementById('csv-active-stat').textContent = `${data.total_shown} rows shown · ${data.columns.length} columns`;
-    renderTable(data.columns, data.rows);
-  } catch (e) {
-    document.getElementById('csv-table-wrap').innerHTML = `<div class="empty-state"><div class="empty-text">Error loading: ${e.message}</div></div>`;
-  }
-}
-
-function renderTable(cols, rows) {
-  const wrap = document.getElementById('csv-table-wrap');
-  const thead = `<thead><tr>${cols.map(c => `<th>${c}</th>`).join('')}</tr></thead>`;
-  const tbody = rows.map(row =>
-    `<tr>${cols.map(c => {
-      const v = row[c];
-      return `<td>${v === null || v === undefined || v === '' ? '<span class="null-val">null</span>' : v}</td>`;
-    }).join('')}</tr>`
+function barChart(data, limit, color) {
+  const entries = Object.entries(data).sort((a,b)=>b[1]-a[1]).slice(0,limit);
+  const max = entries[0]?.[1]||1;
+  return entries.map(([k,v]) =>
+    `<div class="bar-row"><div class="bar-label" title="${k}">${k}</div><div class="bar-track"><div class="bar-fill" style="width:${(v/max*100).toFixed(1)}%;background:${color}"></div></div><div class="bar-val">${fmtK(v)}</div></div>`
   ).join('');
-  wrap.innerHTML = `<table>${thead}<tbody>${tbody}</tbody></table>`;
 }
 
-async function loadCsvStats() {
-  if (!currentCsvFile) return;
+// ═══════════════════════════════════════════════════════════════════════
+// CSV VIEWER
+// ═══════════════════════════════════════════════════════════════════════
+async function loadCsvFiles2() {
+  const el = document.getElementById('csv-file-list2');
+  if (!el) return;
   try {
-    const data = await apiFetch('/csv/stats?file=' + encodeURIComponent(currentCsvFile));
-    const info = `📊 ${currentCsvFile}: ${data.shape.rows} rows × ${data.shape.cols} cols\n\nNull counts:\n${JSON.stringify(data.null_counts, null, 2)}`;
-    alert(info);
-  } catch (e) { toast('Error: ' + e.message); }
+    const data = await api('/csv/list');
+    el.innerHTML = data.files.map(f =>
+      `<div onclick="openCsv2('${f.name}',this)"
+        style="padding:7px 10px;border-radius:var(--r);cursor:pointer;margin-bottom:3px;transition:.12s;font-size:12px;color:var(--text-med);font-family:var(--font-mono)">
+        <div style="font-weight:600">${f.name.replace('.csv','')}</div>
+        <div style="font-size:10px;color:var(--text-dim)">${f.row_count||'?'}r · ${f.size_kb||'?'}KB</div>
+      </div>`
+    ).join('');
+  } catch(e) { el.innerHTML = `<div style="color:var(--danger);font-size:11px;padding:8px">${e.message}</div>`; }
 }
 
-/* ══ URGENCY PANEL ══════════════════════════════════════════════════════════ */
-async function populateUrgencyFilters() {
+async function openCsv2(filename, el) {
+  document.querySelectorAll('#csv-file-list2 div[onclick]').forEach(e => e.style.background='');
+  if (el) { el.style.background = 'rgba(0,229,195,.08)'; el.style.color = 'var(--accent)'; }
+  const view = document.getElementById('csv-view-area');
+  view.innerHTML = '<div class="spinner"></div>';
   try {
-    const g = await apiFetch('/metrics/growers');
-    const stateEl = document.getElementById('urg-state');
-    const states = Object.keys(g.states || {}).sort();
-    stateEl.innerHTML = '<option value="">All States</option>' + states.map(s => `<option value="${s}">${s}</option>`).join('');
+    const data = await api(`/csv/preview?file=${encodeURIComponent(filename)}&rows=100`);
+    const thead = `<thead><tr>${data.columns.map(c=>`<th>${c}</th>`).join('')}</tr></thead>`;
+    const tbody = data.rows.map(row =>
+      `<tr>${data.columns.map(c=>{const v=row[c];return`<td>${v===null||v===undefined||v===''?'<span style="color:var(--border)">—</span>':String(v).substring(0,120)}</td>`}).join('')}</tr>`
+    ).join('');
+    view.innerHTML = `
+      <div style="padding:8px 14px;border-bottom:1px solid var(--border);background:var(--bg1);display:flex;gap:10px;align-items:center;flex-shrink:0">
+        <span style="font-family:var(--font-mono);font-size:12px;color:var(--accent)">${filename}</span>
+        <span style="font-size:11px;color:var(--text-dim)">${data.total_shown} rows · ${data.columns.length} cols</span>
+        <button class="act-btn" style="margin-left:auto;font-size:10px" onclick="pushCsvToLeft('${filename}')">⬡ PUSH TO INTEL</button>
+      </div>
+      <div style="overflow:auto;flex:1"><table class="data-table">${thead}<tbody>${tbody}</tbody></table></div>`;
+  } catch(e) { view.innerHTML = `<div class="empty-state"><div class="empty-text">${e.message}</div></div>`; }
+}
 
-    const c = await apiFetch('/metrics/campaigns');
-    const cropEl = document.getElementById('urg-crop');
-    const crops = Object.keys(c.by_crop || {}).sort();
-    cropEl.innerHTML = '<option value="">All Crops</option>' + crops.map(c => `<option value="${c}">${c}</option>`).join('');
+async function pushCsvToLeft(filename) {
+  try {
+    const data = await api(`/csv/preview?file=${encodeURIComponent(filename)}&rows=30`);
+    const thead = `<thead><tr>${data.columns.map(c=>`<th>${c}</th>`).join('')}</tr></thead>`;
+    const tbody = data.rows.slice(0,15).map(row =>
+      `<tr>${data.columns.map(c=>{const v=row[c];return`<td>${v===null||v===undefined?'—':String(v).substring(0,60)}</td>`}).join('')}</tr>`
+    ).join('');
+    const body = `<div style="overflow-x:auto"><table class="data-table">${thead}<tbody>${tbody}</tbody></table></div>
+      <div style="font-size:10px;color:var(--text-dim);font-family:var(--font-mono);margin-top:6px">Showing 15 of ${data.total_shown} rows</div>`;
+    createBox('csv_' + filename.replace('.csv',''), '▦', filename.toUpperCase().replace('.CSV',''), `${data.total_shown}r`, '', body, filename, `${data.columns.length} cols`);
+    toast('▦ Pushed to Intel Display');
+  } catch(e) { toast('Error: '+e.message); }
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// URGENCY PANEL
+// ═══════════════════════════════════════════════════════════════════════
+async function populateUrgencyFilters2() {
+  try {
+    const g = await api('/metrics/growers');
+    const el = document.getElementById('urg2-state');
+    if (el) {
+      const states = Object.keys(g.states||{}).sort();
+      el.innerHTML = '<option value="">All States</option>' + states.map(s=>`<option>${s}</option>`).join('');
+    }
+    const c = await api('/metrics/campaigns');
+    const el2 = document.getElementById('urg2-crop');
+    if (el2) {
+      const crops = Object.keys(c.by_crop||{}).sort();
+      el2.innerHTML = '<option value="">All Crops</option>' + crops.map(c=>`<option>${c}</option>`).join('');
+    }
   } catch {}
 }
 
-async function runUrgencyDetection() {
-  const state = document.getElementById('urg-state').value;
-  const crop = document.getElementById('urg-crop').value;
-  const product = document.getElementById('urg-product').value;
-
-  document.getElementById('urg-level').textContent = 'Analyzing…';
-  document.getElementById('urg-score').textContent = '…';
-  document.getElementById('signals-grid').innerHTML = '<div class="spinner" style="grid-column:1/-1"></div>';
-  document.getElementById('recs-list').innerHTML = '<div class="spinner"></div>';
-
+async function runUrgency2() {
+  const state = document.getElementById('urg2-state')?.value;
+  const crop = document.getElementById('urg2-crop')?.value;
+  const out = document.getElementById('urgency-output2');
+  out.innerHTML = '<div class="spinner"></div>';
   try {
-    const data = await apiFetch('/urgency/detect', {
-      method: 'POST',
-      body: JSON.stringify({ state: state || null, crop: crop || null, product: product || null })
+    const data = await api('/urgency/detect', {
+      method:'POST', body: JSON.stringify({ state:state||null, crop:crop||null })
     });
-
-    // Update ring
-    const score = data.urgency_score;
-    const circumference = 2 * Math.PI * 42;
-    const filled = (score / 100) * circumference;
-    const ring = document.getElementById('ring-fill');
-    ring.style.strokeDasharray = `${filled} ${circumference}`;
-    const color = score >= 75 ? 'var(--red)' : score >= 50 ? 'var(--accent2)' : score >= 25 ? 'var(--yellow)' : 'var(--green)';
-    ring.style.stroke = color;
-
-    document.getElementById('urg-score').textContent = score;
-    document.getElementById('urg-score').style.color = color;
-    document.getElementById('urg-level').textContent = data.urgency_icon + ' ' + data.urgency_level;
-    document.getElementById('urg-msg').textContent = data.urgency_message;
-
-    // Show urgency badge on sidebar
-    if (score >= 50) {
-      document.getElementById('sidebar-urgency-badge').style.display = 'inline-block';
-    }
-
-    // Signals
-    const sigGrid = document.getElementById('signals-grid');
-    if (data.signals && data.signals.length > 0) {
-      sigGrid.innerHTML = data.signals.map(s => {
-        const sevClass = s.severity >= 75 ? 'sev-crit' : s.severity >= 50 ? 'sev-high' : s.severity >= 25 ? 'sev-med' : 'sev-low';
-        return `<div class="signal-card">
-          <div class="signal-type">${s.type.replace(/_/g,' ')}</div>
-          <div class="signal-msg">${s.message}</div>
-          <span class="signal-sev ${sevClass}">Severity ${s.severity || 0}</span>
-        </div>`;
-      }).join('');
-    } else {
-      sigGrid.innerHTML = '<div class="empty-state" style="grid-column:1/-1"><div class="empty-icon">✅</div><div class="empty-text">No concerning signals detected</div></div>';
-    }
-
-    // Recommendations
-    const recsList = document.getElementById('recs-list');
-    if (data.recommendations && data.recommendations.length > 0) {
-      recsList.innerHTML = data.recommendations.map(r => `<div class="rec-item">${r}</div>`).join('');
-    } else {
-      recsList.innerHTML = '<div class="rec-item">No specific actions required at this time</div>';
-    }
-
-  } catch (e) {
-    document.getElementById('urg-level').textContent = 'Error: ' + e.message;
-    toast('❌ Urgency detection failed: ' + e.message);
-  }
+    const score = data.urgency_score||0;
+    const sc = score>=75?'var(--danger)':score>=50?'var(--accent2)':score>=25?'var(--warn)':'var(--green)';
+    out.innerHTML = `
+      <div style="display:flex;align-items:center;gap:16px;padding:16px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r-lg);margin-bottom:14px">
+        <div style="font-family:var(--font-head);font-size:48px;font-weight:800;color:${sc}">${score}</div>
+        <div>
+          <div style="font-family:var(--font-head);font-size:18px;font-weight:700">${data.urgency_icon||''} ${data.urgency_level||''}</div>
+          <div style="font-size:12px;color:var(--text-dim)">${state||'All India'} · ${crop||'All Crops'}</div>
+          <div style="font-size:13px;color:var(--text-med);margin-top:4px">${data.urgency_message||''}</div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
+        ${(data.signals||[]).map(s=>{const sc2=s.severity>=75?'sig-crit':s.severity>=50?'sig-high':s.severity>=25?'sig-med':'sig-low';return`<div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:12px"><div style="font-size:10px;color:var(--text-dim);font-family:var(--font-mono);text-transform:uppercase;margin-bottom:4px">${(s.type||'').replace(/_/g,' ')}</div><div style="font-size:12px;margin-bottom:6px">${s.message||''}</div><span class="sig-pill ${sc2}">SEV ${s.severity||0}</span></div>`;}).join('')}
+      </div>
+      <div style="font-family:var(--font-head);font-size:12px;font-weight:700;color:var(--text-dim);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px">RECOMMENDATIONS</div>
+      ${(data.recommendations||[]).map(r=>`<div style="padding:8px 12px;background:var(--bg2);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:var(--r);margin-bottom:6px;font-size:12px">${r}</div>`).join('')}`;
+    // Push to left panel
+    createBox('urgency_result', '△', 'URGENCY RESULT', `${score}/100`, score>=50?'danger':score>=25?'warn':'', out.innerHTML.substring(0,2000), state||'ALL', data.urgency_level||'');
+    toast(`△ Urgency: ${score}/100`);
+  } catch(e) { out.innerHTML = `<div class="empty-state"><div class="empty-text">${e.message}</div></div>`; }
 }
 
-async function runBulkScan() {
-  document.getElementById('hotspot-table-wrap').innerHTML = '<div class="spinner"></div>';
+async function runBulkScan2() {
+  const out = document.getElementById('urgency-output2');
+  out.innerHTML = '<div class="spinner"></div>';
   try {
-    const data = await apiFetch('/urgency/bulk');
-    if (!data.results || data.results.length === 0) {
-      document.getElementById('hotspot-table-wrap').innerHTML = '<div class="empty-state"><div class="empty-text">No data</div></div>';
-      return;
-    }
-    const html = `<table class="hotspot-table">
-      <thead><tr><th>State</th><th>Urgency Score</th><th>Level</th><th>Top Signal</th></tr></thead>
-      <tbody>${data.results.map(r => `
-        <tr>
-          <td><strong>${r.state}</strong></td>
-          <td><span style="color:${r.urgency_score>=75?'var(--red)':r.urgency_score>=50?'var(--accent2)':r.urgency_score>=25?'var(--yellow)':'var(--green)'}">
-            ${r.urgency_score}
-          </span></td>
-          <td>${r.urgency_icon} ${r.urgency_level}</td>
-          <td style="color:var(--text-dim);font-size:12px">${r.top_signal}</td>
-        </tr>`).join('')}
-      </tbody>
-    </table>
-    <div style="margin-top:10px;font-size:12px;color:var(--text-dim)">
-      Scanned ${data.total_states_scanned} states · ${data.critical_states} critical
-    </div>`;
-    document.getElementById('hotspot-table-wrap').innerHTML = html;
-  } catch (e) {
-    document.getElementById('hotspot-table-wrap').innerHTML = `<div class="empty-state"><div class="empty-text">Error: ${e.message}</div></div>`;
-  }
+    const data = await api('/urgency/bulk');
+    if (!data.results?.length) { out.innerHTML = '<div class="empty-state"><div class="empty-text">No data</div></div>'; return; }
+    out.innerHTML = `
+      <div style="margin-bottom:10px;font-size:11px;color:var(--text-dim);font-family:var(--font-mono)">${data.total_states_scanned||0} states scanned · ${data.critical_states||0} CRITICAL</div>
+      <table class="data-table">
+        <thead><tr><th>STATE</th><th>SCORE</th><th>LEVEL</th><th>TOP SIGNAL</th></tr></thead>
+        <tbody>${(data.results||[]).map(r=>{const sc=r.urgency_score>=75?'var(--danger)':r.urgency_score>=50?'var(--accent2)':r.urgency_score>=25?'var(--warn)':'var(--green)';return`<tr><td><strong>${r.state}</strong></td><td style="color:${sc}">${r.urgency_score}</td><td>${r.urgency_icon||''} ${r.urgency_level||''}</td><td style="font-size:11px;color:var(--text-dim)">${r.top_signal||''}</td></tr>`;}).join('')}</tbody>
+      </table>`;
+  } catch(e) { out.innerHTML = `<div class="empty-state"><div class="empty-text">${e.message}</div></div>`; }
 }
 
-/* ══ CAMPAIGN GENERATOR ═════════════════════════════════════════════════════ */
-async function generateCampaign() {
-  const btn = document.getElementById('gen-btn');
-  btn.disabled = true;
-  btn.textContent = '⏳ Generating…';
-
-  const langs = Array.from(document.querySelectorAll('#lang-checkboxes input:checked')).map(el => el.value);
-
+// ═══════════════════════════════════════════════════════════════════════
+// CAMPAIGN GENERATOR
+// ═══════════════════════════════════════════════════════════════════════
+async function generateCampaign2() {
+  const btn = document.getElementById('camp2-gen-btn');
+  if (btn) { btn.disabled = true; btn.textContent = '⏳ GENERATING…'; }
+  const langs = Array.from(document.querySelectorAll('#camp2-langs input:checked')).map(e=>e.value);
   const payload = {
-    campaign_type: document.getElementById('camp-type').value,
-    product: document.getElementById('camp-product').value,
-    crop: document.getElementById('camp-crop').value,
-    state: document.getElementById('camp-state').value,
+    campaign_type: document.getElementById('camp2-type').value,
+    product: document.getElementById('camp2-product').value,
+    crop: document.getElementById('camp2-crop').value,
+    state: document.getElementById('camp2-state').value,
     languages: langs,
-    context: document.getElementById('camp-context').value
+    context: document.getElementById('camp2-context').value
   };
-
-  document.getElementById('campaign-results').innerHTML = '<div class="spinner"></div>';
-
+  document.getElementById('camp2-results').innerHTML = '<div class="spinner"></div>';
   try {
-    const data = await apiFetch('/campaign/generate', {
-      method: 'POST',
-      body: JSON.stringify(payload)
-    });
-
-    const results = data.messages || {};
-    const cards = Object.entries(results).map(([lang, content]) => {
-      if (content.error) {
-        return `<div class="lang-result-card">
-          <div class="lang-result-header">
-            <span class="lang-name">${lang}</span>
-            <span style="color:var(--red);font-size:12px">Error: ${content.error}</span>
-          </div>
-        </div>`;
-      }
-
-      const smsId = 'sms-' + lang.replace(/\s/g,'');
-      const audioId = 'aud-' + lang.replace(/\s/g,'');
-      const tabSmsId = 'tab-sms-' + lang.replace(/\s/g,'');
-      const tabAudId = 'tab-aud-' + lang.replace(/\s/g,'');
-
-      // Format audio script with stage direction highlighting
-      const audioHTML = (content.audio_script || 'Not generated').replace(
-        /\[([^\]]+)\]/g,
-        '<span class="stage-dir">[$1]</span>'
-      ).replace(/\n/g,'<br>');
-
-      return `<div class="lang-result-card">
-        <div class="lang-result-header">
-          <span class="lang-name">${lang}</span>
-          <span class="lang-script">${content.script || ''}</span>
+    const data = await api('/campaign/generate', { method:'POST', body: JSON.stringify(payload) });
+    lastCampaignData = data;
+    const msgs = data.messages||{};
+    const html = Object.entries(msgs).map(([lang,c])=>{
+      if(c.error) return `<div class="camp-card"><div class="camp-card-head"><span>${lang}</span><span style="color:var(--danger)">ERR: ${c.error}</span></div></div>`;
+      const id='cc2-'+lang.replace(/\s/g,'');
+      const audioHTML = (c.audio_script||'').replace(/\[([^\]]+)\]/g,'<span class="stage-dir">[$1]</span>').replace(/\n/g,'<br>');
+      return `<div class="camp-card" id="${id}">
+        <div class="camp-card-head" onclick="document.getElementById('${id}').classList.toggle('open')">
+          <span class="camp-lang">${lang}</span><span style="font-size:10px;color:var(--text-dim);font-family:var(--font-mono)">${c.char_count||0}chr · ${c.sms_parts||1}pt</span><span style="margin-left:8px">▾</span>
         </div>
-        <div class="msg-tabs">
-          <button class="msg-tab active" id="${tabSmsId}" onclick="switchMsgTab('${lang}','sms')">📱 SMS</button>
-          <button class="msg-tab" id="${tabAudId}" onclick="switchMsgTab('${lang}','audio')">🎙 Audio Script</button>
-        </div>
-        <div class="msg-content" id="${smsId}">
-          <div class="sms-content">${(content.sms||'').replace(/\n/g,'<br>')}</div>
-          <button class="copy-btn" onclick="copyText('${escapeJs(content.sms || '')}')">📋 Copy SMS</button>
-        </div>
-        <div class="msg-content" id="${audioId}" style="display:none">
-          <div class="audio-content">${audioHTML}</div>
-          <button class="copy-btn" onclick="copyText('${escapeJs(content.audio_script || '')}')">📋 Copy Script</button>
-        </div>
-        <div class="msg-stats">
-          <span>📏 ${content.char_count || 0} chars</span>
-          <span>📨 ${content.sms_parts || 1} SMS part(s)</span>
-          <span>⏱ ~${content.estimated_audio_duration_sec || '?'}s audio</span>
+        <div class="camp-body">
+          <div style="font-size:10px;color:var(--accent);font-family:var(--font-mono);margin-bottom:5px">📱 SMS</div>
+          <div class="sms-box">${(c.sms||'').replace(/\n/g,'<br>')}</div>
+          <div style="font-size:10px;color:var(--warn);font-family:var(--font-mono);margin:8px 0 5px">🎙 VOICE SCRIPT</div>
+          <div class="script-box">${audioHTML}</div>
+          <button class="act-btn" style="margin-top:6px;font-size:10px" onclick="copyToClipboard('${escJ(c.sms||'')}')">📋 COPY</button>
         </div>
       </div>`;
-    });
-
-    document.getElementById('campaign-results').innerHTML = cards.join('');
-    toast(`✅ Generated ${Object.keys(results).length} language variants`);
-  } catch (e) {
-    document.getElementById('campaign-results').innerHTML = `<div class="empty-state"><div class="empty-icon">❌</div><div class="empty-text">Error: ${e.message}</div></div>`;
-    toast('❌ Generation failed: ' + e.message);
+    }).join('');
+    document.getElementById('camp2-results').innerHTML = html || '<div class="empty-state"><div class="empty-text">No results</div></div>';
+    toast(`✦ ${Object.keys(msgs).length} variants generated`);
+  } catch(e) {
+    document.getElementById('camp2-results').innerHTML = `<div class="empty-state"><div class="empty-text">Error: ${e.message}</div></div>`;
   }
-
-  btn.disabled = false;
-  btn.textContent = '✨ Generate Multilingual Messages';
+  if (btn) { btn.disabled = false; btn.textContent = '✦ GENERATE MESSAGES'; }
 }
 
-function switchMsgTab(lang, type) {
-  const smsId = 'sms-' + lang.replace(/\s/g,'');
-  const audioId = 'aud-' + lang.replace(/\s/g,'');
-  const tabSmsId = 'tab-sms-' + lang.replace(/\s/g,'');
-  const tabAudId = 'tab-aud-' + lang.replace(/\s/g,'');
+// ═══════════════════════════════════════════════════════════════════════
+// UTILITIES
+// ═══════════════════════════════════════════════════════════════════════
+function fmt(n){return Number(n).toLocaleString('en-IN')}
+function fmtK(n){if(n>=1e7)return(n/1e7).toFixed(1)+'Cr';if(n>=1e5)return(n/1e5).toFixed(1)+'L';if(n>=1000)return(n/1000).toFixed(1)+'K';return n}
+function escJ(s){return(s||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/\n/g,'\\n')}
+async function copyToClipboard(txt){try{await navigator.clipboard.writeText(txt);toast('📋 Copied')}catch{toast('Copy failed')}}
 
-  if (type === 'sms') {
-    document.getElementById(smsId).style.display = 'block';
-    document.getElementById(audioId).style.display = 'none';
-    document.getElementById(tabSmsId).classList.add('active');
-    document.getElementById(tabAudId).classList.remove('active');
-  } else {
-    document.getElementById(smsId).style.display = 'none';
-    document.getElementById(audioId).style.display = 'block';
-    document.getElementById(tabSmsId).classList.remove('active');
-    document.getElementById(tabAudId).classList.add('active');
-  }
-}
+// ── Resize Handle ──────────────────────────────────────────────────────
+(function(){
+  const handle = document.getElementById('resize-handle');
+  const lp = document.getElementById('left-panel');
+  let dragging = false;
+  handle.addEventListener('mousedown', e => { dragging=true; e.preventDefault(); });
+  document.addEventListener('mousemove', e => { if(!dragging)return; const rect = document.getElementById('app').getBoundingClientRect(); const w = e.clientX - rect.left; lp.style.width = Math.max(280,Math.min(700,w))+'px'; });
+  document.addEventListener('mouseup', ()=>{ dragging=false; });
+})();
 
-function escapeJs(str) {
-  return (str || '').replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/\n/g,'\\n');
-}
-
-async function copyText(text) {
+// ── INIT ───────────────────────────────────────────────────────────────
+async function init() {
   try {
-    await navigator.clipboard.writeText(text);
-    toast('📋 Copied to clipboard!');
-  } catch { toast('Copy failed'); }
+    const h = await api('/health');
+    document.getElementById('api-dot').className = 'dot';
+    document.getElementById('api-status').textContent = `SYS-OK · ${h.datasets_loaded.length}DS`;
+    // Auto-load pinned box
+    addPinnedBox();
+    // Auto-load data summary box
+    await displayDataSummaryBox();
+    toast('⬡ LUMINA BOARD ONLINE');
+  } catch {
+    document.getElementById('api-dot').className = 'dot err';
+    document.getElementById('api-status').textContent = 'OFFLINE';
+    toast('⚠ API not reachable. Run: python api/app.py');
+    // Still show empty boxes for UI demo
+    addPinnedBox();
+    displayMarketingBox();
+  }
 }
 
-/* ══ BOOT ════════════════════════════════════════════════════════════════════ */
 window.addEventListener('load', init);
 </script>
 </body>
