@@ -135,7 +135,7 @@ def call_qwen_api(prompt: str, system_prompt: str = None, max_tokens: int = 2000
         if system_prompt:
             payload["system"] = system_prompt
         
-        response = requests.post(QWEN_API_URL, json=payload, timeout=60)
+        response = requests.post(QWEN_API_URL, json=payload, timeout=180)
         response.raise_for_status()
         
         result = response.json()
