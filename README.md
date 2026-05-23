@@ -452,39 +452,7 @@ POST /api/rag/query
 
 ---
 
-## 🤝 Contributing
 
-We welcome contributions! Please follow these guidelines:
-
-### Development Workflow
-
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feature/amazing-feature`
-3. Commit changes: `git commit -m 'Add amazing feature'`
-4. Push to branch: `git push origin feature/amazing-feature`
-5. Open a Pull Request
-
-### Code Standards
-
-- **Formatting**: Use `black` for Python code
-- **Linting**: Pass `flake8` and `pylint` checks
-- **Testing**: Add tests for new features (pytest)
-- **Documentation**: Update README and docstrings
-
-### Testing
-
-```bash
-# Run all tests
-pytest
-
-# Run with coverage
-pytest --cov=. --cov-report=html
-
-# Run specific test file
-pytest tests/test_urgency_detector.py
-```
-
----
 
 ## 📄 License
 
